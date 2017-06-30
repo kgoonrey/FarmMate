@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UserInterface.Controls.SimpleSearchGrid"
         mc:Ignorable="d"
-        Title="AssetSearchGrid" Height="365" Width="777">
+        Title="AssetSearchGrid" Height="365" Width="777" Loaded="Window_Loaded">
     <Grid>
         <StackPanel Orientation="Horizontal"  VerticalAlignment="Top">
             <Label Margin="4,4,4,4">Asset</Label>
-            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" Margin="4,4,4,4" TabIndex="0" PreviewKeyDown="uiCode_PreviewKeyDown"/>
+            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" Margin="4,4,4,4" TabIndex="0" PreviewKeyDown="uiCode_PreviewKeyDown" CharacterCasing="Upper"/>
             <CheckBox x:Name="uiShowActive" Margin="4,10,4,4" Click="uiShowActive_Click" >Show Active</CheckBox>
         </StackPanel>
         <DockPanel Grid.RowSpan="2">

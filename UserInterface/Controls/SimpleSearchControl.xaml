@@ -4,19 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:UserInterface.Controls"
-             mc:Ignorable="d" d:DesignWidth="300" Height="25.424" GotFocus="UserControl_GotFocus">
+             mc:Ignorable="d" d:DesignWidth="300" Height="25" GotFocus="UserControl_GotFocus">
     <Grid>
         <StackPanel Orientation="Horizontal"  VerticalAlignment="Top">
-            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" PreviewKeyDown="uiCode_PreviewKeyDown" LostFocus="Control_LostFocus" />
+            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" PreviewKeyDown="uiCode_PreviewKeyDown" LostFocus="Control_LostFocus" CharacterCasing="Upper" />
             <Button x:Name="uiBrowse" Content="..." Margin="5,1,0,0" VerticalAlignment="Top" Height="23" IsTabStop="False" LostFocus="Control_LostFocus" Click="uiBrowse_Click"/>
             </StackPanel>
         <DockPanel Margin="0,0,0,-170">
-            <DataGrid x:Name="uiDataGrid" Margin="0,26,0,0" Visibility="Collapsed" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" LostFocus="Control_LostFocus" MouseDoubleClick="uiDataGrid_MouseDoubleClick" BeginningEdit="uiDataGrid_BeginningEdit" IsTabStop="False" VerticalAlignment="Stretch">
+            <DataGrid x:Name="uiDataGrid" Margin="0,26,0,0" Visibility="Collapsed" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" LostFocus="Control_LostFocus" MouseDoubleClick="uiDataGrid_MouseDoubleClick" BeginningEdit="uiDataGrid_BeginningEdit" IsTabStop="False" VerticalAlignment="Top" Height="60">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Code}" Header="Code"/>
                     <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
+        <Label Name="uiRowCount" Visibility="Collapsed" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="28" Panel.ZIndex="1" FontWeight="Bold">Showing {0} rows of {0}</Label>
     </Grid>
 </UserControl>

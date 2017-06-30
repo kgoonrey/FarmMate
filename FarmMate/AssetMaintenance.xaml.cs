@@ -67,11 +67,7 @@ namespace FarmMateWPF
                 return;
 
             _viewModel.Update();
-        }
-
-        private void uiBottom_CancelClick(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Cancel");
+            uiCode.UpdateDataSource();
         }
     }
 }

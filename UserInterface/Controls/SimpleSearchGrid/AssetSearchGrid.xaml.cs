@@ -116,5 +116,10 @@ namespace UserInterface.Controls.SimpleSearchGrid
         {
             FilterGrid();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            uiCode.SelectAll();
+        }
     }
 }

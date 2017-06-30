@@ -52,16 +52,16 @@ namespace UserInterface.Controls
         private void uiCode_TextChanged(object sender, TextChangedEventArgs e)
         {
             if(uiCode.Text == string.Empty)
-                uiDataGrid.Visibility = Visibility.Collapsed;
+                uiDataGrid.Visibility = uiRowCount.Visibility = Visibility.Collapsed;
             else
-                uiDataGrid.Visibility = Visibility.Visible;
+                uiDataGrid.Visibility = uiRowCount.Visibility = Visibility.Visible;
 
             filterGrid();
         }
 
         private void LoseFocus()
         {
-            uiDataGrid.Visibility = Visibility.Collapsed;
+            uiDataGrid.Visibility = uiRowCount.Visibility = Visibility.Collapsed;
             HasFocus = false;
         }
 
@@ -73,14 +73,41 @@ namespace UserInterface.Controls
                 {
                     _assetDataTable = _assetTableAdapter.GetData();
                 }
-
-                uiDataGrid.ItemsSource = _assetDataTable.Where(x => x.Code.Contains(uiCode.Text));
+                var items = _assetDataTable.Where(x => x.Code.Contains(uiCode.Text));
+                if (items.Count() > 4)
+                {
+                    uiRowCount.Content = "Showing 4 rows of " + items.Count();
+                    uiDataGrid.ItemsSource = _assetDataTable.Take(4);
+                }
+                else
+                {
+                    uiRowCount.Content = string.Format("Showing {0} rows of {0}", items.Count());
+                    uiDataGrid.ItemsSource = _assetDataTable.Where(x => x.Code.Contains(uiCode.Text));
+                }
             }
+            ResizeGrid();
+        }
+
+        private void ResizeGrid()
+        {
+            uiDataGrid.Height = 50 + (uiDataGrid.Items.Count * 25);
+
+            Thickness margin = uiRowCount.Margin;
+            margin.Bottom = -uiDataGrid.Height - 5;
+            uiRowCount.Margin = margin;
         }
 
         private void uiDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             SelectRow();
+        }
+
+        public void UpdateDataSource()
+        {
+            if (SearchType == SearchTypeEnum.Assets)
+            {
+                _assetDataTable = _assetTableAdapter.GetData();
+            }
         }
 
         private void SelectRow()
