@@ -1,0 +1,28 @@
+﻿<Window x:Class="UserInterface.Controls.SimpleSearchGrid.AssetSearchGrid"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UserInterface.Controls.SimpleSearchGrid"
+        mc:Ignorable="d"
+        Title="AssetSearchGrid" Height="365" Width="777">
+    <Grid>
+        <StackPanel Orientation="Horizontal"  VerticalAlignment="Top">
+            <Label Margin="4,4,4,4">Asset</Label>
+            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" Margin="4,4,4,4" />
+            <CheckBox x:Name="uiShowActive" Margin="4,10,4,4" Click="uiShowActive_Click" >Show Active</CheckBox>
+        </StackPanel>
+        <DockPanel Grid.RowSpan="2">
+            <DataGrid x:Name="uiDataGrid" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" MouseDoubleClick="uiDataGrid_MouseDoubleClick" BeginningEdit="uiDataGrid_BeginningEdit" IsTabStop="False" Margin="0,39,0,47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Code}" Header="Code"/>
+                    <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="uiOK" Content="OK" Width="76" Margin="0,0,20,6" Height="35" VerticalAlignment="Bottom" Click="uiOK_Click"/>
+                <Button x:Name="uiCancel" Content="Cancel" Width="76" Margin="0,0,20,6" Height="35" VerticalAlignment="Bottom" Click="uiCancel_Click"/>
+            </StackPanel>
+    </Grid>
+</Window>

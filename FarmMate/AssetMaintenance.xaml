@@ -1,0 +1,45 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FarmMateWPF"
+        xmlns:UserControls="clr-namespace:UserInterface;assembly=UserInterface" xmlns:Controls="clr-namespace:UserInterface.Controls;assembly=UserInterface" x:Class="FarmMateWPF.AssetMaintenance"
+        mc:Ignorable="d"
+        Title="Asset Maintenance" Height="500" Width="800" Closing="Window_Closing">
+    <Grid>
+        <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Panel.ZIndex="1">
+            <Label x:Name="lblAsset" Content="Code"/>
+            <Controls:SimpleSearchControl x:Name="uiCode" Margin="5,0,0,0" VerticalAlignment="Top" TabIndex="0" LostFocus="uiCode_LostFocus" Height="24" Width="226" SearchType="Assets"/>
+            <Label x:Name="lblAssetDesc" Content="Description"/>
+            <TextBox x:Name="uiDescription" TextWrapping="Wrap" Width="172" Margin="5,0,0,0" VerticalAlignment="Top" Height="23" TabIndex="1" Text="{Binding AssetRow.Description}"/>
+            <CheckBox x:Name="uiActive" Content="Active" Margin="5,8,0,0" TabIndex="2" Height="16" VerticalAlignment="Top" IsChecked="{Binding AssetRow.Active}"/>
+        </StackPanel>
+        <DockPanel Margin="0,38,0,0">
+            <TabControl x:Name="tabControl">
+                <TabItem Header="Details" TabIndex="4">
+                    <Grid Background="#FFE5E5E5">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                <Label x:Name="lblAccountCode" Content="Account Code"/>
+                                <TextBox x:Name="uiAccountCode" TextWrapping="Wrap" Width="172" Margin="5,0,0,0" Height="23" VerticalAlignment="Top" TabIndex="5" Text="{Binding AssetRow.AccountCode}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label x:Name="lblAssetType" Content="Asset Type"/>
+                                <ComboBox x:Name="uiAssetType" Width="172" Margin="23,1,0,0" Height="23" VerticalAlignment="Top" TabIndex="6" ItemsSource="{Binding AssetTypeDataTable}" DisplayMemberPath="Description" SelectedValuePath="Type" SelectedValue="{Binding AssetRow.AssetType}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label x:Name="lblManufacturer" Content="Manufacturer"/>
+                                <ComboBox x:Name="uiManufacturer" Width="172" Margin="9,1,0,0" Height="23" VerticalAlignment="Top" TabIndex="7" ItemsSource="{Binding ManufacturerDataTable}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.Manufacturer}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Financial">
+                    <Grid Background="#FFE5E5E5"/>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+        <UserControls:BottomBar Name="uiBottom" VerticalAlignment="Bottom" HorizontalAlignment="Right" SaveClick="uiBottom_SaveClick" />
+    </Grid>
+</Window>
