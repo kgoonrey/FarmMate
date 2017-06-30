@@ -773,12 +773,12 @@
                                    />
                                 <Rectangle x:Name="HoverRectangle" 
                                    Grid.ColumnSpan="2" Grid.RowSpan="2" Stretch="Fill" 
-                                   Fill="{StaticResource BtnOverFill}" 
+                                   Fill="{DynamicResource ComboBoxItemHoverBorderBrush}" 
                                    Opacity="0" />
                                 <Rectangle x:Name="ShineRectangle" 
-                                   Fill="{StaticResource hoverGradient}" 
+                                   Fill="{DynamicResource ComboBoxItemPressedBorderBrush}" 
                                    Stretch="Fill" 
-                                   Stroke="{StaticResource selectedStroke}" 
+                                   Stroke="{DynamicResource ComboBoxItemPressedBackgroundBrush}" 
                                    Opacity="0"
                                    Grid.ColumnSpan="2" Grid.RowSpan="2"                                   
                                            />
@@ -938,7 +938,7 @@
                                 Converter={x:Static controls:DataGrid.HeadersVisibilityConverter},
                                 ConverterParameter={x:Static controls:DataGridHeadersVisibility.Row}}"/>
                             <Rectangle x:Name="Over" Margin="0" Grid.RowSpan="2" Grid.ColumnSpan="2" 
-                                   Fill="{StaticResource hoverGradient}" 
+                                   Fill="{StaticResource hoverGradient}"
                                    Stroke="{StaticResource hoverStroke}" 
                                    Opacity="0"/>
                             <primitives:DataGridCellsPresenter Grid.Column="1"

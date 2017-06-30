@@ -262,6 +262,16 @@ SELECT Type, Description, Active FROM AssetTypes WHERE (Type = @Type)</CommandTe
               <Mapping SourceColumn="Active" DataSetColumn="Active" />
             </Mappings>
             <Sources>
+              <DbSource ConnectionRef="DataConfig (Settings)" DbObjectName="FarmMate.dbo.AssetTypes" DbObjectType="Table" GenerateMethods="Get" GenerateShortCommands="true" GeneratorGetMethodName="GetActiveData" GetMethodModifier="Public" GetMethodName="GetActiveData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetActiveData" UserSourceName="GetActiveData">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                    <CommandText>SELECT        Type, Description, Active
+FROM            AssetTypes
+WHERE        (Active = 1)</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
               <DbSource ConnectionRef="DataConfig (Settings)" DbObjectName="FarmMate.dbo.AssetTypes" DbObjectType="Table" GenerateMethods="Get" GenerateShortCommands="true" GeneratorGetMethodName="GetDataByType" GetMethodModifier="Public" GetMethodName="GetDataByType" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetDataByType" UserSourceName="GetDataByType">
                 <SelectCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="true">
@@ -328,6 +338,16 @@ SELECT Code, Description, Active FROM Manufacturers WHERE (Code = @Code)</Comman
               <Mapping SourceColumn="Active" DataSetColumn="Active" />
             </Mappings>
             <Sources>
+              <DbSource ConnectionRef="DataConfig (Settings)" DbObjectName="FarmMate.dbo.Manufacturers" DbObjectType="Table" GenerateMethods="Get" GenerateShortCommands="true" GeneratorGetMethodName="GetActiveData" GetMethodModifier="Public" GetMethodName="GetActiveData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetActiveData" UserSourceName="GetActiveData">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                    <CommandText>SELECT        Code, Description, Active
+FROM            Manufacturers
+WHERE        (Active = 1)</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
               <DbSource ConnectionRef="DataConfig (Settings)" DbObjectName="FarmMate.dbo.Manufacturers" DbObjectType="Table" GenerateMethods="Get" GenerateShortCommands="true" GeneratorGetMethodName="GetDataByCode" GetMethodModifier="Public" GetMethodName="GetDataByCode" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetDataByCode" UserSourceName="GetDataByCode">
                 <SelectCommand>
                   <DbCommand CommandType="Text" ModifiedByUser="true">
@@ -348,7 +368,7 @@ SELECT Code, Description, Active FROM Manufacturers WHERE (Code = @Code)</Comman
   <xs:element name="Database" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="Database" msprop:Generator_UserDSName="Database">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="Assets" msprop:Generator_TableClassName="AssetsDataTable" msprop:Generator_TableVarName="tableAssets" msprop:Generator_RowChangedName="AssetsRowChanged" msprop:Generator_TablePropName="Assets" msprop:Generator_RowDeletingName="AssetsRowDeleting" msprop:Generator_RowChangingName="AssetsRowChanging" msprop:Generator_RowEvHandlerName="AssetsRowChangeEventHandler" msprop:Generator_RowDeletedName="AssetsRowDeleted" msprop:Generator_RowClassName="AssetsRow" msprop:Generator_UserTableName="Assets" msprop:Generator_RowEvArgName="AssetsRowChangeEvent">
+        <xs:element name="Assets" msprop:Generator_TableClassName="AssetsDataTable" msprop:Generator_TableVarName="tableAssets" msprop:Generator_TablePropName="Assets" msprop:Generator_RowDeletingName="AssetsRowDeleting" msprop:Generator_RowChangingName="AssetsRowChanging" msprop:Generator_RowEvHandlerName="AssetsRowChangeEventHandler" msprop:Generator_RowDeletedName="AssetsRowDeleted" msprop:Generator_UserTableName="Assets" msprop:Generator_RowChangedName="AssetsRowChanged" msprop:Generator_RowEvArgName="AssetsRowChangeEvent" msprop:Generator_RowClassName="AssetsRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Code" msprop:Generator_ColumnVarNameInTable="columnCode" msprop:Generator_ColumnPropNameInRow="Code" msprop:Generator_ColumnPropNameInTable="CodeColumn" msprop:Generator_UserColumnName="Code">
@@ -429,7 +449,7 @@ SELECT Code, Description, Active FROM Manufacturers WHERE (Code = @Code)</Comman
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="AssetTypes" msprop:Generator_TableClassName="AssetTypesDataTable" msprop:Generator_TableVarName="tableAssetTypes" msprop:Generator_TablePropName="AssetTypes" msprop:Generator_RowDeletingName="AssetTypesRowDeleting" msprop:Generator_RowChangingName="AssetTypesRowChanging" msprop:Generator_RowEvHandlerName="AssetTypesRowChangeEventHandler" msprop:Generator_RowDeletedName="AssetTypesRowDeleted" msprop:Generator_UserTableName="AssetTypes" msprop:Generator_RowChangedName="AssetTypesRowChanged" msprop:Generator_RowEvArgName="AssetTypesRowChangeEvent" msprop:Generator_RowClassName="AssetTypesRow">
+        <xs:element name="AssetTypes" msprop:Generator_TableClassName="AssetTypesDataTable" msprop:Generator_TableVarName="tableAssetTypes" msprop:Generator_RowChangedName="AssetTypesRowChanged" msprop:Generator_TablePropName="AssetTypes" msprop:Generator_RowDeletingName="AssetTypesRowDeleting" msprop:Generator_RowChangingName="AssetTypesRowChanging" msprop:Generator_RowEvHandlerName="AssetTypesRowChangeEventHandler" msprop:Generator_RowDeletedName="AssetTypesRowDeleted" msprop:Generator_RowClassName="AssetTypesRow" msprop:Generator_UserTableName="AssetTypes" msprop:Generator_RowEvArgName="AssetTypesRowChangeEvent">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Type" msprop:Generator_ColumnVarNameInTable="columnType" msprop:Generator_ColumnPropNameInRow="Type" msprop:Generator_ColumnPropNameInTable="TypeColumn" msprop:Generator_UserColumnName="Type">
@@ -450,7 +470,7 @@ SELECT Code, Description, Active FROM Manufacturers WHERE (Code = @Code)</Comman
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Manufacturers" msprop:Generator_TableClassName="ManufacturersDataTable" msprop:Generator_TableVarName="tableManufacturers" msprop:Generator_RowChangedName="ManufacturersRowChanged" msprop:Generator_TablePropName="Manufacturers" msprop:Generator_RowDeletingName="ManufacturersRowDeleting" msprop:Generator_RowChangingName="ManufacturersRowChanging" msprop:Generator_RowEvHandlerName="ManufacturersRowChangeEventHandler" msprop:Generator_RowDeletedName="ManufacturersRowDeleted" msprop:Generator_RowClassName="ManufacturersRow" msprop:Generator_UserTableName="Manufacturers" msprop:Generator_RowEvArgName="ManufacturersRowChangeEvent">
+        <xs:element name="Manufacturers" msprop:Generator_TableClassName="ManufacturersDataTable" msprop:Generator_TableVarName="tableManufacturers" msprop:Generator_TablePropName="Manufacturers" msprop:Generator_RowDeletingName="ManufacturersRowDeleting" msprop:Generator_RowChangingName="ManufacturersRowChanging" msprop:Generator_RowEvHandlerName="ManufacturersRowChangeEventHandler" msprop:Generator_RowDeletedName="ManufacturersRowDeleted" msprop:Generator_UserTableName="Manufacturers" msprop:Generator_RowChangedName="ManufacturersRowChanged" msprop:Generator_RowEvArgName="ManufacturersRowChangeEvent" msprop:Generator_RowClassName="ManufacturersRow">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="Code" msprop:Generator_ColumnVarNameInTable="columnCode" msprop:Generator_ColumnPropNameInRow="Code" msprop:Generator_ColumnPropNameInTable="CodeColumn" msprop:Generator_UserColumnName="Code">

@@ -9,7 +9,7 @@
         Title="Asset Maintenance" Height="500" Width="800" Closing="Window_Closing">
     <Grid>
         <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Panel.ZIndex="1">
-            <Label x:Name="lblAsset" Content="Code"/>
+            <Label x:Name="lblAsset" Content="Code" Height="24" VerticalAlignment="Top"/>
             <Controls:SimpleSearchControl x:Name="uiCode" Margin="5,0,0,0" VerticalAlignment="Top" TabIndex="0" LostFocus="uiCode_LostFocus" Height="24" Width="226" SearchType="Assets"/>
             <Label x:Name="lblAssetDesc" Content="Description"/>
             <TextBox x:Name="uiDescription" TextWrapping="Wrap" Width="172" Margin="5,0,0,0" VerticalAlignment="Top" Height="23" TabIndex="1" Text="{Binding AssetRow.Description}"/>

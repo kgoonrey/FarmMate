@@ -9,7 +9,7 @@
     <Grid>
         <StackPanel Orientation="Horizontal"  VerticalAlignment="Top">
             <Label Margin="4,4,4,4">Asset</Label>
-            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" Margin="4,4,4,4" />
+            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" Margin="4,4,4,4" TabIndex="0" PreviewKeyDown="uiCode_PreviewKeyDown"/>
             <CheckBox x:Name="uiShowActive" Margin="4,10,4,4" Click="uiShowActive_Click" >Show Active</CheckBox>
         </StackPanel>
         <DockPanel Grid.RowSpan="2">

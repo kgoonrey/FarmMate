@@ -7,8 +7,8 @@
 <DiagramLayout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ex:showrelationlabel="False" ViewPortX="0" ViewPortY="0" xmlns:ex="urn:schemas-microsoft-com:xml-msdatasource-layout-extended" xmlns="urn:schemas-microsoft-com:xml-msdatasource-layout">
   <Shapes>
     <Shape ID="DesignTable:Assets" ZOrder="3" X="79" Y="50" Height="54" Width="181" AdapterExpanded="false" DataTableExpanded="false" OldAdapterHeight="64" OldDataTableHeight="254" SplitterPosition="24" />
-    <Shape ID="DesignTable:AssetTypes" ZOrder="2" X="311" Y="54" Height="54" Width="209" AdapterExpanded="false" DataTableExpanded="false" OldAdapterHeight="64" OldDataTableHeight="83" SplitterPosition="24" />
-    <Shape ID="DesignTable:Manufacturers" ZOrder="1" X="563" Y="61" Height="54" Width="229" AdapterExpanded="false" DataTableExpanded="false" OldAdapterHeight="64" OldDataTableHeight="83" SplitterPosition="24" />
+    <Shape ID="DesignTable:AssetTypes" ZOrder="2" X="311" Y="54" Height="55" Width="209" AdapterExpanded="false" DataTableExpanded="false" OldAdapterHeight="82" OldDataTableHeight="83" SplitterPosition="25" />
+    <Shape ID="DesignTable:Manufacturers" ZOrder="1" X="563" Y="61" Height="55" Width="229" AdapterExpanded="false" DataTableExpanded="false" OldAdapterHeight="82" OldDataTableHeight="83" SplitterPosition="25" />
   </Shapes>
   <Connectors />
 </DiagramLayout>

@@ -27,6 +27,7 @@ namespace UserInterface.Controls.SimpleSearchGrid
             InitializeComponent();
             uiDataGrid.AutoGenerateColumns = false;
             FilterGrid();
+            uiCode.Focus();
         }
 
         private string _text = string.Empty;
@@ -73,13 +74,37 @@ namespace UserInterface.Controls.SimpleSearchGrid
 
         private void uiOK_Click(object sender, RoutedEventArgs e)
         {
-            if (uiDataGrid.SelectedCells.Count == 0)
-                return;
-
-            uiCode.Text = ((Data.Database.AssetsRow)uiDataGrid.SelectedCells[0].Item).Code;
+            if (uiDataGrid.SelectedCells.Count > 0)
+            {
+                uiCode.Text = ((Data.Database.AssetsRow)uiDataGrid.SelectedCells[0].Item).Code;
+            }
             Text = uiCode.Text;
             Accept = true;
             Close();
+        }
+
+        private void uiCode_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                uiOK_Click(null, null);
+            }
+            else if (e.Key == Key.Down)
+            {
+                if (uiDataGrid.SelectedIndex == uiDataGrid.Items.Count)
+                    return;
+                uiDataGrid.SelectedIndex++;
+            }
+            else if (e.Key == Key.Up)
+            {
+                if (uiDataGrid.SelectedIndex < 1)
+                    return;
+                uiDataGrid.SelectedIndex--;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                Close();
+            }
         }
 
         private void uiCancel_Click(object sender, RoutedEventArgs e)

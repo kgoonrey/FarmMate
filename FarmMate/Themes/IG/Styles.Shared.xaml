@@ -245,8 +245,8 @@
 
   <SolidColorBrush x:Key="ListBoxItemFocusedBorderBrush" Color="{StaticResource Color_014}" />
   <LinearGradientBrush x:Key="LIstBoxItemSelectedBackgroundBrush" StartPoint="0.7,-0.0390625" EndPoint="0.7,1">
-    <GradientStop Color="{StaticResource Color_011}" Offset="0" />
-    <GradientStop Color="{StaticResource Color_009}" Offset="1" />
+        <GradientStop Color="{StaticResource Color_010}" Offset="0" />
+        <GradientStop Color="{StaticResource Color_016}" Offset="1" />
   </LinearGradientBrush>
 
   <!-- ******************************************************** SL-WPF INLINE-CONTROLS SHARED RESOURCES ***********************************************************

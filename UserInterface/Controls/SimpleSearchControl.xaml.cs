@@ -80,6 +80,11 @@ namespace UserInterface.Controls
 
         private void uiDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            SelectRow();
+        }
+
+        private void SelectRow()
+        {
             if (uiDataGrid.SelectedCells.Count == 0)
                 return;
 
@@ -89,7 +94,7 @@ namespace UserInterface.Controls
             LoseFocus();
             TraversalRequest request = new TraversalRequest(FocusNavigationDirection.Next);
             request.Wrapped = true;
-            ((DataGrid)sender).MoveFocus(request);
+            uiDataGrid.MoveFocus(request);
         }
 
         private void uiDataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -107,6 +112,26 @@ namespace UserInterface.Controls
             if (e.Key == Key.Tab)
             {
                 LoseFocus();
+            }
+            else if(e.Key == Key.Enter)
+            {
+                SelectRow();
+            }
+            else if (e.Key == Key.Down)
+            {
+                if (uiDataGrid.SelectedIndex == uiDataGrid.Items.Count)
+                    return;
+                uiDataGrid.SelectedIndex++;
+            }
+            else if (e.Key == Key.Up)
+            {
+                if (uiDataGrid.SelectedIndex < 1)
+                    return;
+                uiDataGrid.SelectedIndex--;
+            }
+            else if(e.Key == Key.F1)
+            {
+                uiBrowse_Click(null, null);
             }
         }
 
@@ -134,7 +159,7 @@ namespace UserInterface.Controls
                 LoseFocus();
                 TraversalRequest request = new TraversalRequest(FocusNavigationDirection.Next);
                 request.Wrapped = true;
-                ((Button)sender).MoveFocus(request);
+                uiBrowse.MoveFocus(request);
             }
         }
     }
