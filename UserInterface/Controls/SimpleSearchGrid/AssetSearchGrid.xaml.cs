@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 namespace UserInterface.Controls.SimpleSearchGrid
 {
     /// <summary>
-    /// Interaction logic for AssetSearchGrid2.xaml
+    /// Interaction logic for AssetSearchGrid.xaml
     /// </summary>
     public partial class AssetSearchGrid : Window
     {
@@ -85,11 +85,7 @@ namespace UserInterface.Controls.SimpleSearchGrid
 
         private void uiCode_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-            {
-                uiOK_Click(null, null);
-            }
-            else if (e.Key == Key.Down)
+            if (e.Key == Key.Down)
             {
                 if (uiDataGrid.SelectedIndex == uiDataGrid.Items.Count)
                     return;
@@ -120,6 +116,15 @@ namespace UserInterface.Controls.SimpleSearchGrid
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             uiCode.SelectAll();
+        }
+
+        private void uiDataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                uiOK_Click(null, null);
+                e.Handled = true;
+            }
         }
     }
 }

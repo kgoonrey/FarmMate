@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="300" Height="25" GotFocus="UserControl_GotFocus">
     <Grid>
         <StackPanel Orientation="Horizontal"  VerticalAlignment="Top">
-            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" PreviewKeyDown="uiCode_PreviewKeyDown" LostFocus="Control_LostFocus" CharacterCasing="Upper" />
+            <TextBox x:Name="uiCode" TextWrapping="Wrap" Width="172" Height="23" TextChanged="uiCode_TextChanged" PreviewKeyDown="uiCode_PreviewKeyDown" LostFocus="Control_LostFocus" CharacterCasing="Upper" GotFocus="uiCode_GotFocus" />
             <Button x:Name="uiBrowse" Content="..." Margin="5,1,0,0" VerticalAlignment="Top" Height="23" IsTabStop="False" LostFocus="Control_LostFocus" Click="uiBrowse_Click"/>
             </StackPanel>
         <DockPanel Margin="0,0,0,-170">

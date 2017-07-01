@@ -13,7 +13,7 @@
             <CheckBox x:Name="uiShowActive" Margin="4,10,4,4" Click="uiShowActive_Click" >Show Active</CheckBox>
         </StackPanel>
         <DockPanel Grid.RowSpan="2">
-            <DataGrid x:Name="uiDataGrid" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" MouseDoubleClick="uiDataGrid_MouseDoubleClick" BeginningEdit="uiDataGrid_BeginningEdit" IsTabStop="False" Margin="0,39,0,47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <DataGrid x:Name="uiDataGrid" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" MouseDoubleClick="uiDataGrid_MouseDoubleClick" BeginningEdit="uiDataGrid_BeginningEdit" IsTabStop="False" Margin="0,39,0,47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PreviewKeyDown="uiDataGrid_PreviewKeyDown" >
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Code}" Header="Code"/>
                     <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*"/>
@@ -21,7 +21,7 @@
             </DataGrid>
         </DockPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="uiOK" Content="OK" Width="76" Margin="0,0,20,6" Height="35" VerticalAlignment="Bottom" Click="uiOK_Click"/>
+                <Button x:Name="uiOK" Content="OK" Width="76" Margin="0,0,20,6" Height="35" VerticalAlignment="Bottom" Click="uiOK_Click" IsDefault="True"/>
                 <Button x:Name="uiCancel" Content="Cancel" Width="76" Margin="0,0,20,6" Height="35" VerticalAlignment="Bottom" Click="uiCancel_Click"/>
             </StackPanel>
     </Grid>

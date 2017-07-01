@@ -189,5 +189,10 @@ namespace UserInterface.Controls
                 uiBrowse.MoveFocus(request);
             }
         }
+
+        private void uiCode_GotFocus(object sender, RoutedEventArgs e)
+        {
+            uiCode.SelectAll();
+        }
     }
 }
