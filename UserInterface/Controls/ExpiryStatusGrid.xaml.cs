@@ -17,13 +17,13 @@ using System.Windows.Threading;
 namespace UserInterface.Controls
 {
     /// <summary>
-    /// Interaction logic for AssetTypeGrid.xaml
+    /// Interaction logic for ExpiryStatusGrid.xaml
     /// </summary>
-    public partial class AssetTypeGrid : UserControl
+    public partial class ExpiryStatusGrid : UserControl
     {
-        public bool IsDirty { get; set; } 
+        public bool IsDirty { get; set; }
 
-        public AssetTypeGrid()
+        public ExpiryStatusGrid()
         {
             InitializeComponent();
         }

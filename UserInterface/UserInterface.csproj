@@ -62,6 +62,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ExpiryStatusGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ExpiryTypeGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ManufacturerGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -74,10 +82,20 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\StateGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\AssetTypeGrid.xaml.cs">
       <DependentUpon>AssetTypeGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ExpiryStatusGrid.xaml.cs">
+      <DependentUpon>ExpiryStatusGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ExpiryTypeGrid.xaml.cs">
+      <DependentUpon>ExpiryTypeGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ManufacturerGrid.xaml.cs">
       <DependentUpon>ManufacturerGrid.xaml</DependentUpon>
@@ -88,6 +106,10 @@
     <Compile Include="Controls\SimpleSearchGrid\AssetSearchGrid.xaml.cs">
       <DependentUpon>AssetSearchGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StateGrid.xaml.cs">
+      <DependentUpon>StateGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataGridHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

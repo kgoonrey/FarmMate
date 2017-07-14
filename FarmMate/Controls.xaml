@@ -12,6 +12,9 @@
         <ListBox x:Name="uiControls">
                 <ListBoxItem x:Name="uiAssetType" Content="Asset Type" Selected="uiAssetType_Selected"/>
                 <ListBoxItem x:Name="uiManufacturer" Content="Manufacturer" Selected="uiManufacturer_Selected"/>
+                <ListBoxItem x:Name="uiStates" Content="States" Selected="uiStates_Selected" />
+                <ListBoxItem x:Name="uiExpiryTypes" Content="Expiry Types" Selected="uiExpiryTypes_Selected"  />
+                <ListBoxItem x:Name="uiExpiryStatus" Content="Expiry Status" Selected="uiExpiryStatus_Selected"  />
             </ListBox>
             <Grid x:Name="uiContentPanel"/>
         </DockPanel>
