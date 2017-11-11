@@ -29,6 +29,7 @@ namespace FarmMateWPF
             _viewModel = new ViewModel();
             _viewModel.AssetTypeDataTable = _viewModel.AssetTypeAdapter.GetActiveData();
             _viewModel.ManufacturerDataTable = _viewModel.ManufacturerAdapter.GetActiveData();
+            _viewModel.StatesDataTable = _viewModel.StatesAdapter.GetData();
             uiCode.Focus();
         }
 

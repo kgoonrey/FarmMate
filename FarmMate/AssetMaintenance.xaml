@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:FarmMateWPF"
         xmlns:UserControls="clr-namespace:UserInterface;assembly=UserInterface" xmlns:Controls="clr-namespace:UserInterface.Controls;assembly=UserInterface" x:Class="FarmMateWPF.AssetMaintenance"
         mc:Ignorable="d"
-        Title="Asset Maintenance" Height="500" Width="800" Closing="Window_Closing">
+        Title="Asset Maintenance" Height="500" Width="800" MinHeight="500" MinWidth="800"  Closing="Window_Closing">
     <Grid>
         <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Panel.ZIndex="1">
-            <Label x:Name="lblAsset" Content="Code" Height="24" VerticalAlignment="Top"/>
+            <Controls:LabelControl x:Name="lblAsset" Text="Code" />
             <Controls:SimpleSearchControl x:Name="uiCode" Margin="5,0,0,0" VerticalAlignment="Top" TabIndex="0" LostFocus="uiCode_LostFocus" Height="24" Width="226" SearchType="Assets"/>
-            <Label x:Name="lblAssetDesc" Content="Description"/>
-            <TextBox x:Name="uiDescription" TextWrapping="Wrap" Width="172" Margin="5,0,0,0" VerticalAlignment="Top" Height="23" TabIndex="1" Text="{Binding AssetRow.Description}"/>
+            <Controls:LabelControl x:Name="lblAssetDesc" Text="Description"/>
+            <Controls:TextBoxControl x:Name="uiDescription" Margin="5,0,0,0" TabIndex="1" DataSource="{Binding AssetRow.Description, Mode=TwoWay}"/>
             <CheckBox x:Name="uiActive" Content="Active" Margin="5,8,0,0" TabIndex="2" Height="16" VerticalAlignment="Top" IsChecked="{Binding AssetRow.Active}"/>
         </StackPanel>
         <DockPanel Margin="0,38,0,0">
@@ -20,23 +20,32 @@
                 <TabItem Header="Details" TabIndex="4">
                     <Grid Background="#FFE5E5E5">
                         <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                <Label x:Name="lblAccountCode" Content="Account Code"/>
-                                <TextBox x:Name="uiAccountCode" TextWrapping="Wrap" Width="172" Margin="5,0,0,0" Height="23" VerticalAlignment="Top" TabIndex="5" Text="{Binding AssetRow.AccountCode}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Controls:LabelControl x:Name="lblAssetType" Text="Asset Type"/>
+                                <Controls:ComboBoxControl x:Name="uiAssetType" Margin="24,1,0,0" TabIndex="6" ItemsSource="{Binding AssetTypeDataTable, Mode=TwoWay}" DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.AssetType, Mode=TwoWay}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label x:Name="lblAssetType" Content="Asset Type"/>
-                                <ComboBox x:Name="uiAssetType" Width="172" Margin="23,1,0,0" Height="23" VerticalAlignment="Top" TabIndex="6" ItemsSource="{Binding AssetTypeDataTable}" DisplayMemberPath="Description" SelectedValuePath="Type" SelectedValue="{Binding AssetRow.AssetType}"/>
+                                <Controls:LabelControl x:Name="lblManufacturer" Text="Manufacturer"/>
+                                <Controls:ComboBoxControl x:Name="uiManufacturer" Margin="9,1,0,0" TabIndex="7" ItemsSource="{Binding ManufacturerDataTable, Mode=TwoWay}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.Manufacturer, Mode=TwoWay}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label x:Name="lblManufacturer" Content="Manufacturer"/>
-                                <ComboBox x:Name="uiManufacturer" Width="172" Margin="9,1,0,0" Height="23" VerticalAlignment="Top" TabIndex="7" ItemsSource="{Binding ManufacturerDataTable}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.Manufacturer}"/>
+                                <Controls:LabelControl x:Name="lblRego" Text="Rego Number"/>
+                                <Controls:TextBoxControl x:Name="uiRego" Margin="6,1,0,0" TabIndex="8" DataSource="{Binding AssetRow.RegistrationNumber, Mode=TwoWay}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Controls:LabelControl x:Name="lblRegoState" Text="Rego State"/>
+                                <Controls:ComboBoxControl x:Name="uiRegoState" Margin="23,1,0,0" TabIndex="9" ItemsSource="{Binding StatesDataTable, Mode=TwoWay}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.RegistrationState, Mode=TwoWay}"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Financial">
-                    <Grid Background="#FFE5E5E5"/>
+                    <Grid Background="#FFE5E5E5">
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <Controls:LabelControl x:Name="lblAccountCode" Text="Account Code"/>
+                            <Controls:TextBoxControl x:Name="uiAccountCode" Margin="5,0,0,0" TabIndex="3" DataSource="{Binding AssetRow.AccountCode, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </DockPanel>

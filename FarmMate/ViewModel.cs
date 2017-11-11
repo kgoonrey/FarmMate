@@ -18,6 +18,9 @@ namespace FarmMateWPF
         private Data.DatabaseTableAdapters.ManufacturersTableAdapter _manufacturerAdapter = new Data.DatabaseTableAdapters.ManufacturersTableAdapter();
         public Data.DatabaseTableAdapters.ManufacturersTableAdapter ManufacturerAdapter { get { return _manufacturerAdapter; } }
 
+        private Data.DatabaseTableAdapters.StatesTableAdapter _statesAdapter = new Data.DatabaseTableAdapters.StatesTableAdapter();
+        public Data.DatabaseTableAdapters.StatesTableAdapter StatesAdapter { get { return _statesAdapter; } }
+
         private Data.Database.AssetsDataTable _assetDataTable = new Data.Database.AssetsDataTable();
         public Data.Database.AssetsDataTable AssetDataTable
         {
@@ -39,6 +42,13 @@ namespace FarmMateWPF
             set { _manufacturerDataTable = value; NotifyPropertyChanged("ManufacturerDataTable"); }
         }
 
+        private Data.Database.StatesDataTable _statesDataTable = new Data.Database.StatesDataTable();
+        public Data.Database.StatesDataTable StatesDataTable
+        {
+            get { return _statesDataTable; }
+            set { _statesDataTable = value; NotifyPropertyChanged("StatesDataTable"); }
+        }
+
         private Data.Database.AssetsRow _assetRow = null;
         public Data.Database.AssetsRow AssetRow
         {
@@ -54,7 +64,7 @@ namespace FarmMateWPF
 
         public void SetAssetDataSource(string asset)
         {
-            AssetDataTable = AssetAdapter.GetDataByAsset(asset);
+            AssetDataTable = AssetAdapter.GetDataByCode(asset);
         }
 
         public void Update()

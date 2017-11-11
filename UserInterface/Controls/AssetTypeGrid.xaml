@@ -9,7 +9,7 @@
     <Grid>
         <DataGrid x:Name="uiDataGrid" CanUserAddRows="True" AutoGenerateColumns="False" x:FieldModifier="public" VerticalAlignment="Stretch" CellEditEnding="uiDataGrid_CellEditEnding" PreviewKeyDown="uiDataGrid_PreviewKeyDown" RowEditEnding="uiDataGrid_RowEditEnding">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Type}" Header="Type" Width="0.2*"/>
+                <DataGridTextColumn Binding="{Binding Code}" Header="Code" Width="0.2*"/>
                 <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="0.7*"/>
                 <DataGridCheckBoxColumn Binding="{Binding Active}" Header="Active" Width="0.15*"/>
             </DataGrid.Columns>
