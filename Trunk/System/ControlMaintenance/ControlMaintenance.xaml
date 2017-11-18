@@ -1,0 +1,23 @@
+﻿<Window x:Class="ControlMaintenance.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ControlMaintenance"
+        xmlns:UserControls="clr-namespace:UserInterface;assembly=UserInterface" xmlns:Controls="clr-namespace:UserInterface.Controls;assembly=UserInterface"
+        mc:Ignorable="d"
+        Title="Control Maintenance" Height="500" Width="800">
+    <Grid>
+        <DockPanel>
+            <ListBox x:Name="uiControls">
+                <ListBoxItem x:Name="uiAssetType" Content="Asset Type" Selected="uiAssetType_Selected"/>
+                <ListBoxItem x:Name="uiManufacturer" Content="Manufacturer" Selected="uiManufacturer_Selected"/>
+                <ListBoxItem x:Name="uiStates" Content="States" Selected="uiStates_Selected" />
+                <ListBoxItem x:Name="uiExpiryTypes" Content="Expiry Types" Selected="uiExpiryTypes_Selected"  />
+                <ListBoxItem x:Name="uiExpiryStatus" Content="Expiry Status" Selected="uiExpiryStatus_Selected"  />
+            </ListBox>
+            <Grid x:Name="uiContentPanel"/>
+        </DockPanel>
+        <UserControls:BottomBar Name="uiBottom" VerticalAlignment="Bottom" HorizontalAlignment="Right" SaveClick="uiBottom_SaveClick"/>
+    </Grid>
+</Window>
