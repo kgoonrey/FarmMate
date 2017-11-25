@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +24,17 @@ namespace UserInterface.Controls
         public string DisplayMemberPath { get; set; }
         public string SelectedValuePath { get; set; }
 
+        private bool _addOnTheFly = false;
+        public bool AddOnTheFly
+        {
+            get { return _addOnTheFly; }
+            set
+            {
+                _addOnTheFly = value;
+                uiComboBox.IsEditable = value;
+            }
+        }
+
         public static DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(object), typeof(ComboBoxControl));
         public object ItemsSource
         {
@@ -37,9 +49,83 @@ namespace UserInterface.Controls
             set { SetValue(SelectedValueProperty, value); }
         }
 
+        public static DependencyProperty TableProperty = DependencyProperty.Register("Table", typeof(Sources.TableEnum), typeof(Pointer));
+        public Sources.TableEnum Table
+        {
+            get { return (Sources.TableEnum)GetValue(TableProperty); }
+            set { SetValue(TableProperty, value); }
+        }
+
+        private bool _clicked = false;
+
         public ComboBoxControl()
         {
             InitializeComponent();
+        }
+
+        private void uiComboBox_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (_clicked || e.OriginalSource.GetType() != typeof(TextBox)) { _clicked = false; return; }
+
+            if (!IsVisible || !AddOnTheFly || uiComboBox.Text == string.Empty || uiComboBox.SelectedItem != null)
+                return;
+
+            var newItem = uiComboBox.Text;
+            if (Table == Sources.TableEnum.AssetTypes)
+            {
+                if (MessageBox.Show("Create a new asset type?", "Create New?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    uiComboBox.IsDropDownOpen = false;
+                    e.Handled = true;
+                    ((TextBox)e.OriginalSource).SelectAll();
+                    return;
+                }
+
+                ((Data.Database.AssetTypesDataTable)uiComboBox.ItemsSource).AddAssetTypesRow(uiComboBox.Text, uiComboBox.Text, true);
+                new Data.DatabaseTableAdapters.AssetTypesTableAdapter().Update(((Data.Database.AssetTypesDataTable)uiComboBox.ItemsSource));
+                uiComboBox.SelectedValue = newItem;
+            }
+            else if (Table == Sources.TableEnum.Manufacturers)
+            {
+                if (MessageBox.Show("Create a new manufacturer?", "Create New?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    uiComboBox.IsDropDownOpen = false;
+                    e.Handled = true;
+                    ((TextBox)e.OriginalSource).SelectAll();
+                    return;
+                }
+
+                ((Data.Database.ManufacturersDataTable)uiComboBox.ItemsSource).AddManufacturersRow(uiComboBox.Text, uiComboBox.Text, true);
+                new Data.DatabaseTableAdapters.ManufacturersTableAdapter().Update(((Data.Database.ManufacturersDataTable)uiComboBox.ItemsSource));
+                uiComboBox.SelectedValue = newItem;
+            }
+        }
+
+        private void uiComboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                MoveToNextUIElement(e);
+            }
+        }
+
+        private void MoveToNextUIElement(KeyEventArgs e)
+        {
+            FocusNavigationDirection focusDirection = FocusNavigationDirection.Next;
+            TraversalRequest request = new TraversalRequest(focusDirection);
+            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
+            if (elementWithFocus != null)
+            {
+                if (elementWithFocus.MoveFocus(request)) e.Handled = true;
+            }
+        }
+
+        private void uiComboBox_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource.GetType() != typeof(Rectangle))
+                return;
+            
+            _clicked = true;           
         }
     }
 }

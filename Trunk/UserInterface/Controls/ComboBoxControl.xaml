@@ -9,6 +9,8 @@
     <Grid>
         <ComboBox x:Name="uiComboBox" Width="175" Height="23" VerticalAlignment="Top" ItemsSource="{Binding Path=ItemsSource, ElementName=uc}" SelectedValue="{Binding Path=SelectedValue, ElementName=uc}" 
                   DisplayMemberPath="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DisplayMemberPath, UpdateSourceTrigger=PropertyChanged}" 
-                  SelectedValuePath="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=SelectedValuePath, UpdateSourceTrigger=PropertyChanged}"/>
+                  SelectedValuePath="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=SelectedValuePath, UpdateSourceTrigger=PropertyChanged}" 
+                  PreviewLostKeyboardFocus="uiComboBox_PreviewLostKeyboardFocus" KeyDown="uiComboBox_KeyDown" 
+                  PreviewMouseDown="uiComboBox_PreviewMouseDown"/>
     </Grid>
 </UserControl>

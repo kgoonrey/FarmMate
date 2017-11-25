@@ -22,11 +22,11 @@
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
                                 <Controls:LabelControl x:Name="lblAssetType" Text="Asset Type"/>
-                                <Controls:ComboBoxControl x:Name="uiAssetType" Margin="24,1,0,0" TabIndex="6" ItemsSource="{Binding AssetTypeDataTable, Mode=TwoWay}" DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.AssetType, Mode=TwoWay}"/>
+                                <Controls:ComboBoxControl x:Name="uiAssetType" Margin="24,1,0,0" TabIndex="6" ItemsSource="{Binding AssetTypeDataTable, Mode=TwoWay}" DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.AssetType, Mode=TwoWay}" AddOnTheFly="True" Table="AssetTypes"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Controls:LabelControl x:Name="lblManufacturer" Text="Manufacturer"/>
-                                <Controls:ComboBoxControl x:Name="uiManufacturer" Margin="9,1,0,0" TabIndex="7" ItemsSource="{Binding ManufacturerDataTable, Mode=TwoWay}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.Manufacturer, Mode=TwoWay}"/>
+                                <Controls:ComboBoxControl x:Name="uiManufacturer" Margin="9,1,0,0" TabIndex="7" ItemsSource="{Binding ManufacturerDataTable, Mode=TwoWay}"  DisplayMemberPath="Description" SelectedValuePath="Code" SelectedValue="{Binding AssetRow.Manufacturer, Mode=TwoWay}" AddOnTheFly="True" Table="Manufacturers"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Controls:LabelControl x:Name="lblRego" Text="Rego Number"/>

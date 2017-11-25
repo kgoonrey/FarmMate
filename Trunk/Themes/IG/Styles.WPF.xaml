@@ -456,7 +456,7 @@
           <Rectangle x:Name="DropDownNormal" Fill="{TemplateBinding Background}" RadiusY="3" RadiusX="3" Stroke="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2" StrokeThickness="{TemplateBinding BorderThickness}" />
           <Rectangle x:Name="DropDownhover" RadiusY="3" RadiusX="3" Stroke="{StaticResource ComboBoxHoverBorderBrush}" StrokeThickness="1" Margin="0" Opacity="0" Grid.ColumnSpan="2" />
           <Rectangle x:Name="DropDownBackground" Fill="{StaticResource ComboBoxInnerShadowBackgroundBrush}" Height="22" RadiusY="3" RadiusX="3" Grid.ColumnSpan="2" VerticalAlignment="Top" IsHitTestVisible="False"/>
-          <ToggleButton x:Name="DropDownToggle" BorderThickness="{TemplateBinding BorderThickness}" Style="{StaticResource ComboToggleStyle}" Height="{TemplateBinding Height}" Grid.Column="1" HorizontalAlignment="Stretch" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Stretch" />
+          <ToggleButton x:Name="DropDownToggle" BorderThickness="{TemplateBinding BorderThickness}" Style="{StaticResource ComboToggleStyle}" Height="{TemplateBinding Height}" Grid.Column="1" HorizontalAlignment="Stretch" IsTabStop="False" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Stretch" />
           <Rectangle x:Name="DropDownDisabled" Fill="{StaticResource ToggleButtonDisabledBackgroundBrush}" RadiusX="3" RadiusY="3" IsHitTestVisible="false" d:LayoutOverrides="GridBox" Grid.Column="1" Opacity="0" />
          <TextBox x:Name="PART_EditableTextBox" Grid.Column="0" Margin="0,0,0,-1" HorizontalContentAlignment="Left" IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}" Style="{StaticResource ComboBoxEditableTextBoxStyle}" />
           <TextBlock IsHitTestVisible="False" Text=" " Margin="5,2,5,0" Visibility="Collapsed" />
@@ -481,7 +481,7 @@
   </ControlTemplate>
 
   <!-- *********************************  ComboBox Style  ********************************* -->
-  <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
+    <Style x:Key="ComboBoxStyle" TargetType="ComboBox">
     <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemStyle}" />
     <Setter Property="Padding" Value="5,3,20,3" />
     <Setter Property="MinHeight" Value="24" />
@@ -563,7 +563,7 @@
                 <Rectangle x:Name="DropDownNormal" Fill="{TemplateBinding Background}" RadiusY="3" RadiusX="3" Stroke="{TemplateBinding BorderBrush}" Grid.ColumnSpan="2" StrokeThickness="{TemplateBinding BorderThickness}" />
                 <Rectangle x:Name="DropDownhover" RadiusY="3" RadiusX="3" Stroke="{StaticResource ComboBoxHoverBorderBrush}" StrokeThickness="1" Margin="0" Opacity="0" Grid.ColumnSpan="2" />
                 <Rectangle x:Name="DropDownBackground" Fill="{StaticResource ComboBoxInnerShadowBackgroundBrush}" Height="22" RadiusY="3" RadiusX="3" Grid.ColumnSpan="2" VerticalAlignment="Top" IsHitTestVisible="False" />
-                <ToggleButton x:Name="DropDownToggle" BorderThickness="{TemplateBinding BorderThickness}" Style="{StaticResource ComboToggleStyle}" Height="{TemplateBinding Height}" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Stretch" />
+                                <ToggleButton x:Name="DropDownToggle" BorderThickness="{TemplateBinding BorderThickness}" Style="{StaticResource ComboToggleStyle}" Height="{TemplateBinding Height}" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" IsTabStop="False" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Stretch" />
                 <Rectangle x:Name="DropDownDisabled" Fill="{StaticResource ToggleButtonDisabledBackgroundBrush}" RadiusX="3" RadiusY="3" IsHitTestVisible="false" d:LayoutOverrides="GridBox" Grid.Column="1" Opacity="0" />
                 <ContentPresenter x:Name="ContentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" IsHitTestVisible="false" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
                 <TextBlock IsHitTestVisible="False" Text=" " Margin="5,2,5,0" Visibility="Collapsed" />

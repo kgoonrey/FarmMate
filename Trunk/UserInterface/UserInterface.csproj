@@ -58,6 +58,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Sources.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="BottomBar.xaml">
