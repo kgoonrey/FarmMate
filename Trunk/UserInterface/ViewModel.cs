@@ -72,4 +72,68 @@ namespace UserInterface
             AssetAdapter.Update(AssetDataTable);
         }
     }
+
+    public class FormattedDecimalViewModel : INotifyPropertyChanged
+    {
+        private readonly string _format;
+        private object _bindingObject;
+        private string _bindingColumn;
+
+        public FormattedDecimalViewModel(string format, object bindingObject, string bindingColumn)
+        {
+            _format = format;
+            _bindingObject = bindingObject;
+            _bindingColumn = bindingColumn;
+        }
+
+        private string _formattedString;
+        public string FormattedString
+        {
+            get
+            {
+                if (_formattedString == null)
+                {
+                    if (_bindingObject.GetType() == typeof(Data.Database.AssetsRow))
+                        return ((Data.Database.AssetsRow)_bindingObject)[_bindingColumn].ToString();
+                }
+
+                return _formattedString;
+            }
+            set
+            {
+                _formattedString = value;
+                NotifyPropertyChanged("Value");
+                _formattedString = Value.ToString(_format);
+                NotifyPropertyChanged("FormattedString");
+
+                if (_bindingObject.GetType() == typeof(Data.Database.AssetsRow))
+                    ((Data.Database.AssetsRow)_bindingObject)[_bindingColumn] = Value;
+            }
+        }
+
+        public decimal Value
+        {
+            get
+            {
+                if (_formattedString == null)
+                    return 0m;
+                return decimal.Parse(_formattedString.Replace("$", ""));
+            }
+            set
+            {
+                FormattedString = value.ToString(_format);
+            }
+        }
+
+        public void ApplyFormat()
+        {
+            FormattedString = Value.ToString(_format);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyPropertyChanged(string info)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+        }
+    }
 }

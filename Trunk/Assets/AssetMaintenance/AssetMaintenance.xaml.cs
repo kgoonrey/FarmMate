@@ -57,6 +57,9 @@ namespace AssetMaintenance
                 _viewModel.AssetDataTable.AddAssetsRow(_viewModel.AssetRow);
             }
             DataContext = _viewModel;
+
+            var purchaseCostViewModel = new FormattedDecimalViewModel("C2", _viewModel.AssetRow, "PurchaseCost");
+            uiPurchaseCost.DataContext = purchaseCostViewModel;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

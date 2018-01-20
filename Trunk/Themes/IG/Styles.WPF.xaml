@@ -1024,7 +1024,6 @@
         </Setter>
     </Style>
 
-
     <!--DataGrid -->
     <Style TargetType='{x:Type controls:DataGrid}'>
         <Setter Property='ScrollViewer.CanContentScroll' Value='False' />

@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+    <div class="demo-section k-content" style="text-align: center;">
+        <h4>Pick a date</h4>
+        <div id="calendar" style="width: 100%; height: 100%; font-size:x-large"></div>
+    </div>
+
+<div id="window">
+    Start Date <input id="startDate" value="10/10/2011" title="startDate" style="width: 100%" />
+    End Date <input id="endDate" value="10/10/2011" title="endDate" style="width: 100%" />
+    Hours Worked <input id="hoursWorked" value="8.00" title="hoursWorked" style="width: 100%" />
+    <input id="submit" value="Submit" title="submit" style="width: 100%" />
+</div>
+
+<style>
+    #submit {
+        margin: 10px 0px 0px 0px;
+    }
+</style>
+
+    @section scripts{
+        <script>
+
+            $(document).ready(function () {
+                $("#window").kendoWindow({
+                    width: "90%",
+                    title: "Time Sheet Entry",
+                    visible: false,
+                    actions: ["Close"]
+                });
+                $("#calendar").kendoCalendar(
+                    {
+                        format: "dd/MM/yyyy",
+                        change: OnChange
+                    });
+                $("#startDate").kendoDatePicker({ format: "dd/MM/yyyy" });
+                $("#endDate").kendoDatePicker({ format: "dd/MM/yyyy" });
+                $("#hoursWorked").kendoNumericTextBox();
+                $("#submit").kendoButton({ click: Submit });
+            });
+
+            function OnChange() {
+                $("#startDate").data("kendoDatePicker").value(kendo.toString(this.value()));
+                $("#endDate").data("kendoDatePicker").value(kendo.toString(this.value()));
+                $("#hoursWorked").data("kendoNumericTextBox").value(8.00);
+                $("#window").data("kendoWindow").open().center();
+            }
+
+            function Submit() {
+                $("#window").data("kendoWindow").close();
+            }
+
+        </script>
+    }

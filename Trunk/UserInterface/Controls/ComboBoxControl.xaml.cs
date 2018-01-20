@@ -49,7 +49,7 @@ namespace UserInterface.Controls
             set { SetValue(SelectedValueProperty, value); }
         }
 
-        public static DependencyProperty TableProperty = DependencyProperty.Register("Table", typeof(Sources.TableEnum), typeof(Pointer));
+        public static DependencyProperty TableProperty = DependencyProperty.Register("Table", typeof(Sources.TableEnum), typeof(ComboBoxControl));
         public Sources.TableEnum Table
         {
             get { return (Sources.TableEnum)GetValue(TableProperty); }
@@ -105,18 +105,7 @@ namespace UserInterface.Controls
         {
             if (e.Key == Key.Enter)
             {
-                MoveToNextUIElement(e);
-            }
-        }
-
-        private void MoveToNextUIElement(KeyEventArgs e)
-        {
-            FocusNavigationDirection focusDirection = FocusNavigationDirection.Next;
-            TraversalRequest request = new TraversalRequest(focusDirection);
-            UIElement elementWithFocus = Keyboard.FocusedElement as UIElement;
-            if (elementWithFocus != null)
-            {
-                if (elementWithFocus.MoveFocus(request)) e.Handled = true;
+                Tools.MoveToNextUIElement(e);
             }
         }
 

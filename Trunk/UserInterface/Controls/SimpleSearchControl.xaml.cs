@@ -119,9 +119,7 @@ namespace UserInterface.Controls
 
             Focus();
             LoseFocus();
-            TraversalRequest request = new TraversalRequest(FocusNavigationDirection.Next);
-            request.Wrapped = true;
-            uiDataGrid.MoveFocus(request);
+            Tools.MoveToNextUIElement(uiDataGrid);
         }
 
         private void uiDataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
@@ -184,9 +182,7 @@ namespace UserInterface.Controls
                 uiCode.Text = asset.Text;
                 Focus();
                 LoseFocus();
-                TraversalRequest request = new TraversalRequest(FocusNavigationDirection.Next);
-                request.Wrapped = true;
-                uiBrowse.MoveFocus(request);
+                Tools.MoveToNextUIElement(uiBrowse);
             }
         }
 
