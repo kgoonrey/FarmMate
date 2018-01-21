@@ -1,4 +1,6 @@
-﻿@{
+﻿@using WebPortal.App_Code;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -8,9 +10,10 @@
     </div>
 
 <div id="window">
-    Start Date <input id="startDate" value="10/10/2011" title="startDate" style="width: 100%" />
-    End Date <input id="endDate" value="10/10/2011" title="endDate" style="width: 100%" />
-    Hours Worked <input id="hoursWorked" value="8.00" title="hoursWorked" style="width: 100%" />
+    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%" />
+    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%" />
+    Break (min) <input id="break" value="45" title="break" style="width: 100%" />
+    Hours Worked <input id="hoursWorked" value="8.00" title="hoursWorked" style="width: 100%" disabled="disabled" />
     <input id="submit" value="Submit" title="submit" style="width: 100%" />
 </div>
 
@@ -23,6 +26,10 @@
     @section scripts{
         <script>
 
+            @{
+                var email = new EmailClass();
+            }
+
             $(document).ready(function () {
                 $("#window").kendoWindow({
                     width: "90%",
@@ -33,19 +40,30 @@
                 $("#calendar").kendoCalendar(
                     {
                         format: "dd/MM/yyyy",
-                        change: OnChange
+                        change: OnCalandarChange
                     });
-                $("#startDate").kendoDatePicker({ format: "dd/MM/yyyy" });
-                $("#endDate").kendoDatePicker({ format: "dd/MM/yyyy" });
+                $("#startTime").kendoTimePicker({ interval: 15, change: CalculateHoursWorked });
+                $("#endTime").kendoTimePicker({ interval: 15, change: CalculateHoursWorked });
+                $("#break").kendoNumericTextBox({ change: CalculateHoursWorked });
                 $("#hoursWorked").kendoNumericTextBox();
                 $("#submit").kendoButton({ click: Submit });
             });
 
-            function OnChange() {
-                $("#startDate").data("kendoDatePicker").value(kendo.toString(this.value()));
-                $("#endDate").data("kendoDatePicker").value(kendo.toString(this.value()));
-                $("#hoursWorked").data("kendoNumericTextBox").value(8.00);
+            function OnCalandarChange() {
+                $("#startTime").data("kendoTimePicker").value("8:00 am");
+                $("#endTime").data("kendoTimePicker").value("5:00 pm");
+                CalculateHoursWorked();
+
                 $("#window").data("kendoWindow").open().center();
+            }
+
+            function CalculateHoursWorked() {
+                var startTime = $("#startTime").data("kendoTimePicker").value();           
+                var endTime = $("#endTime").data("kendoTimePicker").value();
+                var breakTime = $("#break").data("kendoNumericTextBox").value();
+
+                var hours = (Math.abs(endTime - startTime) / 36e5) - (breakTime / 60);
+                $("#hoursWorked").data("kendoNumericTextBox").value(hours);
             }
 
             function Submit() {
@@ -54,3 +72,4 @@
 
         </script>
     }
+
