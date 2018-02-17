@@ -1,0 +1,288 @@
+﻿@model TradingEntity
+@{
+    ViewBag.Title = "Timesheet Entry";
+}
+
+<div>
+    <label> </label>
+</div>
+<label for="company">Company</label>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.DropDownListFor(model => model.Id, (IEnumerable<SelectListItem>)ViewBag.TradingEntitys, "Select Company...", new { @class = "form-control", Id = "company", style = "width: 100%;" })
+    </div>
+}
+
+<label for="employee">Employee</label>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.DropDownListFor(model => model.Id, (IEnumerable<SelectListItem>)ViewBag.Employees, "Select Employee...", new { @class = "form-control", Id = "employee", style = "width: 100%;" })
+    </div>
+}
+
+<div class="demo-section k-content" style="text-align: center;">
+    <div id="calendar" style="width: 100%; height: 100%; font-size:large"></div>
+</div>
+
+<div id="window">
+    <input id="existingId" value="" style="display:none;" />
+    <p>
+        <img id="submittedIcon" src="~/images/TimesheetSubmitted.png" alt="Submitted" style="float:right; display:none;">
+        <img id="notSubmittedIcon" src="~/images/TimesheetNotSubmitted.png" alt="Not Submitted" style="float:right; display:none;">
+    </p>
+    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%" />
+    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%" />
+    Break (min) <input id="break" value="45" title="break" style="width: 100%" />
+    Hours Worked <input id="hoursWorked" value="8.00" title="hoursWorked" style="width: 100%" disabled="disabled" />
+    <input id="submit" value="Submit" title="submit" style="width: 100%" />
+</div>
+
+<style>
+    #submit {
+        margin: 10px 0px 0px 0px;
+    }
+
+    .k-loading-image {
+        background-image: url('http://i.forbesimg.com/assets/img/loading_spinners/43px_on_transparent.gif')
+    }
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            $("#window").kendoWindow({
+                width: "90%",
+                title: "Timesheet Entry",
+                visible: false,
+                actions: ["Close"],
+                close: OnEntryClose
+            });
+            $("#calendar").kendoCalendar(
+                {
+                    format: "dd/MM/yyyy",
+                    change: OnCalandarChange
+                });
+
+            $("#company").kendoDropDownList({
+                suggest: false,
+                change: OnCompanyChange
+            });
+
+            $("#employee").kendoDropDownList({
+                dataValueField: "value",
+                dataTextField: "text",
+                suggest: false
+            });
+
+            $("#startTime").kendoTimePicker({
+                interval: 15,
+                change: CalculateHoursWorked,
+                format: "h:mm tt",
+                parseFormats: ["HH:mm"]
+            });
+
+            $("#endTime").kendoTimePicker({
+                interval: 15,
+                change: CalculateHoursWorked,
+                format: "h:mm tt",
+                parseFormats: ["HH:mm"]
+            });
+
+            $("#alertBtn").on("click", function () {
+                window.myalert("This is a Kendo UI Alert message!");
+            });
+
+            $("#confirmBtn").on("click", function () {
+                window.myconfirm("Are you sure that you want to proceed?").then(function () {
+                    window.myalert("Operation done!");
+                }, function () {
+                    window.myalert("You chose to Cancel action.");
+                });
+            });
+
+            $("#promptBtn").on("click", function () {
+                window.myprompt("Please, enter a arbitrary value:", "any value").then(function (data) {
+                    window.myalert(kendo.format("The value that you entered is '{0}'", data));
+                }, function () {
+                    window.myalert("Cancel entering value.");
+                })
+            });
+
+            $("#break").kendoNumericTextBox({ change: CalculateHoursWorked });
+            $("#hoursWorked").kendoNumericTextBox();
+            $("#submit").kendoButton({ click: Submit });
+        });
+
+        function OnEntryClose() {
+            $("#calendar").data("kendoCalendar").value(null);
+        }
+
+        function OnCalandarChange() {
+            var date = $("#calendar").data("kendoCalendar").value();
+            var selectedCompany = $("#company").data("kendoDropDownList").value();
+            var selectedEmployee = $("#employee").data("kendoDropDownList").value();
+
+            if (selectedCompany == -1 || selectedCompany == "") {
+                window.myalert("Please select a company.", "Error");
+                $("#calendar").data("kendoCalendar").value(null);
+                return;
+            }
+
+            if (selectedEmployee == -1 || selectedEmployee == "") {
+                window.myalert("Please select an employee.", "Error");
+                $("#calendar").data("kendoCalendar").value(null);
+                return;
+            }
+
+            LoadPreviousTimesheet();
+            $("#window").data("kendoWindow").open().center();
+        }
+
+        function LoadPreviousTimesheet() {
+            var selectedCompany = $("#company").data("kendoDropDownList").value();
+            var selectedEmployee = $("#employee").data("kendoDropDownList").value();
+            var startDateTime = $("#startTime").data("kendoTimePicker").value();
+            var endDateTime = $("#endTime").data("kendoTimePicker").value();
+            var breakAmount = $("#break").data("kendoNumericTextBox").value();
+            var dateTime = $("#calendar").data("kendoCalendar").value();
+
+            var startTime = moment(startDateTime).format('h:mm:ss a');;
+            var endTime = moment(endDateTime).format('h:mm:ss a');;
+            var date = moment(dateTime).format('YYYY/MM/DD');
+
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + startTime, "EndDateTime": date + " " + endTime };
+
+            $.ajax({
+                url: "/api/Data/GetPreviousTimesheet",
+                data: JSON.stringify(timesheet),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result != null) {
+                        $("#startTime").data("kendoTimePicker").value(moment(new Date(result.startDateTime)).format('HH:mm:ss'));
+                        $("#endTime").data("kendoTimePicker").value(moment(new Date(result.endDateTime)).format('HH:mm:ss'));
+                        $("#break").data("kendoNumericTextBox").value(result.breakAmount);
+                        document.getElementById("notSubmittedIcon").style.display = "none";
+                        document.getElementById("submittedIcon").style.display = "";
+                        document.getElementById("existingId").value = result.id;
+                        CalculateHoursWorked();
+                    }
+                    else {
+                        document.getElementById("submittedIcon").style.display = "none";
+                        document.getElementById("notSubmittedIcon").style.display = "";
+                        document.getElementById("existingId").value = "";
+                        CalculateHoursWorked();
+                    }
+                }
+            });
+        }
+
+        function myalert(content, title) {
+            $("<div></div>").kendoAlert({
+                title: title,
+                content: content
+            }).data("kendoAlert").open();
+        }
+
+        function myconfirm(content, title) {
+            return $("<div></div>").kendoConfirm({
+                title: title,
+                content: content
+            }).data("kendoConfirm").open().result;
+        }
+
+        function myprompt(content, defaultValue) {
+            return $("<div></div>").kendoPrompt({
+                title: "My Title",
+                value: defaultValue,
+                content: content
+            }).data("kendoPrompt").open().result;
+        }
+
+        function OnCompanyChange() {
+            var tradingEntity = $("#company").data("kendoDropDownList").value();
+            var combo = $("#employee").data("kendoDropDownList");
+            var dataSource = new kendo.data.DataSource({
+                data: [{ value: -1, text: "Select Employee..." }]
+            });
+            combo.setDataSource(dataSource);
+            combo.select(0);
+
+            $.ajax({
+                url: "/api/Data/GetEmployee",
+                data: JSON.stringify({ "Id": tradingEntity }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+
+                    for (i = 0; i < result.length; i++) {
+                        combo.dataSource.add({ value: result[i].id, text: result[i].firstName + " " + result[i].lastName });
+                    }
+                }
+            });
+        }
+
+        function CalculateHoursWorked() {
+            var startTime = $("#startTime").data("kendoTimePicker").value();
+            var endTime = $("#endTime").data("kendoTimePicker").value();
+            var breakTime = $("#break").data("kendoNumericTextBox").value();
+
+            var hours = (Math.abs(endTime - startTime) / 36e5) - (breakTime / 60);
+            $("#hoursWorked").data("kendoNumericTextBox").value(hours);
+        }
+
+        function Submit() {
+            var id = document.getElementById("existingId").value;
+            if (id != "") {
+                myconfirm("Timesheet has already been submitted for this day. Submit again?", "Submit Again?").then(function () {
+                    SubmitContinue(id);
+                }, function () {
+                    $("#window").data("kendoWindow").close();
+                    return;
+                });
+            }
+            else {
+                id = "00000000-0000-0000-0000-000000000000";
+                SubmitContinue(id);
+            }
+        }
+
+        function SubmitContinue(id) {
+            var selectedCompany = $("#company").data("kendoDropDownList").value();
+            var selectedEmployee = $("#employee").data("kendoDropDownList").value();
+            var startDateTime = $("#startTime").data("kendoTimePicker").value();
+            var endDateTime = $("#endTime").data("kendoTimePicker").value();
+            var breakAmount = $("#break").data("kendoNumericTextBox").value();
+            var dateTime = $("#calendar").data("kendoCalendar").value();
+
+            var startTime = moment(startDateTime).format('h:mm:ss a');;
+            var endTime = moment(endDateTime).format('h:mm:ss a');;
+            var date = moment(dateTime).format('YYYY/MM/DD');
+
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + startTime, "EndDateTime": date + " " + endTime, "BreakAmount": breakAmount, "Id": id };
+            kendo.ui.progress($("#window"), true);
+            $.ajax({
+                url: "/api/Email/SendEmail",
+                data: JSON.stringify(timesheet),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    window.myalert(result, "Email");
+                    kendo.ui.progress($("#window"), false);
+                    $("#window").data("kendoWindow").close();
+                }
+            });
+        }
+
+    </script>
+}
+

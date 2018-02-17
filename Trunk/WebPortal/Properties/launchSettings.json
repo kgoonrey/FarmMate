@@ -17,7 +17,12 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "use64Bit": false
+    },
+    "IIS": {
+      "commandName": "IIS",
+      "launchBrowser": true
     }
   }
 }
