@@ -58,6 +58,7 @@
         $(document).ready(function () {
             $("#window").kendoWindow({
                 width: "90%",
+                maxWidth: "500px",
                 title: "Timesheet Entry",
                 visible: false,
                 actions: ["Close"],
@@ -270,7 +271,7 @@
             var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + startTime, "EndDateTime": date + " " + endTime, "BreakAmount": breakAmount, "Id": id };
             kendo.ui.progress($("#window"), true);
             $.ajax({
-                url: "/api/Email/SendEmail",
+                url: "api/TimesheetEntry/SubmitTimesheet",
                 data: JSON.stringify(timesheet),
                 type: 'POST',
                 traditional: true,

@@ -1,0 +1,152 @@
+﻿@model TradingEntity
+@{
+    ViewBag.Title = "Reports";
+}
+
+<h1>Reports</h1>
+<br />
+<a class="timesheetReportLink">Timesheet Report</a>
+
+<div id="timesheetReportWindow">
+    Start Date <input id="startDate" title="startDate" style="width: 100%" />
+    End Date <input id="endDate" title="endDate" style="width: 100%" />
+    Company
+    @using (Html.BeginForm())
+    {
+        @Html.DropDownListFor(model => model.Id, (IEnumerable<SelectListItem>)ViewBag.TradingEntitys, "", new { @class = "form-control", Id = "company", style = "width: 100%;" })
+    }
+
+    Employee
+    @using (Html.BeginForm())
+    {
+        @Html.DropDownListFor(model => model.Id, (IEnumerable<SelectListItem>)ViewBag.Employees, "", new { @class = "form-control", Id = "employee", style = "width: 100%;" })
+    }
+
+    <input id="downloadTimesheetReport" value="Download" title="Download" style="width: 100%" />
+
+    @using (Html.BeginForm("Download", "Reports", FormMethod.Post)) 
+    {
+        <input type="submit" name="downloadButton" style="width:80%; display:none;" value="Export" id="downloadButton" class="button" />
+    }
+</div>
+
+<style>
+    a {
+        cursor: pointer;
+        color: blue;
+    }
+
+        a:hover, a.hover {
+            text-decoration: underline;
+        }
+
+    #downloadTimesheetReport {
+        margin: 10px 0px 0px 0px;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+@section scripts{
+<script>
+        $(document).ready(function () {
+            $("#timesheetReportWindow").kendoWindow({
+                width: "90%",
+                maxWidth: "500px",
+                title: "Timesheet Report",
+                visible: false,
+                actions: ["Close"]
+            });
+
+            $("#company").kendoDropDownList({
+                suggest: false,
+                change: OnCompanyChange
+            });
+
+            $("#employee").kendoDropDownList({
+                dataValueField: "value",
+                dataTextField: "text",
+                suggest: false
+            });
+
+            $("#startDate").kendoDatePicker({
+                format: "dd/MM/yyyy"
+            });
+
+            $("#endDate").kendoDatePicker({
+                format: "dd/MM/yyyy"
+            });
+
+            $("#downloadTimesheetReport").kendoButton({ click: DownloadTimesheetReport });
+        });
+
+        $('.timesheetReportLink').click(function () {
+            $("#timesheetReportWindow").data("kendoWindow").open().center();
+            $("#startDate").data("kendoDatePicker").value(getStartOfWeek(new Date()));
+            $("#endDate").data("kendoDatePicker").value(new Date());
+        });
+
+        // Hover shim for Internet Explorer 6 and Internet Explorer 7.
+        $(document.body).on('hover', 'a', function () {
+            $(this).toggleClass('hover');
+        });
+
+        function DownloadTimesheetReport() {
+            var startDate = $("#startDate").data("kendoDatePicker").value();
+            var endDate = $("#endDate").data("kendoDatePicker").value();
+            var employee = $("#employee").data("kendoDropDownList").value();
+            var tradingEntity = $("#company").data("kendoDropDownList").value();
+
+            if (employee == "")
+                employee = -1;
+
+            if (tradingEntity == "")
+                tradingEntity = -1;
+
+            $.ajax({
+                url: "/api/Reports/GenerateTimesheetReport",
+                data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    var downloadButton = document.getElementById("downloadButton");
+                    downloadButton.click();
+                    $("#timesheetReportWindow").data("kendoWindow").close();
+                }
+            });
+        }
+
+        function OnCompanyChange() {
+            var tradingEntity = $("#company").data("kendoDropDownList").value();
+            var combo = $("#employee").data("kendoDropDownList");
+            var dataSource = new kendo.data.DataSource({
+                data: [{ value: -1, text: "" }]
+            });
+            combo.setDataSource(dataSource);
+            combo.select(0);
+
+            $.ajax({
+                url: "/api/Data/GetEmployee",
+                data: JSON.stringify({ "Id": tradingEntity }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+
+                    for (i = 0; i < result.length; i++) {
+                        combo.dataSource.add({ value: result[i].id, text: result[i].firstName + " " + result[i].lastName });
+                    }
+                }
+            });
+        }
+
+        function getStartOfWeek(d) {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+
+</script>
+}

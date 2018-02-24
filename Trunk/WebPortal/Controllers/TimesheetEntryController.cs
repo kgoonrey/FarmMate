@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebPortal.Models;
 using System.Collections.Generic;
+using System;
 
 namespace WebPortal.Controllers
 {
@@ -45,6 +46,33 @@ namespace WebPortal.Controllers
                 ViewBag.TradingEntitys = tradingEntity;
             }
             return View();
+        }
+
+        [HttpPost]
+        [Route("api/TimesheetEntry/SubmitTimesheet")]
+        public string SubmitTimesheet([FromBody]Timesheets timesheet)
+        {
+            try
+            {
+                var updateExisting = (timesheet.Id != Guid.Empty);
+                if (!updateExisting)
+                    timesheet.Id = Guid.NewGuid();
+
+                using (var context = new DataModel())
+                {
+                    if (updateExisting)
+                        context.Update(timesheet);
+                    else
+                        context.Add(timesheet);
+
+                    context.SaveChanges();
+                }
+
+                return "Timesheet Submitted Successfully";
+            }
+            catch { }
+
+            return "Timesheet failed, Please try again.";
         }
 
     }
