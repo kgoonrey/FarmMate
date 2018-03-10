@@ -47,7 +47,6 @@
     .k-loading-image {
         background-image: url('http://i.forbesimg.com/assets/img/loading_spinners/43px_on_transparent.gif')
     }
-
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
@@ -167,8 +166,8 @@
                 contentType: 'application/json',
                 success: function (result) {
                     if (result != null) {
-                        $("#startTime").data("kendoTimePicker").value(moment(new Date(result.startDateTime)).format('HH:mm:ss'));
-                        $("#endTime").data("kendoTimePicker").value(moment(new Date(result.endDateTime)).format('HH:mm:ss'));
+                        $("#startTime").data("kendoTimePicker").value(moment(result.startDateTime).format('HH:mm:ss'));
+                        $("#endTime").data("kendoTimePicker").value(moment(result.endDateTime).format('HH:mm:ss'));
                         $("#break").data("kendoNumericTextBox").value(result.breakAmount);
                         document.getElementById("notSubmittedIcon").style.display = "none";
                         document.getElementById("submittedIcon").style.display = "";
@@ -223,7 +222,6 @@
                 traditional: true,
                 contentType: 'application/json',
                 success: function (result) {
-
                     for (i = 0; i < result.length; i++) {
                         combo.dataSource.add({ value: result[i].id, text: result[i].firstName + " " + result[i].lastName });
                     }

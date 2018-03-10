@@ -16,18 +16,6 @@ namespace WebPortal.Controllers
         [Route("api/Data/GetTradingEntity")]
         public JsonResult GetTradingEntity()
         {
-            //var dataTable = SqlHelper.RunQuery("select * from TradingEntity", new Dictionary<string, object>());
-            //var list = new List<string>();
-
-            //foreach (DataRow row in dataTable.Rows)
-            //{
-            //    var id = (int)row["Id"];
-            //    var description = (string)row["Description"];
-            //    list.Add(description);
-            //}
-
-            //return Json(list);
-
             using (var context = new DataModel())
             {
                 var tradingEntity = context.Employees.Select(a => new SelectListItem
@@ -38,8 +26,6 @@ namespace WebPortal.Controllers
                 ViewBag.TradingEntitys = tradingEntity;
                 return Json(tradingEntity);
             }
-
-            // return Json(list); //TODO: Work out how to do it with the id
         }
 
         public class TradingEntity
@@ -52,26 +38,19 @@ namespace WebPortal.Controllers
         [Route("api/Data/GetEmployee")]
         public JsonResult GetEmployee([FromBody]TradingEntity id)
         {
-            var query = @"SELECT E.Id, E.FirstName, E.LastName 
-                        FROM Employees E
-                        INNER JOIN TradingEntity TE on E.TradingEntity = TE.Id
-                        WHERE E.TradingEntity = @Id";
-
-            var dataTable = SqlHelper.RunQuery(query, new Dictionary<string, object>() { { "@Id", id.Id } });
             var list = new List<Employees>();
-
-            foreach (DataRow row in dataTable.Rows)
+            using (var context = new DataModel())
             {
-                var idValue = (int)row["Id"];
-                var firstName = (string)row["FirstName"];
-                var lastName = (string)row["LastName"];
+                var employees = context.Employees.Where(x => x.TradingEntity == id.Id);
+                foreach(var employeeRow in employees)
+                {
+                    var employee = new Employees();
+                    employee.Id = employeeRow.Id;
+                    employee.FirstName = employeeRow.FirstName;
+                    employee.LastName = employeeRow.LastName;
 
-                var employee = new Employees();
-                employee.Id = idValue;
-                employee.FirstName = firstName;
-                employee.LastName = lastName;
-
-                list.Add(employee);
+                    list.Add(employee);
+                }
             }
 
             return Json(list);
@@ -81,17 +60,18 @@ namespace WebPortal.Controllers
         [Route("api/Data/GetPreviousTimesheet")]
         public JsonResult GetPreviousTimesheet([FromBody]Timesheets timesheet)
         {
-            var query = @"SELECT TOP 1 * FROM Timesheets
-                          WHERE Employee = @Employee AND TradingEntity = @TradingEntity AND StartDateTime BETWEEN @StartDate AND @EndDate";
+            using (var context = new DataModel())
+            {
+                var timesheetRow = context.Timesheets.FirstOrDefault(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime >= timesheet.StartDateTime.Date && x.EndDateTime < timesheet.EndDateTime.Date.AddDays(1).AddSeconds(-1));
+                if (timesheetRow == null)
+                    return Json(null);
 
-            var dataTable = SqlHelper.RunQuery(query, new Dictionary<string, object>() { { "@Employee", timesheet.Employee }, { "@TradingEntity", timesheet.TradingEntity }, { "@StartDate", timesheet.StartDateTime.Date }, { "@EndDate", timesheet.StartDateTime.Date.AddDays(1).AddSeconds(-1) } });
-            if (dataTable.Rows.Count == 0)
-                return Json(null);
+                timesheet.Id = timesheetRow.Id;
+                timesheet.StartDateTime = timesheetRow.StartDateTime;
+                timesheet.EndDateTime = timesheetRow.EndDateTime;
+                timesheet.BreakAmount = timesheetRow.BreakAmount;
+            }
 
-            timesheet.Id = (System.Guid)dataTable.Rows[0]["Id"];
-            timesheet.StartDateTime = (System.DateTime)dataTable.Rows[0]["StartDateTime"];
-            timesheet.EndDateTime = (System.DateTime)dataTable.Rows[0]["EndDateTime"];
-            timesheet.BreakAmount = (decimal)dataTable.Rows[0]["BreakAmount"];
             return Json(timesheet);
         }
     }

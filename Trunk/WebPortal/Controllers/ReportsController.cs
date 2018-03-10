@@ -79,135 +79,119 @@ namespace WebPortal.Controllers
 
                 if (employeeRow != null)
                     _reportName = $"{employeeRow.FirstName}_{employeeRow.LastName}_{_reportName}";
-            }
 
-            var query = @"SELECT t.StartDateTime, t.EndDateTime, t.BreakAmount, e.Id AS EmployeeId, e.FirstName + ' ' + e.LastName AS Name, te.Id AS TradingEntityId, te.Description AS TradingEntityDescription  
-                        FROM Timesheets t
-                        INNER JOIN Employees e on t.Employee = e.Id
-                        INNER JOIN TradingEntity te on te.Id = t.TradingEntity
-                        WHERE t.StartDateTime BETWEEN @StartDate AND @EndDate ";
+                var data = from t in context.Timesheets
+                           join e in context.Employees on t.Employee equals e.Id
+                           join te in context.TradingEntity on t.TradingEntity equals te.Id
+                           where t.StartDateTime >= reportParameters.StartDate.Date && t.EndDateTime < reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && (reportParameters.Employee == -1 || e.Id == reportParameters.TradingEntity) && (reportParameters.TradingEntity == -1 || te.Id == reportParameters.TradingEntity)
+                           orderby te.Description, e.FirstName, t.StartDateTime
+                           select new { t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description };
 
-            if (reportParameters.Employee != -1)
-                query += " AND e.Id = @Employee ";
-
-            if (reportParameters.TradingEntity != -1)
-                query += " AND te.Id = @TradingEntity ";
-
-            query += "  ORDER BY te.Description, e.FirstName, t.StartDateTime";
-
-            var results = SqlHelper.RunQuery(query, new Dictionary<string, object>() { { "@StartDate", reportParameters.StartDate.Date }, { "@EndDate", reportParameters.EndDate.AddDays(1).AddSeconds(-1) }, { "@Employee", reportParameters.Employee }, { "@TradingEntity", reportParameters.TradingEntity } });
-
-            using (var w = new StreamWriter(filePath))
-            {
-                w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Hours Worked");
-                w.Flush();
-                w.WriteLine(",,,,");
-                w.Flush();
-
-                var lastTradingEntity = -1;
-                var lastTradingEntityDescription = string.Empty;
-                var lastEmployee = -1;
-                var lastEmployeeName = string.Empty;
-                var employeeBreakTotal = 0m;
-                var employeeHoursWorkedTotal = 0m;
-                var tradingEntityBreakTotal = 0m;
-                var tradingEntityWorkedTotal = 0m;
-                var reportBreakTotal = 0m;
-                var reportWorkedTotal = 0m;
-
-                foreach (DataRow row in results.Rows)
+                using (var w = new StreamWriter(filePath))
                 {
-                    var startDate = (DateTime)row["StartDateTime"];
-                    var endDate = (DateTime)row["EndDateTime"];
-                    var breakAmount = (decimal)row["BreakAmount"];
-                    var employeeId = (int)row["EmployeeId"];
-                    var name = (string)row["Name"];
-                    var tradingEntityId = (int)row["TradingEntityId"];
-                    var tradingEntityDescription = (string)row["TradingEntityDescription"];
-                    var hoursWorked = decimal.Parse((endDate - startDate).TotalHours.ToString("N2")) - (breakAmount / 60);
+                    w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Hours Worked");
+                    w.Flush();
+                    w.WriteLine(",,,,");
+                    w.Flush();
 
-                    if (lastTradingEntity != tradingEntityId)
+                    var lastTradingEntity = -1;
+                    var lastTradingEntityDescription = string.Empty;
+                    var lastEmployee = -1;
+                    var lastEmployeeName = string.Empty;
+                    var employeeBreakTotal = 0m;
+                    var employeeHoursWorkedTotal = 0m;
+                    var tradingEntityBreakTotal = 0m;
+                    var tradingEntityWorkedTotal = 0m;
+                    var reportBreakTotal = 0m;
+                    var reportWorkedTotal = 0m;
+
+                    foreach (var row in data)
                     {
-                        if (lastEmployee != -1)
+                        var hoursWorked = decimal.Parse((row.EndDateTime - row.StartDateTime).TotalHours.ToString("N2")) - (row.BreakAmount / 60);
+
+                        if (lastTradingEntity != row.TradingEntityId)
                         {
-                            w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
-                            w.Flush();
+                            if (lastEmployee != -1)
+                            {
+                                w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.Flush();
 
-                            w.WriteLine(",,,,");
-                            w.Flush();
+                                w.WriteLine(",,,,");
+                                w.Flush();
 
-                            employeeBreakTotal = employeeHoursWorkedTotal = 0m;
+                                employeeBreakTotal = employeeHoursWorkedTotal = 0m;
+                            }
+
+                            if (lastTradingEntity != -1)
+                            {
+                                w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
+                                w.Flush();
+
+                                w.WriteLine(",,,,");
+                                w.Flush();
+
+                                tradingEntityBreakTotal = tradingEntityWorkedTotal = 0m;
+                            }
+
+                            lastTradingEntity = row.TradingEntityId;
+                            lastTradingEntityDescription = row.TradingEntityDescription;
+                            lastEmployee = -1;
+                            w.WriteLine($"{lastTradingEntityDescription},,,,");
+                            w.Flush();
                         }
 
-                        if (lastTradingEntity != -1)
+                        if (lastEmployee != row.EmployeeId)
                         {
-                            w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
-                            w.Flush();
+                            if (lastEmployee != -1)
+                            {
+                                w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.Flush();
 
-                            w.WriteLine(",,,,");
-                            w.Flush();
+                                w.WriteLine(",,,,");
+                                w.Flush();
 
-                            tradingEntityBreakTotal = tradingEntityWorkedTotal = 0m;
+                                employeeBreakTotal = employeeHoursWorkedTotal = 0m;
+                            }
+
+                            lastEmployee = row.EmployeeId;
+                            w.WriteLine($"{row.Name},,,,");
+                            w.Flush();
                         }
 
-                        lastTradingEntity = tradingEntityId;
-                        lastTradingEntityDescription = tradingEntityDescription;
-                        lastEmployee = -1;
-                        w.WriteLine($"{lastTradingEntityDescription},,,,");
+                        employeeBreakTotal += row.BreakAmount;
+                        tradingEntityBreakTotal += row.BreakAmount;
+                        reportBreakTotal += row.BreakAmount;
+                        employeeHoursWorkedTotal += hoursWorked;
+                        tradingEntityWorkedTotal += hoursWorked;
+                        reportWorkedTotal += hoursWorked;
+
+                        w.WriteLine($"{row.StartDateTime.ToShortDateString()},{row.StartDateTime.ToShortTimeString()},{row.EndDateTime.ToShortTimeString()},{row.BreakAmount.ToString("N2")},{hoursWorked.ToString("N2")}");
                         w.Flush();
                     }
 
-                    if (lastEmployee != employeeId)
+                    if (lastEmployee != -1)
                     {
-                        if (lastEmployee != -1)
-                        {
-                            w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
-                            w.Flush();
+                        w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                        w.Flush();
 
-                            w.WriteLine(",,,,");
-                            w.Flush();
-
-                            employeeBreakTotal = employeeHoursWorkedTotal = 0m;
-                        }
-
-                        lastEmployee = employeeId;
-                        w.WriteLine($"{name},,,,");
+                        w.WriteLine(",,,,");
                         w.Flush();
                     }
 
-                    employeeBreakTotal += breakAmount;
-                    tradingEntityBreakTotal += breakAmount;
-                    reportBreakTotal += breakAmount;
-                    employeeHoursWorkedTotal += hoursWorked;
-                    tradingEntityWorkedTotal += hoursWorked;
-                    reportWorkedTotal += hoursWorked;
+                    if (lastTradingEntity != -1)
+                    {
+                        w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
+                        w.Flush();
 
-                    w.WriteLine($"{startDate.ToShortDateString()},{startDate.ToShortTimeString()},{endDate.ToShortTimeString()},{breakAmount.ToString("N2")},{hoursWorked.ToString("N2")}");
-                    w.Flush();
-                }
+                        w.WriteLine(",,,,");
+                        w.Flush();
+                    }
 
-                if (lastEmployee != -1)
-                {
-                    w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
-                    w.Flush();
-
-                    w.WriteLine(",,,,");
-                    w.Flush();
-                }
-
-                if (lastTradingEntity != -1)
-                {
-                    w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
-                    w.Flush();
-
-                    w.WriteLine(",,,,");
-                    w.Flush();
-                }
-
-                if(reportWorkedTotal != tradingEntityWorkedTotal)
-                {
-                    w.WriteLine($"Report Total,,,{reportBreakTotal.ToString("N2")},{reportWorkedTotal.ToString("N2")}");
-                    w.Flush();
+                    if (reportWorkedTotal != tradingEntityWorkedTotal)
+                    {
+                        w.WriteLine($"Report Total,,,{reportBreakTotal.ToString("N2")},{reportWorkedTotal.ToString("N2")}");
+                        w.Flush();
+                    }
                 }
             }
 
