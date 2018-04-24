@@ -32,10 +32,10 @@
         <img id="submittedIcon" src="~/images/TimesheetSubmitted.png" alt="Submitted" style="float:right; display:none;">
         <img id="notSubmittedIcon" src="~/images/TimesheetNotSubmitted.png" alt="Not Submitted" style="float:right; display:none;">
     </p>
-    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%" />
-    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%" />
+    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%;" readonly="readonly"; />
+    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%;" readonly="readonly"; />
     Break (min) <input id="break" value="45" title="break" style="width: 100%" />
-    Hours Worked <input id="hoursWorked" value="8.00" title="hoursWorked" style="width: 100%" disabled="disabled" />
+    Hours Worked <input type="text" id="hoursWorked" name="hoursWorked" class="k-textbox" placeholder="Hours Worked" style="width: 100%;" readonly="readonly" />
     <input id="submit" value="Submit" title="submit" style="width: 100%" />
 </div>
 
@@ -94,6 +94,14 @@
                 parseFormats: ["HH:mm"]
             });
 
+            $("#startTime").bind("focus", function () {
+                $(this).data("kendoTimePicker").open();
+            });
+
+            $("#endTime").bind("focus", function () {
+                $(this).data("kendoTimePicker").open();
+            });
+
             $("#alertBtn").on("click", function () {
                 window.myalert("This is a Kendo UI Alert message!");
             });
@@ -114,8 +122,29 @@
                 })
             });
 
-            $("#break").kendoNumericTextBox({ change: CalculateHoursWorked });
-            $("#hoursWorked").kendoNumericTextBox();
+            var breakData = [
+                { text: "5", value: "5" },
+                { text: "10", value: "10" },
+                { text: "15", value: "15" },
+                { text: "20", value: "20" },
+                { text: "25", value: "25" },
+                { text: "30", value: "30" },
+                { text: "35", value: "35" },
+                { text: "40", value: "40" },
+                { text: "45", value: "45" },
+                { text: "50", value: "50" },
+                { text: "55", value: "55" },
+                { text: "60", value: "60" }
+            ];
+
+            $("#break").kendoDropDownList({
+                dataTextField: "text",
+                dataValueField: "value",
+                dataSource: breakData,
+                index: 8,
+                change: CalculateHoursWorked
+            });
+
             $("#submit").kendoButton({ click: Submit });
         });
 
@@ -149,7 +178,7 @@
             var selectedEmployee = $("#employee").data("kendoDropDownList").value();
             var startDateTime = $("#startTime").data("kendoTimePicker").value();
             var endDateTime = $("#endTime").data("kendoTimePicker").value();
-            var breakAmount = $("#break").data("kendoNumericTextBox").value();
+            var breakAmount = $("#break").data("kendoDropDownList").value();
             var dateTime = $("#calendar").data("kendoCalendar").value();
 
             var startTime = moment(startDateTime).format('h:mm:ss a');;
@@ -168,7 +197,7 @@
                     if (result != null) {
                         $("#startTime").data("kendoTimePicker").value(moment(result.startDateTime).format('HH:mm:ss'));
                         $("#endTime").data("kendoTimePicker").value(moment(result.endDateTime).format('HH:mm:ss'));
-                        $("#break").data("kendoNumericTextBox").value(result.breakAmount);
+                        $("#break").data("kendoDropDownList").value(result.breakAmount);
                         document.getElementById("notSubmittedIcon").style.display = "none";
                         document.getElementById("submittedIcon").style.display = "";
                         document.getElementById("existingId").value = result.id;
@@ -232,10 +261,14 @@
         function CalculateHoursWorked() {
             var startTime = $("#startTime").data("kendoTimePicker").value();
             var endTime = $("#endTime").data("kendoTimePicker").value();
-            var breakTime = $("#break").data("kendoNumericTextBox").value();
+            var breakTime = $("#break").data("kendoDropDownList").value();
 
-            var hours = (Math.abs(endTime - startTime) / 36e5) - (breakTime / 60);
-            $("#hoursWorked").data("kendoNumericTextBox").value(hours);
+            var dif = ((Math.abs(endTime - startTime) / 36e5) - (breakTime / 60)) * 60;
+            var hours = Math.floor(dif / 60);
+            var min = Math.round(dif % 60);
+
+            var hoursWorked = document.getElementById('hoursWorked');
+            hoursWorked.value = hours + "h " + min + "min";
         }
 
         function Submit() {
@@ -259,7 +292,7 @@
             var selectedEmployee = $("#employee").data("kendoDropDownList").value();
             var startDateTime = $("#startTime").data("kendoTimePicker").value();
             var endDateTime = $("#endTime").data("kendoTimePicker").value();
-            var breakAmount = $("#break").data("kendoNumericTextBox").value();
+            var breakAmount = $("#break").data("kendoDropDownList").value();
             var dateTime = $("#calendar").data("kendoCalendar").value();
 
             var startTime = moment(startDateTime).format('h:mm:ss a');;
