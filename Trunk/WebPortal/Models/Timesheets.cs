@@ -13,5 +13,6 @@ namespace WebPortal.Models
         public DateTime StartDateTime { get; set; }
         public DateTime EndDateTime { get; set; }
         public decimal BreakAmount { get; set; }
+        public string Notes { get; set; }
     }
 }

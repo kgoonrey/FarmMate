@@ -32,10 +32,11 @@
         <img id="submittedIcon" src="~/images/TimesheetSubmitted.png" alt="Submitted" style="float:right; display:none;">
         <img id="notSubmittedIcon" src="~/images/TimesheetNotSubmitted.png" alt="Not Submitted" style="float:right; display:none;">
     </p>
-    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%;" readonly="readonly"; />
-    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%;" readonly="readonly"; />
+    Start Time <input id="startTime" value="8:00 am" title="startTime" style="width: 100%;" readonly="readonly" ; />
+    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%;" readonly="readonly" ; />
     Break (min) <input id="break" value="45" title="break" style="width: 100%" />
     Hours Worked <input type="text" id="hoursWorked" name="hoursWorked" class="k-textbox" placeholder="Hours Worked" style="width: 100%;" readonly="readonly" />
+    Notes <textarea id="notes" class="k-textbox" style="width: 100%; height: 60px;"></textarea>
     <input id="submit" value="Submit" title="submit" style="width: 100%" />
 </div>
 
@@ -201,12 +202,14 @@
                         document.getElementById("notSubmittedIcon").style.display = "none";
                         document.getElementById("submittedIcon").style.display = "";
                         document.getElementById("existingId").value = result.id;
+                        document.getElementById("notes").value = result.notes;
                         CalculateHoursWorked();
                     }
                     else {
                         document.getElementById("submittedIcon").style.display = "none";
                         document.getElementById("notSubmittedIcon").style.display = "";
                         document.getElementById("existingId").value = "";
+                        document.getElementById("notes").value = "";
                         CalculateHoursWorked();
                     }
                 }
@@ -294,12 +297,13 @@
             var endDateTime = $("#endTime").data("kendoTimePicker").value();
             var breakAmount = $("#break").data("kendoDropDownList").value();
             var dateTime = $("#calendar").data("kendoCalendar").value();
+            var notes = document.getElementById("notes").value;
 
             var startTime = moment(startDateTime).format('h:mm:ss a');;
             var endTime = moment(endDateTime).format('h:mm:ss a');;
             var date = moment(dateTime).format('YYYY/MM/DD');
 
-            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + startTime, "EndDateTime": date + " " + endTime, "BreakAmount": breakAmount, "Id": id };
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + startTime, "EndDateTime": date + " " + endTime, "BreakAmount": breakAmount, "Id": id, "Notes": notes };
             kendo.ui.progress($("#window"), true);
             $.ajax({
                 url: "api/TimesheetEntry/SubmitTimesheet",
@@ -308,7 +312,7 @@
                 traditional: true,
                 contentType: 'application/json',
                 success: function (result) {
-                    window.myalert(result, "Email");
+                    window.myalert(result, "Timesheet");
                     kendo.ui.progress($("#window"), false);
                     $("#window").data("kendoWindow").close();
                 }

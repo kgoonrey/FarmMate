@@ -6,12 +6,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebPortal.Models;
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.AspNetCore.Identity;
+using WebPortal.Data;
 
 namespace WebPortal.Controllers
 {
     [Produces("application/json")]
     public class DataController : Controller
     {
+        private readonly UserManager<ApplicationUser> userManager;
+
+        public DataController(UserManager<ApplicationUser> userManager)
+        {
+            this.userManager = userManager;
+        }
+
         [HttpGet]
         [Route("api/Data/GetTradingEntity")]
         public JsonResult GetTradingEntity()
@@ -70,6 +79,7 @@ namespace WebPortal.Controllers
                 timesheet.StartDateTime = timesheetRow.StartDateTime;
                 timesheet.EndDateTime = timesheetRow.EndDateTime;
                 timesheet.BreakAmount = timesheetRow.BreakAmount;
+                timesheet.Notes = timesheetRow.Notes;
             }
 
             return Json(timesheet);

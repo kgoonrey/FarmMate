@@ -6,16 +6,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WebPortal.Models;
 using System.Collections.Generic;
 using System;
+using Microsoft.AspNetCore.Identity;
+using WebPortal.Data;
 
 namespace WebPortal.Controllers
 {
     public class TimesheetEntryController : Controller
     {
+        private readonly UserManager<ApplicationUser> userManager;
+
+        public TimesheetEntryController(UserManager<ApplicationUser> userManager)
+        {
+            this.userManager = userManager;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Index(int? id)
         {
             using (var context = new DataModel())
             {
+                var user = await userManager.GetUserAsync(HttpContext.User);
                 var tradingEntity = await context.TradingEntity.Select(a => new SelectListItem
                 {
                     Value = a.Id.ToString(),

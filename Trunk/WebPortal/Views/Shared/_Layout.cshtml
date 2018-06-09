@@ -34,6 +34,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Reports" asp-action="Index">Reports</a></li>
                 </ul>
+                @await Html.PartialAsync("_UserHeader")
             </div>
         </div>
     </nav>

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,7 @@ using WebPortal.Models;
 
 namespace WebPortal.Controllers
 {
+    [Authorize]
     public class ReportsController : Controller
     {
         private IHostingEnvironment _hostingEnvironment;
@@ -34,11 +36,13 @@ namespace WebPortal.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Index(int? id)
         {
@@ -62,6 +66,7 @@ namespace WebPortal.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("api/Reports/GenerateTimesheetReport")]
         public JsonResult GenerateTimesheetReport([FromBody]ReportParameters reportParameters)
@@ -85,24 +90,21 @@ namespace WebPortal.Controllers
                            join te in context.TradingEntity on t.TradingEntity equals te.Id
                            where t.StartDateTime >= reportParameters.StartDate.Date && t.EndDateTime < reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && (reportParameters.Employee == -1 || e.Id == reportParameters.TradingEntity) && (reportParameters.TradingEntity == -1 || te.Id == reportParameters.TradingEntity)
                            orderby te.Description, e.FirstName, t.StartDateTime
-                           select new { t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description };
+                           select new { t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description, Notes = t.Notes };
 
                 using (var w = new StreamWriter(filePath))
                 {
-                    w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Hours Worked");
+                    w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Hours Worked,Notes");
                     w.Flush();
-                    w.WriteLine(",,,,");
+                    w.WriteLine(",,,,,");
                     w.Flush();
 
                     var lastTradingEntity = -1;
                     var lastTradingEntityDescription = string.Empty;
                     var lastEmployee = -1;
                     var lastEmployeeName = string.Empty;
-                    var employeeBreakTotal = 0m;
                     var employeeHoursWorkedTotal = 0m;
-                    var tradingEntityBreakTotal = 0m;
                     var tradingEntityWorkedTotal = 0m;
-                    var reportBreakTotal = 0m;
                     var reportWorkedTotal = 0m;
 
                     foreach (var row in data)
@@ -113,30 +115,30 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")}");
                                 w.Flush();
 
-                                w.WriteLine(",,,,");
+                                w.WriteLine(",,,,,");
                                 w.Flush();
 
-                                employeeBreakTotal = employeeHoursWorkedTotal = 0m;
+                                employeeHoursWorkedTotal = 0m;
                             }
 
                             if (lastTradingEntity != -1)
                             {
-                                w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
+                                w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
-                                w.WriteLine(",,,,");
+                                w.WriteLine(",,,,,");
                                 w.Flush();
 
-                                tradingEntityBreakTotal = tradingEntityWorkedTotal = 0m;
+                                tradingEntityWorkedTotal = 0m;
                             }
 
                             lastTradingEntity = row.TradingEntityId;
                             lastTradingEntityDescription = row.TradingEntityDescription;
                             lastEmployee = -1;
-                            w.WriteLine($"{lastTradingEntityDescription},,,,");
+                            w.WriteLine($"{lastTradingEntityDescription},,,,,");
                             w.Flush();
                         }
 
@@ -144,34 +146,31 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
-                                w.WriteLine(",,,,");
+                                w.WriteLine(",,,,,");
                                 w.Flush();
 
-                                employeeBreakTotal = employeeHoursWorkedTotal = 0m;
+                                employeeHoursWorkedTotal = 0m;
                             }
 
                             lastEmployee = row.EmployeeId;
-                            w.WriteLine($"{row.Name},,,,");
+                            w.WriteLine($"{row.Name},,,,,");
                             w.Flush();
                         }
 
-                        employeeBreakTotal += row.BreakAmount;
-                        tradingEntityBreakTotal += row.BreakAmount;
-                        reportBreakTotal += row.BreakAmount;
                         employeeHoursWorkedTotal += hoursWorked;
                         tradingEntityWorkedTotal += hoursWorked;
                         reportWorkedTotal += hoursWorked;
 
-                        w.WriteLine($"{row.StartDateTime.ToShortDateString()},{row.StartDateTime.ToShortTimeString()},{row.EndDateTime.ToShortTimeString()},{row.BreakAmount.ToString("N2")},{hoursWorked.ToString("N2")}");
+                        w.WriteLine($"{row.StartDateTime.ToShortDateString()},{row.StartDateTime.ToShortTimeString()},{row.EndDateTime.ToShortTimeString()},{row.BreakAmount.ToString("N2")},{hoursWorked.ToString("N2")},{row.Notes.Replace("\n", " ")}");
                         w.Flush();
                     }
 
                     if (lastEmployee != -1)
                     {
-                        w.WriteLine($",,Total,{employeeBreakTotal.ToString("N2")},{employeeHoursWorkedTotal.ToString("N2")}");
+                        w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
                         w.Flush();
 
                         w.WriteLine(",,,,");
@@ -180,16 +179,16 @@ namespace WebPortal.Controllers
 
                     if (lastTradingEntity != -1)
                     {
-                        w.WriteLine($"{lastTradingEntityDescription} Total,,,{tradingEntityBreakTotal.ToString("N2")},{tradingEntityWorkedTotal.ToString("N2")}");
+                        w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
                         w.Flush();
 
-                        w.WriteLine(",,,,");
+                        w.WriteLine(",,,,,");
                         w.Flush();
                     }
 
                     if (reportWorkedTotal != tradingEntityWorkedTotal)
                     {
-                        w.WriteLine($"Report Total,,,{reportBreakTotal.ToString("N2")},{reportWorkedTotal.ToString("N2")}");
+                        w.WriteLine($"Report Total,,,,{reportWorkedTotal.ToString("N2")},");
                         w.Flush();
                     }
                 }
