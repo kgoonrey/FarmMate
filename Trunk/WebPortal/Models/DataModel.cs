@@ -12,6 +12,7 @@ namespace WebPortal.Models
         public DbSet<TradingEntity> TradingEntity { get; set; }
         public DbSet<Employees> Employees { get; set; }
         public DbSet<Timesheets> Timesheets { get; set; }
+        public DbSet<AspNetUsers> AspNetUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -14,7 +14,7 @@
             <div class="panel-body">
                 <section>
                     <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-                        <h4>Use a local account to log in.</h4>
+                        <h4 id="loginMessage">Use a local account to log in.</h4>
                         <hr />
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="form-group">
@@ -29,6 +29,13 @@
                             <div class="col-md-10">
                                 <input asp-for="Password" class="form-control" />
                                 <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div id="ConfirmPasswordGroup" class="form-group" style="display:none">
+                            <label asp-for="ConfirmPassword" class="col-md-2 control-label">Confirm &nbsp;</label>
+                            <div class="col-md-10">
+                                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group">
@@ -53,3 +60,40 @@
     </div>
     <div class="col-md-3"></div>
 </div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            var username = document.getElementById("UserName").value;
+            if (username != "")
+                passwordReset();
+        });
+
+        $("#UserName").on("blur", function () {
+            passwordReset();
+        });
+
+        function passwordReset() {
+            document.getElementById("ConfirmPasswordGroup").style.display = "none";
+            document.getElementById("loginMessage").innerText = "Use a local account to log in.";
+            document.getElementById("ConfirmPassword").value = "";
+            var username = document.getElementById("UserName").value;
+
+            $.ajax({
+                url: "/api/Data/GetPasswordReset",
+                data: JSON.stringify(username),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result) {
+                        document.getElementById("ConfirmPasswordGroup").style.display = "";
+                        document.getElementById("loginMessage").innerText = "Set password to log in.";
+                    }
+                }
+            });
+        }
+
+    </script>
+    }

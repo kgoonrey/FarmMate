@@ -1,0 +1,189 @@
+﻿    <p></p>
+    <div id="example" style="padding-top:10px;">
+        <div class="demo-section k-content">
+            <div id="tickets">
+                <ul id="fieldlist">
+                    <li>
+                        <label for="username" class="required">Username</label>
+                        <input type="text" id="username" name="username" class="k-textbox" placeholder="Username" required validationMessage="Enter {0}" style="width: 100%; background-color:lightgray" readonly="readonly" />
+                    </li>
+                    <li>
+                        <label for="name" class="required">Name</label>
+                        <input type="text" id="name" name="name" class="k-textbox" placeholder="Name" required validationMessage="Enter {0}" style="width: 100%;" />
+                    </li>
+                    <li>
+                        <label for="email" class="required">Email</label>
+                        <input type="text" id="email" name="email" class="k-textbox" placeholder="Email" required validationMessage="Enter {0}" style="width: 100%;" />
+                    </li>
+                    <li>
+                        <a onclick="ChangePassword()" href="#">Change Password</a>
+                    </li>
+                    <li class="confirm">
+                        <button class="k-button k-primary" type="submit" style="float:right">Update</button>
+                    </li>
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="window">
+            <ul id="fieldlist2">
+                <li>
+                    <label for="oldPassword" class="required">Old Password</label>
+                    <input type="password" id="oldPassword" name="oldPassword" class="k-textbox" placeholder="Old Password" required validationMessage="Enter {0}" style="width: 100%;" />
+                </li>
+                <li>
+                    <label for="newPassword" class="required">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" class="k-textbox" placeholder="New Password" required validationMessage="Enter {0}" style="width: 100%;" />
+                </li>
+                <li>
+                    <label for="confirmPassword" class="required">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="k-textbox" placeholder="Confirm Password" required validationMessage="Enter {0}" style="width: 100%;" />
+                </li>
+                <li>
+                    <button id="updatePasswordButton" class="k-button k-primary" type="submit" style="float:right">Save</button>
+                </li>
+            </ul>
+        </div>
+
+        <style>
+            #fieldlist, #fieldlist2 {
+                margin: 0;
+                padding: 0;
+            }
+
+                li {
+                    list-style: none;
+                    padding-bottom: .7em;
+                    text-align: left;
+                }
+
+                label {
+                    display: block;
+                    padding-bottom: .3em;
+                    font-weight: bold;
+                    font-size: 12px;
+                    color: #444;
+                }
+
+                li.status {
+                    text-align: center;
+                }
+
+                li .k-widget:not(.k-tooltip),
+                li .k-textbox {
+                    margin: 0 5px 5px 0;
+                }
+
+            .confirm {
+                padding-top: 1em;
+            }
+
+            .valid {
+                color: green;
+            }
+
+            .invalid {
+                color: red;
+            }
+
+            span.k-widget.k-tooltip-validation {
+                display;
+                inline-block;
+                width: 160px;
+                text-align: left;
+                border: 0;
+                padding: 0;
+                margin: 0;
+                background: none;
+                box-shadow: none;
+                color: red;
+            }
+
+            .k-tooltip-validation .k-warning {
+                display: none;
+            }
+        </style>
+    </div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#window").kendoWindow({
+                width: "90%",
+                maxWidth: "500px",
+                title: "Change Password",
+                visible: false,
+                actions: ["Close"]
+            });
+
+            LoadUserData();
+
+            $("#updatePasswordButton").on("click", function () {
+                updatePassword();
+            });
+        });
+
+        function ChangePassword() {
+            $("#window").data("kendoWindow").open().center();
+        }
+
+        function LoadUserData() {
+            $.ajax({
+                url: "/api/Data/GetUserDetails",
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result != null) {
+                        if (result.email != null)
+                            document.getElementById("email").value = result.email;
+
+                        document.getElementById("username").value = result.userName;
+                        document.getElementById("name").value = result.name;
+                    }
+                }
+            });
+        }
+
+        function myalert(content, title) {
+            $("<div></div>").kendoAlert({
+                title: title,
+                content: content
+            }).data("kendoAlert").open();
+        }
+
+        function updatePassword() {
+            var oldPassword = document.getElementById("oldPassword").value;
+            var newPassword = document.getElementById("newPassword").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (newPassword != confirmPassword) {
+                window.myalert("Passwords Don't Match", "Error");
+                return;
+            }
+            
+            $.ajax({
+                url: "/api/Data/UpdatePassword",
+                data: JSON.stringify({ "OldPassword": oldPassword, "NewPassword": newPassword, "ConfirmPassword": confirmPassword }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result == "Password Updated") {
+                        window.myalert(result, "Success");
+                        $("#window").data("kendoWindow").close();
+                        document.getElementById("oldPassword").value = "";
+                        document.getElementById("newPassword").value = "";
+                        document.getElementById("confirmPassword").value = "";
+                    }
+                    else {
+                        window.myalert(result, "Error");
+                    }
+                }
+            });
+
+        }
+
+    </script>
+}
