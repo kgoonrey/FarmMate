@@ -13,6 +13,9 @@ namespace WebPortal.Models
         public DbSet<Employees> Employees { get; set; }
         public DbSet<Timesheets> Timesheets { get; set; }
         public DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public DbSet<AspNetRoles> AspNetRoles { get; set; }
+        public DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
+        public DbSet<UserEmployeeAccess> UserEmployeeAccess { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

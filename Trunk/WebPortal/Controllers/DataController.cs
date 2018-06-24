@@ -47,11 +47,22 @@ namespace WebPortal.Controllers
         [Route("api/Data/GetEmployee")]
         public JsonResult GetEmployee([FromBody]TradingEntity id)
         {
+            var user = userManager.GetUserAsync(HttpContext.User);
             var list = new List<Employees>();
+            if (id == null)
+                return Json(list);
+
             using (var context = new DataModel())
             {
-                var employees = context.Employees.Where(x => x.TradingEntity == id.Id);
-                foreach(var employeeRow in employees)
+                var userEmployeeAccess = context.UserEmployeeAccess.Where(x => x.UserId == user.Result.Id).ToList();
+                var employees = context.Employees.Where(x => x.TradingEntity == id.Id && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
+                var roles = context.AspNetRoles.FirstOrDefault(x => x.Name == "Admin");
+                var adminUserList = context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToList();
+
+                if (adminUserList.FirstOrDefault(x => x.UserId == user.Result.Id) != null)
+                    employees = context.Employees.Where(x => x.TradingEntity == id.Id).ToList();
+
+                foreach (var employeeRow in employees)
                 {
                     var employee = new Employees();
                     employee.Id = employeeRow.Id;

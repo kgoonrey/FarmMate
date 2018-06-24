@@ -26,19 +26,28 @@ namespace WebPortal.Controllers
             using (var context = new DataModel())
             {
                 var user = await userManager.GetUserAsync(HttpContext.User);
-                var tradingEntity = await context.TradingEntity.Select(a => new SelectListItem
+                var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
+                var employees = await context.Employees.Where(x => userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToListAsync();
+
+                var roles = await context.AspNetRoles.FirstOrDefaultAsync(x => x.Name == "Admin");
+                var adminUserList = await context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToListAsync();
+
+                if(adminUserList.FirstOrDefault(x=> x.UserId == user.Id) != null)
+                    employees = await context.Employees.ToListAsync();
+
+                var tradingEntity = await context.TradingEntity.Where(x=> employees.FirstOrDefault(y => y.TradingEntity == x.Id) != null).Select(a => new SelectListItem
                 {
                     Value = a.Id.ToString(),
                     Text = a.Description
                 }).ToListAsync();
                 ViewBag.TradingEntitys = tradingEntity;
 
-                var employees = await context.Employees.Where(x=> x.Id == 200).Select(a => new SelectListItem //return blank
+                var employeesList = employees.Select(a => new SelectListItem
                 {
                     Value = a.Id.ToString(),
                     Text = $"{a.FirstName} {a.LastName}"
-                }).ToListAsync();
-                ViewBag.Employees = employees;
+                }).ToList();
+                ViewBag.Employees = employeesList;
             }
             return View();
         }

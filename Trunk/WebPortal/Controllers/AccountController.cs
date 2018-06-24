@@ -132,6 +132,25 @@ namespace WebPortal.Controllers
         }
 
         [HttpPost]
+        [Route("api/Data/UpdateDetails")]
+        public JsonResult UpdateDetails([FromBody]UpdateDetails details)
+        {
+            using (var context = new DataModel())
+            {
+                var signedInuser = GetUser();
+                var userDetailRow = context.AspNetUsers.FirstOrDefault(x => x.Id == signedInuser.Result.Id);
+                if (userDetailRow == null)
+                    return Json(false);
+
+                userDetailRow.Name = details.Name;
+                userDetailRow.Email = details.Email;
+                context.SaveChanges();
+
+                return Json(true);
+            }
+        }
+
+        [HttpPost]
         [Route("api/Data/GetPasswordReset")]
         public JsonResult GetPasswordReset([FromBody]string username)
         {

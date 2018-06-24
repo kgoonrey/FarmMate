@@ -149,6 +149,17 @@
             $("#submit").kendoButton({ click: Submit });
         });
 
+        $(window).load(function () {
+            var companyCount = $("#company").data("kendoDropDownList").dataSource.data().length;
+            var employeeCount = $("#employee").data("kendoDropDownList").dataSource.data().length;
+
+            if (companyCount == 2)
+                $("#company").data("kendoDropDownList").select(1);
+
+            if (employeeCount == 2)
+                $("#employee").data("kendoDropDownList").select(1);
+        });        
+
         function OnEntryClose() {
             $("#calendar").data("kendoCalendar").value(null);
         }

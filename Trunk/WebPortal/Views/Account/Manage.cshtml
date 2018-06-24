@@ -19,7 +19,7 @@
                         <a onclick="ChangePassword()" href="#">Change Password</a>
                     </li>
                     <li class="confirm">
-                        <button class="k-button k-primary" type="submit" style="float:right">Update</button>
+                        <button id="updateButton" class="k-button k-primary" type="submit" style="float:right">Update</button>
                     </li>
                     <li></li>
                 </ul>
@@ -122,6 +122,10 @@
             $("#updatePasswordButton").on("click", function () {
                 updatePassword();
             });
+
+            $("#updateButton").on("click", function () {
+                updateDetails();
+            });
         });
 
         function ChangePassword() {
@@ -182,7 +186,27 @@
                     }
                 }
             });
+        }
 
+        function updateDetails() {
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+
+            $.ajax({
+                url: "/api/Data/UpdateDetails",
+                data: JSON.stringify({ "Name": name, "Email": email }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result) {
+                        window.myalert("Update Complete", "Success");
+                    }
+                    else {
+                        window.myalert("Update Failed", "Error");
+                    }
+                }
+            });
         }
 
     </script>
