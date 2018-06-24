@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Identity;
 using WebPortal.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebPortal.Controllers
 {
+    [Authorize]
     public class TimesheetEntryController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;

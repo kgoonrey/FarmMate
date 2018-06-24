@@ -8,9 +8,11 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.AspNetCore.Identity;
 using WebPortal.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebPortal.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     public class DataController : Controller
     {
