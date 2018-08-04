@@ -34,13 +34,18 @@ namespace WebPortal.Controllers
             {
                 if(model.ConfirmPassword != null && model.ConfirmPassword != string.Empty)
                 {
-                    if(model.Password != model.ConfirmPassword)
+                    var user = signInManager.UserManager.Users.FirstOrDefault(x => x.UserName == model.UserName);
+                    var checkPassword = signInManager.UserManager.CheckPasswordAsync(user, string.Empty);
+                    if (!checkPassword.Result)
+                    {
+                        ModelState.AddModelError(string.Empty, "Error Try Again.");
+                        return View(model);
+                    }
+                    if (model.Password != model.ConfirmPassword)
                     {
                         ModelState.AddModelError(string.Empty, "Passwords Don't Match.");
                         return View(model);
                     }
-
-                    var user = signInManager.UserManager.Users.FirstOrDefault(x => x.UserName == model.UserName);
                     user.PasswordHash = signInManager.UserManager.PasswordHasher.HashPassword(user, model.Password);
                     var passwordChange = await signInManager.UserManager.UpdateAsync(user);
 
