@@ -22,9 +22,9 @@
         @Html.DropDownListFor(model => model.Id, (IEnumerable<SelectListItem>)ViewBag.Employees, "", new { @class = "form-control", Id = "employee", style = "width: 100%;" })
     }
 
-    <input id="downloadTimesheetReport" value="Download" title="Download" style="width: 100%" />
+    <button id="downloadTimesheetReport" class="k-button k-primary" type="submit" style="width: 100%">Download</button>
 
-    @using (Html.BeginForm("Download", "Reports", FormMethod.Post)) 
+    @using (Html.BeginForm("Download", "Reports", FormMethod.Post))
     {
         <input type="submit" name="downloadButton" style="width:80%; display:none;" value="Export" id="downloadButton" class="button" />
     }

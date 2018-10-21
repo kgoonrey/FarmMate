@@ -79,6 +79,12 @@ namespace WebPortal.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+                if (model.UserName == null || model.UserName == string.Empty)
+                {
+                    ModelState.AddModelError(string.Empty, "Please enter a valid username");
+                    return View(model);
+                }
+
                 var user = signInManager.UserManager.FindByNameAsync(model.UserName).Result;
 
                 if (user == null || !user.EmailConfirmed || user.Email == null || user.Email == string.Empty)
@@ -94,18 +100,7 @@ namespace WebPortal.Controllers
 
                 using (var context = new DataModel())
                 {
-                    var employeeAccess = context.UserEmployeeAccess.FirstOrDefault(x => x.UserId == user.Id);
-                    if(employeeAccess == null)
-                        RedirectToAction(nameof(HomeController.Index), "Home");
-
-                    var employee = context.Employees.FirstOrDefault(x => x.Id == employeeAccess.EmployeeId);
-                    if (employee == null)
-                        RedirectToAction(nameof(HomeController.Index), "Home");
-
-                    var tradingEntity = context.TradingEntity.FirstOrDefault(x => x.Id == employee.Id);
-                    if (tradingEntity == null)
-                        RedirectToAction(nameof(HomeController.Index), "Home");
-
+                    var tradingEntity = context.TradingEntity.FirstOrDefault();
                     Tools.SendEmail(tradingEntity, user.Email, "Password Reset", $"Please click link to reset password for Farm Mate{Environment.NewLine}{Environment.NewLine}{resetLink}");
 
                 }

@@ -1,0 +1,115 @@
+﻿@model Employees
+@using WebPortal.Models
+
+<form asp-action="NewEmployee" role="form">
+    <div class="modal-body form-horizontal">
+        <h4 id="message">Create a new employee</h4>
+        <hr />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="FirstName" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="LastName" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Occupation" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="Occupation" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TradingEntity" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <select asp-for="TradingEntity" asp-items="@Model.TradingEntities" class="form-control">
+                            <option>Please select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label asp-for="DefaultStartTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultStartTime" class="form-control" style="width:100%;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DefaultEndTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultEndTime" class="form-control" style="width:100%;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DefaultBreakAmount" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultBreakAmount" class="form-control" style="width:100%;" value="30" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+
+@section scripts
+    {
+    <script>
+
+             $(document).ready(function () {
+
+                 $("#DefaultStartTime").kendoTimePicker({
+                     interval: 15,
+                     format: "h:mm tt",
+                     parseFormats: ["HH:mm"],
+                     value: "7:00 am"
+                 });
+
+                 $("#DefaultEndTime").kendoTimePicker({
+                     interval: 15,
+                     format: "h:mm tt",
+                     parseFormats: ["HH:mm"],
+                     value: "5:00 pm"
+                 });
+
+                 $("#DefaultStartTime").bind("focus", function () {
+                     $(this).data("kendoTimePicker").open();
+                 });
+
+                 $("#DefaultEndTime").bind("focus", function () {
+                     $(this).data("kendoTimePicker").open();
+                 });
+
+                 var breakData = [
+                     { text: "5", value: "5" },
+                     { text: "10", value: "10" },
+                     { text: "15", value: "15" },
+                     { text: "20", value: "20" },
+                     { text: "25", value: "25" },
+                     { text: "30", value: "30" },
+                     { text: "35", value: "35" },
+                     { text: "40", value: "40" },
+                     { text: "45", value: "45" },
+                     { text: "50", value: "50" },
+                     { text: "55", value: "55" },
+                     { text: "60", value: "60" }
+                 ];
+
+                 $("#DefaultBreakAmount").kendoDropDownList({
+                     dataTextField: "text",
+                     dataValueField: "value",
+                     dataSource: breakData,
+                     index: 8
+                 });
+             });
+
+    </script>
+}

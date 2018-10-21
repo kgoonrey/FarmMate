@@ -71,13 +71,18 @@ namespace WebPortal.Controllers
 
         [HttpPost]
         [Route("api/TimesheetEntry/SubmitTimesheet")]
-        public string SubmitTimesheet([FromBody]Timesheets timesheet)
+        public async Task<string> SubmitTimesheet([FromBody]Timesheets timesheet)
         {
             try
             {
                 var updateExisting = (timesheet.Id != Guid.Empty);
                 if (!updateExisting)
                     timesheet.Id = Guid.NewGuid();
+
+                var user = await userManager.GetUserAsync(HttpContext.User);
+
+                timesheet.AuditDateTime = DateTime.Now;
+                timesheet.AuditUser = user.Id;
 
                 using (var context = new DataModel())
                 {
@@ -95,6 +100,5 @@ namespace WebPortal.Controllers
 
             return "Timesheet failed, Please try again.";
         }
-
     }
 }

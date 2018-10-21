@@ -1,0 +1,59 @@
+﻿@model Employees
+@using WebPortal.Models
+
+<form asp-action="AddEmployee" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Employee" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="FirstName" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="LastName" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Occupation" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="Occupation" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TradingEntity" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <select asp-for="TradingEntity" asp-items="@Model.TradingEntities" class="form-control">
+                            <option>Please select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label asp-for="DefaultStartTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultStartTime" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DefaultEndTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultEndTime" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DefaultBreakAmount" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="DefaultBreakAmount" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

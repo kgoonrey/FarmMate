@@ -97,5 +97,23 @@ namespace WebPortal.Controllers
 
             return Json(timesheet);
         }
+
+        [HttpPost]
+        [Route("api/Data/GetEmployeeDefaults")]
+        public JsonResult GetEmployeeDefaults([FromBody]Timesheets timesheet)
+        {
+            using (var context = new DataModel())
+            {
+                var employee = context.Employees.FirstOrDefault(x => x.Id == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity);
+                if (employee == null)
+                    return Json(null);
+
+                timesheet.StartDateTime = System.DateTime.Today + employee.DefaultStartTime.TimeOfDay;
+                timesheet.EndDateTime = System.DateTime.Today + employee.DefaultEndTime.TimeOfDay;
+                timesheet.BreakAmount = employee.DefaultBreakAmount;
+
+                return Json(timesheet);
+            }
+        }
     }
 }
