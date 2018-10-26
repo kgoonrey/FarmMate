@@ -35,7 +35,15 @@ namespace WebPortal.Controllers
                 Name = u.Name,
                 Email = u.Email
             }).ToList();
-            return View(model);
+
+            List<Employees> model2 = new List<Employees>();
+            using (var context = new DataModel())
+            {
+                model2 = context.Employees.ToList();
+            }
+
+            var newTest = Tuple.Create(model, model2);
+            return View(newTest);
         }
 
         [HttpGet]
@@ -47,12 +55,24 @@ namespace WebPortal.Controllers
                 Text = r.Name,
                 Value = r.Id
             }).ToList();
-            return PartialView("_AddUser", model);
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddUser(UserViewModel model)
         {
+            if(model.UserName == null || model.UserName == string.Empty)
+                ModelState.AddModelError(string.Empty, "Username missing");
+
+            if (model.Name == null || model.Name == string.Empty)
+                ModelState.AddModelError(string.Empty, "Name missing");
+
+            if (model.Email == null || model.Email == string.Empty || !model.Email.Contains("@"))
+                ModelState.AddModelError(string.Empty, "Invalid Email");
+
+            if (model.ApplicationRoleId == null || model.ApplicationRoleId == "Please select")
+                ModelState.AddModelError(string.Empty, "Please select a valid role");
+
             if (ModelState.IsValid)
             {
                 ApplicationUser user = new ApplicationUser
@@ -61,95 +81,35 @@ namespace WebPortal.Controllers
                     UserName = model.UserName,
                     Email = model.Email
                 };
-                IdentityResult result = await userManager.CreateAsync(user, model.Password);
+
+                ApplicationRole applicationRole = await roleManager.FindByIdAsync(model.ApplicationRoleId);
+                if (applicationRole == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Please select a valid role");
+                    return View(model);
+                }
+
+                IdentityResult result = await userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    ApplicationRole applicationRole = await roleManager.FindByIdAsync(model.ApplicationRoleId);
-                    if (applicationRole != null)
+                    IdentityResult roleResult = await userManager.AddToRoleAsync(user, applicationRole.Name);
+                    if (roleResult.Succeeded)
                     {
-                        IdentityResult roleResult = await userManager.AddToRoleAsync(user, applicationRole.Name);
-                        if (roleResult.Succeeded)
-                        {
-                            return RedirectToAction("Index");
-                        }
+                        return RedirectToAction("Index");
                     }
                 }
                 else
                 {
-                    return RedirectToAction("Index");
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            return View(model);
-        }
 
-        [HttpGet]
-        public IActionResult AddEmployee()
-        {
-            return RedirectToAction("NewEmployee");
-        }
-
-        [HttpGet]
-        public IActionResult NewEmployee()
-        {
-            Employees model = new Employees();
-            using (var context = new DataModel())
+            model.ApplicationRoles = roleManager.Roles.Select(r => new SelectListItem
             {
-                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
-                {
-                    Text = r.Description,
-                    Value = r.Id.ToString()
-                }).ToList();
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> NewEmployee(Employees model)
-        {
-            using (var context = new DataModel())
-            {
-                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
-                {
-                    Text = r.Description,
-                    Value = r.Id.ToString()
-                }).ToList();
-            }
-
-            if (model.FirstName == null || model.FirstName == string.Empty)
-            {
-                ModelState.AddModelError(string.Empty, "Please Enter a First Name");
-                return View(model); 
-            }
-
-            if (ModelState.IsValid)
-            {
-                return RedirectToAction("Index");
-
-                //ApplicationUser user = new ApplicationUser
-                //{
-                //    Name = model.Name,
-                //    UserName = model.UserName,
-                //    Email = model.Email
-                //};
-                //IdentityResult result = await userManager.CreateAsync(user, model.Password);
-                //if (result.Succeeded)
-                //{
-                //    ApplicationRole applicationRole = await roleManager.FindByIdAsync(model.ApplicationRoleId);
-                //    if (applicationRole != null)
-                //    {
-                //        IdentityResult roleResult = await userManager.AddToRoleAsync(user, applicationRole.Name);
-                //        if (roleResult.Succeeded)
-                //        {
-                //            return RedirectToAction("Index");
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    return RedirectToAction("Index");
-                //}
-            }
+                Text = r.Name,
+                Value = r.Id
+            }).ToList();
 
             return View(model);
         }
@@ -194,11 +154,11 @@ namespace WebPortal.Controllers
                     {
                         if (existingRoleId != model.ApplicationRoleId)
                         {
-                            IdentityResult roleResult = await userManager.RemoveFromRoleAsync(user, existingRole);
-                            if (roleResult.Succeeded)
+                            ApplicationRole applicationRole = await roleManager.FindByIdAsync(model.ApplicationRoleId);
+                            if (applicationRole != null)
                             {
-                                ApplicationRole applicationRole = await roleManager.FindByIdAsync(model.ApplicationRoleId);
-                                if (applicationRole != null)
+                                IdentityResult roleResult = await userManager.RemoveFromRoleAsync(user, existingRole);
+                                if (roleResult.Succeeded)
                                 {
                                     IdentityResult newRoleResult = await userManager.AddToRoleAsync(user, applicationRole.Name);
                                     if (newRoleResult.Succeeded)
@@ -218,7 +178,7 @@ namespace WebPortal.Controllers
         public async Task<IActionResult> DeleteUser(string id)
         {
             string name = string.Empty;
-            if (!String.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
                 ApplicationUser applicationUser = await userManager.FindByIdAsync(id);
                 if (applicationUser != null)
@@ -245,6 +205,256 @@ namespace WebPortal.Controllers
                 }
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SendAccountDetails(string id)
+        {
+            string email = string.Empty;
+            if (!string.IsNullOrEmpty(id))
+            {
+                ApplicationUser applicationUser = await userManager.FindByIdAsync(id);
+                if (applicationUser != null)
+                {
+                    email = applicationUser.Email;
+                }
+            }
+            return PartialView("_SendAccountDetails", email);
+        }
+
+        [HttpPost]
+        public IActionResult SendAccountDetails(string id, EditUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = userManager.FindByIdAsync(id).Result;
+
+                if (user == null || user.Email == null || user.Email == string.Empty)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var token = userManager.GeneratePasswordResetTokenAsync(user).Result;
+
+                var resetLink = Url.Action("ResetPassword",
+                                "Account", new { token = token },
+                                 protocol: HttpContext.Request.Scheme);
+
+                using (var context = new DataModel())
+                {
+                    var tradingEntity = context.TradingEntity.FirstOrDefault();
+                    Tools.SendEmail(tradingEntity, user.Email, "Farm Mate Account", $"Hi {user.Name},{Environment.NewLine}{Environment.NewLine}Your account has been created for Farm Mate, your username is {user.UserName}{Environment.NewLine}{Environment.NewLine}Please click the link below to set password and starting using.{Environment.NewLine}{Environment.NewLine}{resetLink}");
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult AddEmployee()
+        {
+            return RedirectToAction("NewEmployee");
+        }
+
+        [HttpGet]
+        public IActionResult NewEmployee()
+        {
+            Employees model = new Employees();
+            using (var context = new DataModel())
+            {
+                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
+                {
+                    Text = r.Description,
+                    Value = r.Id.ToString()
+                }).ToList();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult NewEmployee(Employees model)
+        {
+            using (var context = new DataModel())
+            {
+                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
+                {
+                    Text = r.Description,
+                    Value = r.Id.ToString()
+                }).ToList();
+            }
+
+            if (model.FirstName == null || model.FirstName == string.Empty)
+            {
+                ModelState.AddModelError(string.Empty, "Please Enter a First Name");
+                return View(model);
+            }
+
+            if (model.LastName == null)
+                model.LastName = string.Empty;
+
+            if (model.Occupation == null)
+                model.Occupation = string.Empty;
+
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    context.Add(model);
+                    context.SaveChanges();
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult EditEmployee(int id)
+        {
+            Employees model = null;
+            using (var context = new DataModel())
+            {
+                model = context.Employees.FirstOrDefault(x => x.Id == id);
+                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
+                {
+                    Text = r.Description,
+                    Value = r.Id.ToString()
+                }).ToList();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditEmployee(int id, Employees model)
+        {
+            using (var context = new DataModel())
+            {
+                model.TradingEntities = context.TradingEntity.Select(r => new SelectListItem
+                {
+                    Text = r.Description,
+                    Value = r.Id.ToString()
+                }).ToList();
+            }
+
+            if (model.FirstName == null || model.FirstName == string.Empty)
+            {
+                ModelState.AddModelError(string.Empty, "Please Enter a First Name");
+                return View(model);
+            }
+
+            if (model.LastName == null)
+                model.LastName = string.Empty;
+
+            if (model.Occupation == null)
+                model.Occupation = string.Empty;
+
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    context.Update(model);
+                    context.SaveChanges();
+                }
+
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult DeleteEmployee(int id)
+        {
+            string name = string.Empty;
+            using (var context = new DataModel())
+            {
+                var employee = context.Employees.FirstOrDefault(x => x.Id == id);
+                if (employee != null)
+                    name = (employee.FirstName + " " + employee.LastName).Trim();
+            }
+
+            return PartialView("_DeleteEmployee", name);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteEmployee(int id, Employees model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    context.Employees.Remove(model);
+                    context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult LinkEmployee(string id)
+        {
+            LinkEmployeeViewModel model = new LinkEmployeeViewModel();
+            using (var context = new DataModel())
+            {
+                model.SelectedList = new List<Employees>();
+                model.OptionList = context.Employees.ToList();
+
+                foreach(var item in context.UserEmployeeAccess.Where(x => x.UserId == id).ToList())
+                {
+                    var employee = context.Employees.FirstOrDefault(x => x.Id == item.EmployeeId);
+                    var optionEmployee = model.OptionList.FirstOrDefault(x => x.Id == item.EmployeeId);
+                    if (optionEmployee != null)
+                        model.OptionList.Remove(optionEmployee);
+
+                    model.SelectedList.Add(employee);
+                }
+            }
+
+            foreach (var row in model.SelectedList)
+                row.Name = (row.FirstName + " " + row.LastName).Trim() + " - " + row.TradingEntity;
+
+            foreach (var row in model.OptionList)
+                row.Name = (row.FirstName + " " + row.LastName).Trim() + " - " + row.TradingEntity;
+
+            model.UserId = id;
+            return PartialView("_LinkEmployee", model);
+        }
+
+        [HttpPost]
+        [Route("api/Users/SaveLinkedEmployee")]
+        public void SaveLinkedEmployee([FromBody]SaveEmployeeViewModel[] model)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = model.FirstOrDefault()?.UserId;
+                if (id == null)
+                    return;
+
+                using (var context = new DataModel())
+                {
+                    var currentLink = context.UserEmployeeAccess.Where(x => x.UserId == id);
+                    foreach (var row in currentLink.ToList())
+                        context.UserEmployeeAccess.Remove(row);
+
+                    foreach (var row in model)
+                    {
+                        if (row.EmployeeId == -1)
+                            continue;
+
+                        var link = new UserEmployeeAccess();
+                        link.UserId = id;
+                        link.EmployeeId = row.EmployeeId;
+                        context.UserEmployeeAccess.Add(link);
+                    }
+
+                    context.SaveChanges();
+                }
+            }
         }
     }
 }

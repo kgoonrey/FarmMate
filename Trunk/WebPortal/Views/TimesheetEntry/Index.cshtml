@@ -32,8 +32,8 @@
         <img id="submittedIcon" src="~/images/TimesheetSubmitted.png" alt="Submitted" style="float:right; display:none;">
         <img id="notSubmittedIcon" src="~/images/TimesheetNotSubmitted.png" alt="Not Submitted" style="float:right; display:none;">
     </p>
-    Start Time <input id="startTime" value="7:00 am" title="startTime" style="width: 100%;" readonly="readonly" ; />
-    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%;" readonly="readonly" ; />
+    Start Time <input id="startTime" value="7:00 am" title="startTime" style="width: 100%;" />
+    End Time <input id="endTime" value="5:00 pm" title="endTime" style="width: 100%;" />
     Break (min) <input id="break" value="30" title="break" style="width: 100%" />
     Hours Worked <input type="text" id="hoursWorked" name="hoursWorked" class="k-textbox" placeholder="Hours Worked" style="width: 100%;" readonly="readonly" />
     Notes <textarea id="notes" class="k-textbox" style="width: 100%; min-width: 100%; max-width: 100%; height: 60px; min-height: 60px"></textarea>
@@ -109,6 +109,10 @@
             $("#endTime").bind("focus", function () {
                 $(this).data("kendoTimePicker").open();
             });
+
+            $("#startTime").attr("readonly", "readonly");
+
+            $("#endTime").attr("readonly", "readonly");
 
             $("#alertBtn").on("click", function () {
                 window.myalert("This is a Kendo UI Alert message!");

@@ -102,6 +102,9 @@ namespace WebPortal.Controllers
         [Route("api/Data/GetEmployeeDefaults")]
         public JsonResult GetEmployeeDefaults([FromBody]Timesheets timesheet)
         {
+            if (timesheet == null)
+                return Json(timesheet);
+
             using (var context = new DataModel())
             {
                 var employee = context.Employees.FirstOrDefault(x => x.Id == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity);

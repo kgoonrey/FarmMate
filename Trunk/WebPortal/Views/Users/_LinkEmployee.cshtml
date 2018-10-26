@@ -1,0 +1,98 @@
+﻿@model LinkEmployeeViewModel
+@using WebPortal.Models
+
+<style>
+    .demo-section label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    #employees {
+        width: 270px;
+    }
+
+    #example .demo-section {
+        max-width: none;
+        width: 515px;
+    }
+
+    #example .k-listbox {
+        width: 236px;
+        height: 310px;
+    }
+
+        #example .k-listbox:first-of-type {
+            width: 270px;
+            margin-right: 1px;
+        }
+</style>
+
+<form role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Link Employee" })
+    <div class="modal-body form-horizontal">
+        <div class="demo-section k-content">
+            <div>
+                <label for="optional" id="employees">Employees</label>
+                <label for="selected">Access</label>
+                <br />
+                <select id="optional" style="width:50%"></select>
+                <select id="selected" style="width:45%"></select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button data-dismiss="modal" id="cancel" class="btn btn-default" type="button">Cancel</button>
+        <button class="btn btn-success" id="submit" type="submit">Submit</button>
+    </div>
+</form>
+
+<script>
+        $(document).ready(function () {
+            $("#optional").kendoListBox({
+                connectWith: "selected",
+                dataTextField: "name",
+                dataValueField: "id",
+                dataSource: JSON.parse('@Html.Raw(Json.Serialize(Model.OptionList))'),
+                toolbar: {
+                    tools: ["transferTo", "transferFrom"]
+                }
+            });
+
+            $("#selected").kendoListBox({
+                connectWith: "optional",
+                dataTextField: "name",
+                dataValueField: "id",
+                dataSource: JSON.parse('@Html.Raw(Json.Serialize(Model.SelectedList))'),
+                toolbar: {  }
+            });
+
+            $("#submit").click(submit);
+        });
+
+    function submit() {
+        var data = $("#selected").data("kendoListBox").dataSource;
+        var employees = [{ EmployeeId: -1, UserId: '@Html.Raw(Model.UserId)' }];
+
+        for (i = 0; i < data.data().length; i++) {
+            employees.push({ EmployeeId: data.data()[i].id, UserId: '@Html.Raw(Model.UserId)'});
+        }
+
+        $.ajax({
+            url: "api/Users/SaveLinkedEmployee",
+            data: JSON.stringify(employees),
+            type: 'POST',
+            traditional: true,
+            contentType: 'application/json',
+            success: function (result) {
+                this.close();
+            }
+        });
+    }
+
+</script>
+
+
+
+
+   

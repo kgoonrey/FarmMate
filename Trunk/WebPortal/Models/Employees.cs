@@ -17,5 +17,7 @@ namespace WebPortal.Models
         public int DefaultBreakAmount { get; set; }
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> TradingEntities { get; set; }
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string Name { get; set; }
     }
 }

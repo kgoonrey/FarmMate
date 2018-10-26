@@ -1,9 +1,9 @@
 ﻿@model Employees
 @using WebPortal.Models
 
-<form asp-action="NewEmployee" role="form">
+<form asp-action="EditEmployee" role="form">
     <div class="modal-body form-horizontal">
-        <h4 id="message">Create a new employee</h4>
+        <h4 id="message">Edit employee</h4>
         <hr />
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="row">
@@ -39,19 +39,19 @@
                 <div class="form-group">
                     <label asp-for="DefaultStartTime" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="DefaultStartTime" class="form-control" style="width:100%;" readonly="readonly"; />
+                        <input asp-for="DefaultStartTime" class="form-control" style="width:100%;" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="DefaultEndTime" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="DefaultEndTime" class="form-control" style="width:100%;" readonly="readonly";/>
+                        <input asp-for="DefaultEndTime" class="form-control" style="width:100%;" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="DefaultBreakAmount" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="DefaultBreakAmount" class="form-control" style="width:100%;" value="30" />
+                        <input asp-for="DefaultBreakAmount" class="form-control" style="width:100%;" />
                     </div>
                 </div>
             </div>
@@ -59,6 +59,8 @@
     </div>
     @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
 </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 @section scripts
     {
@@ -71,16 +73,18 @@
                  $("#DefaultStartTime").kendoTimePicker({
                      interval: 15,
                      format: "h:mm tt",
-                     parseFormats: ["HH:mm"],
-                     value: "7:00 am"
-                 });
+                     parseFormats: ["HH:mm"]
+            });
+
+            $("#DefaultStartTime").attr("readonly", "readonly");
 
                  $("#DefaultEndTime").kendoTimePicker({
                      interval: 15,
                      format: "h:mm tt",
-                     parseFormats: ["HH:mm"],
-                     value: "5:00 pm"
-                 });
+                     parseFormats: ["HH:mm"]
+            });
+
+            $("#DefaultEndTime").attr("readonly", "readonly");
 
                  $("#DefaultStartTime").bind("focus", function () {
                      $(this).data("kendoTimePicker").open();
@@ -110,11 +114,22 @@
                      dataValueField: "value",
                      dataSource: breakData,
                      index: 8
-                 });
+            });
+
+            loaded();
+
         });
 
+        function loaded () {
+            var startDateTime = '@Html.Raw(Model.DefaultStartTime.ToShortTimeString())';
+            var endDateTime = '@Html.Raw(Model.DefaultEndTime.ToShortTimeString())';
+
+            $("#DefaultStartTime").data("kendoTimePicker").value(startDateTime);
+            $("#DefaultEndTime").data("kendoTimePicker").value(endDateTime);
+        };
+
         function cancel() {
-            window.location.href = '../Users'
+            window.location.href = '../'
         }
 
     </script>

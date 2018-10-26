@@ -2,16 +2,26 @@
 @using WebPortal.Models
 
 <form asp-action="AddUser" role="form">
-    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add User" })
     <div class="modal-body form-horizontal">
+        <h4 id="message">Create new user</h4>
+        <hr />
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="row">
             <div class="col-lg-6">
+                <div class="form-group">
+                    <label asp-for="UserName" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="UserName" class="form-control" />
+                    </div>
+                </div>
                 <div class="form-group">
                     <label asp-for="Name" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
                         <input asp-for="Name" class="form-control" />
                     </div>
                 </div>
+            </div>
+            <div class="col-lg-6">
                 <div class="form-group">
                     <label asp-for="Email" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
@@ -27,27 +37,23 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="form-group">
-                    <label asp-for="UserName" class="col-lg-3 col-sm-3 control-label"></label>
-                    <div class="col-lg-6">
-                        <input asp-for="UserName" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="col-lg-3 col-sm-3 control-label"></label>
-                    <div class="col-lg-6">
-                        <input asp-for="Password" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ConfirmPassword" class="col-lg-3 col-sm-3 control-label"></label>
-                    <div class="col-lg-6">
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
 </form>
+
+@section scripts
+    {
+    <script>
+
+        $(document).ready(function () {
+
+            $("#btn-cancel").click(cancel);
+        });
+
+        function cancel() {
+            window.location.href = '../Users'
+        }
+
+    </script>
+}

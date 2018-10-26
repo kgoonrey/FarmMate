@@ -1,4 +1,5 @@
-﻿@model IEnumerable<UserListViewModel>
+﻿
+@model Tuple<List<UserListViewModel>, List<Employees>>
 @using WebPortal.Models
 @using WebPortal.Code
 
@@ -8,11 +9,8 @@
     <div class="panel-heading panel-head">Users</div>
     <div class="panel-body">
         <div class="btn-group">
-            <a id="createEditUserModal" data-toggle="modal" asp-action="AddUser" data-target="#modal-action-user" class="btn btn-primary">
+            <a id="createEditUserModal" data-toggle="modal" asp-action="AddUser" class="btn btn-primary">
                 <i class="glyphicon glyphicon-plus"></i>  Add User
-            </a>
-            <a id="addEmployee" asp-action="AddEmployee" class="btn btn-primary" style="margin-left:4px;">
-                <i class="glyphicon glyphicon-plus"></i>  Add Employee
             </a>
         </div>
         <p></p>
@@ -26,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Item1)
                 {
                     <tr>
                         <td>@item.Name</td>
@@ -39,8 +37,58 @@
                             <a id="deleteUserModal" data-toggle="modal" asp-action="DeleteUser" asp-route-id="@item.Id" data-target="#modal-action-user" class="btn btn-danger">
                                 <i class="glyphicon glyphicon-trash"></i>  Delete
                             </a>
+                            <a id="linkEmployeeModal" data-toggle="modal" asp-action="LinkEmployee" asp-route-id="@item.Id" data-target="#modal-action-user" class="btn btn-success">
+                                <i class="glyphicon glyphicon-link"></i>  Link
+                            </a>
+                            <a id="sendAccountDetailsModal" data-toggle="modal" asp-action="sendAccountDetails" asp-route-id="@item.Id" data-target="#modal-action-user" class="btn btn-link">
+                                <i class="glyphicon glyphicon-envelope"></i>  Send Account Details
+                            </a>
                         </td>
                     </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<p></p>
+<div class="top-buffer"></div>
+<div class="panel panel-primary">
+    <div class="panel-heading panel-head">Employees</div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <a id="addEmployee" asp-action="AddEmployee" class="btn btn-primary" style="margin-left:4px;">
+                <i class="glyphicon glyphicon-plus"></i>  Add Employee
+            </a>
+        </div>
+        <p></p>
+        <div class="top-buffer"></div>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Company</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Item2)
+                {
+                <tr>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                    <td>@item.TradingEntity</td>
+                    <td>
+                        <a id="editEmployeeModal" data-toggle="modal" asp-action="EditEmployee" asp-route-id="@item.Id"
+                           class="btn btn-info">
+                            <i class="glyphicon glyphicon-pencil"></i>  Edit
+                        </a>
+                        <a id="deleteEmployeeModal" data-toggle="modal" asp-action="DeleteEmployee" asp-route-id="@item.Id" data-target="#modal-action-user" class="btn btn-danger">
+                            <i class="glyphicon glyphicon-trash"></i>  Delete
+                        </a>
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>

@@ -87,7 +87,7 @@ namespace WebPortal.Controllers
 
                 var user = signInManager.UserManager.FindByNameAsync(model.UserName).Result;
 
-                if (user == null || !user.EmailConfirmed || user.Email == null || user.Email == string.Empty)
+                if (user == null || user.Email == null || user.Email == string.Empty)
                 {
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
@@ -118,7 +118,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(PasswordResetViewModel model)
+        public async Task<IActionResult> ResetPassword(PasswordResetViewModel model)
         {
             if(model.Password != model.ConfirmPassword)
             {
@@ -137,6 +137,7 @@ namespace WebPortal.Controllers
             IdentityResult result = signInManager.UserManager.ResetPasswordAsync(user, model.Token, model.Password).Result;
             if (result.Succeeded)
             {
+                await signInManager.PasswordSignInAsync(model.UserName, model.Password, false, lockoutOnFailure: false);
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             else
