@@ -29,13 +29,13 @@ namespace WebPortal.Controllers
             {
                 var user = await userManager.GetUserAsync(HttpContext.User);
                 var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
-                var employees = await context.Employees.Where(x => userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToListAsync();
+                var employees = await context.Employees.Where(x => x.Active && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToListAsync();
 
                 var roles = await context.AspNetRoles.FirstOrDefaultAsync(x => x.Name == "Admin");
                 var adminUserList = await context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToListAsync();
 
                 if(adminUserList.FirstOrDefault(x=> x.UserId == user.Id) != null)
-                    employees = await context.Employees.ToListAsync();
+                    employees = await context.Employees.Where(x=> x.Active).ToListAsync();
 
                 var tradingEntity = await context.TradingEntity.Where(x=> employees.FirstOrDefault(y => y.TradingEntity == x.Id) != null).Select(a => new SelectListItem
                 {

@@ -39,7 +39,10 @@ namespace WebPortal.Controllers
             List<Employees> model2 = new List<Employees>();
             using (var context = new DataModel())
             {
-                model2 = context.Employees.ToList();
+                model2 = context.Employees.Where(x=> x.Active).ToList();
+
+                foreach (var item in model2)
+                    item.TradingEntityDescription = item.TradingEntity + " - " + context.TradingEntity.FirstOrDefault(x => x.Id == item.TradingEntity).Description;
             }
 
             var newTest = Tuple.Create(model, model2);
@@ -200,6 +203,15 @@ namespace WebPortal.Controllers
                     IdentityResult result = await userManager.DeleteAsync(user);
                     if (result.Succeeded)
                     {
+                        using (var context = new DataModel())
+                        {
+                            var links = context.UserEmployeeAccess.Where(x => x.UserId == id);
+                            foreach (var link in links.ToList())
+                                context.UserEmployeeAccess.Remove(link);
+
+                            context.SaveChanges();
+                        }
+
                         return RedirectToAction("Index");
                     }
                 }
@@ -388,7 +400,20 @@ namespace WebPortal.Controllers
             {
                 using (var context = new DataModel())
                 {
-                    context.Employees.Remove(model);
+                    model = context.Employees.FirstOrDefault(x => x.Id == id);
+                    var access = context.UserEmployeeAccess.Where(x => x.EmployeeId == id);
+                    foreach (var item in access.ToList())
+                        context.UserEmployeeAccess.Remove(item);
+
+                    if (context.Timesheets.Any(x => x.Employee == id))
+                    {
+                        model.Active = false;
+                        context.Update(model);
+                    }
+                    else
+                    {
+                        context.Employees.Remove(model);
+                    }
                     context.SaveChanges();
                 }
             }

@@ -57,12 +57,12 @@ namespace WebPortal.Controllers
             using (var context = new DataModel())
             {
                 var userEmployeeAccess = context.UserEmployeeAccess.Where(x => x.UserId == user.Result.Id).ToList();
-                var employees = context.Employees.Where(x => x.TradingEntity == id.Id && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
+                var employees = context.Employees.Where(x => x.Active && x.TradingEntity == id.Id && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
                 var roles = context.AspNetRoles.FirstOrDefault(x => x.Name == "Admin");
                 var adminUserList = context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToList();
 
                 if (adminUserList.FirstOrDefault(x => x.UserId == user.Result.Id) != null)
-                    employees = context.Employees.Where(x => x.TradingEntity == id.Id).ToList();
+                    employees = context.Employees.Where(x => x.Active && x.TradingEntity == id.Id).ToList();
 
                 foreach (var employeeRow in employees)
                 {

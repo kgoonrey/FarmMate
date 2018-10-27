@@ -54,6 +54,12 @@
                         <input asp-for="DefaultBreakAmount" class="form-control" style="width:100%;" />
                     </div>
                 </div>
+                <div class="form-group" style="visibility:collapse">
+                    <label asp-for="Active" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="Active" class="form-control" style="width:20px;" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -74,17 +80,14 @@
                      interval: 15,
                      format: "h:mm tt",
                      parseFormats: ["HH:mm"]
-            });
+                 });
 
-            $("#DefaultStartTime").attr("readonly", "readonly");
 
                  $("#DefaultEndTime").kendoTimePicker({
                      interval: 15,
                      format: "h:mm tt",
                      parseFormats: ["HH:mm"]
-            });
-
-            $("#DefaultEndTime").attr("readonly", "readonly");
+                 });
 
                  $("#DefaultStartTime").bind("focus", function () {
                      $(this).data("kendoTimePicker").open();
@@ -92,7 +95,10 @@
 
                  $("#DefaultEndTime").bind("focus", function () {
                      $(this).data("kendoTimePicker").open();
-                 });
+                });
+
+                $("#DefaultStartTime").attr("readonly", "readonly");
+                $("#DefaultEndTime").attr("readonly", "readonly");
 
                  var breakData = [
                      { text: "5", value: "5" },
