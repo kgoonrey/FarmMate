@@ -54,12 +54,20 @@
         color: #eee;
     }
 
+    .completedDate {
+        font-weight: bold;
+        color: #41AD49;
+    }
+
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 @section scripts{
     <script>
+
+        var today = new Date(), events = [];
 
         $(document).ready(function () {
             $("#window").kendoWindow({
@@ -70,11 +78,8 @@
                 actions: ["Close"],
                 close: OnEntryClose
             });
-            $("#calendar").kendoCalendar(
-                {
-                    format: "dd/MM/yyyy",
-                    change: OnCalandarChange
-                });
+
+            InitialiseCalendar();
 
             $("#company").kendoDropDownList({
                 suggest: false,
@@ -114,26 +119,6 @@
 
             $("#endTime").attr("readonly", "readonly");
 
-            $("#alertBtn").on("click", function () {
-                window.myalert("This is a Kendo UI Alert message!");
-            });
-
-            $("#confirmBtn").on("click", function () {
-                window.myconfirm("Are you sure that you want to proceed?").then(function () {
-                    window.myalert("Operation done!");
-                }, function () {
-                    window.myalert("You chose to Cancel action.");
-                });
-            });
-
-            $("#promptBtn").on("click", function () {
-                window.myprompt("Please, enter a arbitrary value:", "any value").then(function (data) {
-                    window.myalert(kendo.format("The value that you entered is '{0}'", data));
-                }, function () {
-                    window.myalert("Cancel entering value.");
-                })
-            });
-
             var breakData = [
                 { text: "5", value: "5" },
                 { text: "10", value: "10" },
@@ -169,7 +154,69 @@
 
             if (employeeCount == 2)
                 $("#employee").data("kendoDropDownList").select(1);
-        });        
+
+        });   
+
+        function PopulateCompletedDays() {
+
+            if ($("#company").data("kendoDropDownList") == null || $("#employee").data("kendoDropDownList") == null)
+                return;
+
+            var selectedCompany = $("#company").data("kendoDropDownList").value();
+            var selectedEmployee = $("#employee").data("kendoDropDownList").value();
+
+            if (selectedCompany == -1 || selectedCompany == "" || selectedEmployee == -1 || selectedEmployee == "") {
+                return;
+            }
+
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany };
+
+            today = new Date(), events = [];
+
+            $.ajax({
+                url: "/api/Data/GetMonthlyTimesheets",
+                data: JSON.stringify(timesheet),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+
+                    if (result != null) {
+                        result.forEach(function (item) {
+                            var date = new Date(moment(item.startDateTime).toDate());
+                            events.push(+new Date(date.getFullYear(), date.getMonth(), moment(item.startDateTime).format("DD")));
+                        });
+
+                        today = new Date(), events;
+
+                        $("#calendar").data("kendoCalendar").destroy();
+                        $('#calendar').empty();
+                        InitialiseCalendar();   
+
+                    }                        
+                }
+            });
+        }
+
+        function InitialiseCalendar() {
+            $("#calendar").kendoCalendar(
+                {
+                    format: "dd/MM/yyyy",
+                    change: OnCalandarChange,
+                    value: today,
+                    dates: events,
+                    month: {
+                        // template for dates in month view
+                        content: '# if ($.inArray(+data.date, data.dates) != -1) { #' +
+                            '<div class="' +
+                            "completedDate" +
+                            '">#= data.value #</div>' +
+                            '# } else { #' +
+                            '#= data.value #' +
+                            '# } #'
+                    }
+                });
+        }
 
         function OnEntryClose() {
             $("#calendar").data("kendoCalendar").value(null);
@@ -281,6 +328,8 @@
                     }
                 }
             });
+
+            PopulateCompletedDays();
         }
 
         function OnEmployeeChange() {
@@ -302,6 +351,8 @@
                     }
                 }
             });
+
+            PopulateCompletedDays();
         }
 
         function CalculateHoursWorked() {
@@ -358,6 +409,7 @@
                     window.myalert(result, "Timesheet");
                     kendo.ui.progress($("#window"), false);
                     $("#window").data("kendoWindow").close();
+                    PopulateCompletedDays();
                 }
             });
         }

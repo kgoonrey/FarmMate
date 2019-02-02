@@ -40,6 +40,7 @@ namespace WebPortal
             {
                 options.LoginPath = new PathString("/Account/Login");
                 options.AccessDeniedPath = new PathString("/Account/AccessDenied");
+                options.Cookie.Expiration = new TimeSpan(30, 0, 0, 0);
             });
 
             services.AddMvc();

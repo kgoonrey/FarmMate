@@ -99,6 +99,17 @@ namespace WebPortal.Controllers
         }
 
         [HttpPost]
+        [Route("api/Data/GetMonthlyTimesheets")]
+        public JsonResult GetMonthlyTimesheets([FromBody]Timesheets timesheet)
+        {
+            using (var context = new DataModel())
+            {
+                var timesheetRows = context.Timesheets.Where(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime >= System.DateTime.Today.Date.AddYears(-1) && x.EndDateTime <= System.DateTime.Today.Date.AddYears(1).AddDays(1).AddSeconds(-1)).ToList();
+                return Json(timesheetRows);
+            }
+        }
+
+        [HttpPost]
         [Route("api/Data/GetEmployeeDefaults")]
         public JsonResult GetEmployeeDefaults([FromBody]Timesheets timesheet)
         {
