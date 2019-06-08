@@ -88,7 +88,7 @@ namespace WebPortal.Controllers
                 var data = from t in context.Timesheets
                            join e in context.Employees on t.Employee equals e.Id
                            join te in context.TradingEntity on t.TradingEntity equals te.Id
-                           where t.StartDateTime >= reportParameters.StartDate.Date && t.EndDateTime < reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && (reportParameters.Employee == -1 || e.Id == reportParameters.TradingEntity) && (reportParameters.TradingEntity == -1 || te.Id == reportParameters.TradingEntity)
+                           where t.StartDateTime >= reportParameters.StartDate.Date && t.EndDateTime < reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && (reportParameters.Employee == -1 || e.Id == reportParameters.Employee) && (reportParameters.TradingEntity == -1 || te.Id == reportParameters.TradingEntity)
                            orderby te.Description, e.FirstName, t.StartDateTime
                            select new { t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description, Notes = t.Notes };
 
