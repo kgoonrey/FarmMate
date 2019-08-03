@@ -90,13 +90,13 @@ namespace WebPortal.Controllers
                            join te in context.TradingEntity on t.TradingEntity equals te.Id
                            where t.StartDateTime >= reportParameters.StartDate.Date && t.EndDateTime < reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && (reportParameters.Employee == -1 || e.Id == reportParameters.Employee) && (reportParameters.TradingEntity == -1 || te.Id == reportParameters.TradingEntity)
                            orderby te.Description, e.FirstName, t.StartDateTime
-                           select new { t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description, Notes = t.Notes };
+                           select new { t.Type, t.StartDateTime, t.EndDateTime, t.BreakAmount, EmployeeId = e.Id, Name = e.FirstName + ' ' + e.LastName, TradingEntityId = te.Id, TradingEntityDescription = te.Description, Notes = t.Notes };
 
                 using (var w = new StreamWriter(filePath))
                 {
-                    w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Hours Worked,Notes");
+                    w.WriteLine("Date,Start Time,End Time,Break Amount (Min),Total Hours,Type,Notes");
                     w.Flush();
-                    w.WriteLine(",,,,,");
+                    w.WriteLine(",,,,,,");
                     w.Flush();
 
                     var lastTradingEntity = -1;
@@ -115,10 +115,10 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")}");
                                 w.Flush();
 
-                                w.WriteLine(",,,,,");
+                                w.WriteLine(",,,,,,");
                                 w.Flush();
 
                                 employeeHoursWorkedTotal = 0m;
@@ -126,10 +126,10 @@ namespace WebPortal.Controllers
 
                             if (lastTradingEntity != -1)
                             {
-                                w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
+                                w.WriteLine($"{lastTradingEntityDescription} Total,,,,,{tradingEntityWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
-                                w.WriteLine(",,,,,");
+                                w.WriteLine(",,,,,,");
                                 w.Flush();
 
                                 tradingEntityWorkedTotal = 0m;
@@ -138,7 +138,7 @@ namespace WebPortal.Controllers
                             lastTradingEntity = row.TradingEntityId;
                             lastTradingEntityDescription = row.TradingEntityDescription;
                             lastEmployee = -1;
-                            w.WriteLine($"{lastTradingEntityDescription},,,,,");
+                            w.WriteLine($"{lastTradingEntityDescription},,,,,,");
                             w.Flush();
                         }
 
@@ -146,17 +146,17 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
+                                w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
-                                w.WriteLine(",,,,,");
+                                w.WriteLine(",,,,,,");
                                 w.Flush();
 
                                 employeeHoursWorkedTotal = 0m;
                             }
 
                             lastEmployee = row.EmployeeId;
-                            w.WriteLine($"{row.Name},,,,,");
+                            w.WriteLine($"{row.Name},,,,,,");
                             w.Flush();
                         }
 
@@ -164,31 +164,34 @@ namespace WebPortal.Controllers
                         tradingEntityWorkedTotal += hoursWorked;
                         reportWorkedTotal += hoursWorked;
 
-                        w.WriteLine($"{row.StartDateTime.ToShortDateString()},{row.StartDateTime.ToShortTimeString()},{row.EndDateTime.ToShortTimeString()},{row.BreakAmount.ToString("N2")},{hoursWorked.ToString("N2")},{row.Notes.Replace("\n", " ")}");
+                        if (hoursWorked == 0)
+                            continue;
+
+                        w.WriteLine($"{row.StartDateTime.ToShortDateString()},{row.StartDateTime.ToShortTimeString()},{row.EndDateTime.ToShortTimeString()},{row.BreakAmount.ToString("N2")},{hoursWorked.ToString("N2")},{((TimesheetEntryController.TimeSheetTypeEnum)row.Type).ToString()}{row.Notes.Replace("\n", " ")}");
                         w.Flush();
                     }
 
                     if (lastEmployee != -1)
                     {
-                        w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
-                        w.Flush();
-
-                        w.WriteLine(",,,,");
-                        w.Flush();
-                    }
-
-                    if (lastTradingEntity != -1)
-                    {
-                        w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
+                        w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")},");
                         w.Flush();
 
                         w.WriteLine(",,,,,");
                         w.Flush();
                     }
 
+                    if (lastTradingEntity != -1)
+                    {
+                        w.WriteLine($"{lastTradingEntityDescription} Total,,,,,{tradingEntityWorkedTotal.ToString("N2")},");
+                        w.Flush();
+
+                        w.WriteLine(",,,,,,");
+                        w.Flush();
+                    }
+
                     if (reportWorkedTotal != tradingEntityWorkedTotal)
                     {
-                        w.WriteLine($"Report Total,,,,{reportWorkedTotal.ToString("N2")},");
+                        w.WriteLine($"Report Total,,,,,{reportWorkedTotal.ToString("N2")},");
                         w.Flush();
                     }
                 }

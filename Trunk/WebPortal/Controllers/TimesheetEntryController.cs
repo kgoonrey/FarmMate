@@ -16,6 +16,12 @@ namespace WebPortal.Controllers
     public class TimesheetEntryController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
+        public enum TimeSheetTypeEnum
+        {
+            Work,
+            Sick,
+            AnnualLeave
+        }
 
         public TimesheetEntryController(UserManager<ApplicationUser> userManager)
         {
@@ -75,21 +81,33 @@ namespace WebPortal.Controllers
         {
             try
             {
-                var updateExisting = (timesheet.Id != Guid.Empty);
-                if (!updateExisting)
-                    timesheet.Id = Guid.NewGuid();
-
-                var user = await userManager.GetUserAsync(HttpContext.User);
-
-                timesheet.AuditDateTime = DateTime.Now;
-                timesheet.AuditUser = user.Id;
-
                 using (var context = new DataModel())
                 {
-                    if (updateExisting)
-                        context.Update(timesheet);
+                    var user = await userManager.GetUserAsync(HttpContext.User);
+                    var existingTimesheet = context.Timesheets.FirstOrDefault(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime.Date == timesheet.StartDateTime.Date && x.Type == timesheet.Type);
+                    var exists = true;
+
+                    if(existingTimesheet == null)
+                    {
+                        existingTimesheet = new Timesheets();
+                        existingTimesheet.Id = Guid.NewGuid();
+                        existingTimesheet.Type = timesheet.Type;
+                        exists = false;
+                    }
+
+                    existingTimesheet.Employee = timesheet.Employee;
+                    existingTimesheet.TradingEntity = timesheet.TradingEntity;
+                    existingTimesheet.StartDateTime = timesheet.StartDateTime;
+                    existingTimesheet.EndDateTime = timesheet.EndDateTime;
+                    existingTimesheet.BreakAmount = 0;
+                    existingTimesheet.Notes = timesheet.Notes;
+                    existingTimesheet.AuditDateTime = DateTime.Now;
+                    existingTimesheet.AuditUser = user.Id;
+
+                    if (exists)
+                        context.Update(existingTimesheet);
                     else
-                        context.Add(timesheet);
+                        context.Add(existingTimesheet);
 
                     context.SaveChanges();
                 }
@@ -99,6 +117,35 @@ namespace WebPortal.Controllers
             catch { }
 
             return "Timesheet failed, Please try again.";
+        }
+
+        [HttpPost]
+        [Route("api/TimesheetEntry/DeleteTimesheet")]
+        public async Task<string> DeleteTimesheet([FromBody]Timesheets timesheet)
+        {
+            try
+            {
+                using (var context = new DataModel())
+                {
+                    var user = await userManager.GetUserAsync(HttpContext.User);
+                    var existingTimesheets = context.Timesheets.Where(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime.Date == timesheet.StartDateTime.Date);
+
+                    if (!existingTimesheets.Any())
+                    {
+                        return "Timesheet Doesn't Exist";
+                    }
+
+                    foreach (var row in existingTimesheets)
+                        context.Remove(row);
+
+                    context.SaveChanges();
+                }
+
+                return "Timesheet Deleted Successfully";
+            }
+            catch { }
+
+            return "Timesheet failed to delete, Please try again.";
         }
     }
 }

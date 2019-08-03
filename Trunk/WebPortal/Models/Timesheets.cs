@@ -16,5 +16,6 @@ namespace WebPortal.Models
         public string Notes { get; set; }
         public DateTime AuditDateTime { get; set; }
         public string AuditUser { get; set; }
+        public int Type { get; set; }
     }
 }

@@ -84,7 +84,7 @@ namespace WebPortal.Controllers
         {
             using (var context = new DataModel())
             {
-                var timesheetRow = context.Timesheets.FirstOrDefault(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime >= timesheet.StartDateTime.Date && x.EndDateTime < timesheet.EndDateTime.Date.AddDays(1).AddSeconds(-1));
+                var timesheetRow = context.Timesheets.FirstOrDefault(x => x.Employee == timesheet.Employee && x.TradingEntity == timesheet.TradingEntity && x.StartDateTime >= timesheet.StartDateTime.Date && x.EndDateTime < timesheet.EndDateTime.Date.AddDays(1).AddSeconds(-1) && x.Type == timesheet.Type);
                 if (timesheetRow == null)
                     return Json(null);
 
