@@ -5,7 +5,8 @@
 
 <h1>Reports</h1>
 <br />
-<a class="timesheetReportLink">Timesheet Report</a>
+<p><a class="timesheetReportLink">Timesheet Report</a></p>
+<p><a class="canegrowersTimesheetReportLink">Canegrowers Timesheet Report</a></p>
 
 <div id="timesheetReportWindow">
     Start Date <input id="startDate" title="startDate" style="width: 100%" />
@@ -49,6 +50,9 @@
 
 @section scripts{
 <script>
+
+    var reportRun = "TimesheetReport";
+
         $(document).ready(function () {
             $("#timesheetReportWindow").kendoWindow({
                 width: "90%",
@@ -78,13 +82,20 @@
             });
 
             $("#downloadTimesheetReport").kendoButton({ click: DownloadTimesheetReport });
+
+            $("#startDate").data("kendoDatePicker").value(getStartOfWeek(new Date()));
+            $("#endDate").data("kendoDatePicker").value(new Date());
         });
 
         $('.timesheetReportLink').click(function () {
             $("#timesheetReportWindow").data("kendoWindow").open().center();
-            $("#startDate").data("kendoDatePicker").value(getStartOfWeek(new Date()));
-            $("#endDate").data("kendoDatePicker").value(new Date());
-        });
+            reportRun = "TimesheetReport";
+    });
+
+    $('.canegrowersTimesheetReportLink').click(function () {
+        $("#timesheetReportWindow").data("kendoWindow").open().center();
+        reportRun = "CanegrowersTimesheetReport";
+    });
 
         // Hover shim for Internet Explorer 6 and Internet Explorer 7.
         $(document.body).on('hover', 'a', function () {
@@ -103,18 +114,34 @@
             if (tradingEntity == "")
                 tradingEntity = -1;
 
-            $.ajax({
-                url: "/api/Reports/GenerateTimesheetReport",
-                data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
-                type: 'POST',
-                traditional: true,
-                contentType: 'application/json',
-                success: function (result) {
-                    var downloadButton = document.getElementById("downloadButton");
-                    downloadButton.click();
-                    $("#timesheetReportWindow").data("kendoWindow").close();
-                }
-            });
+            if (reportRun == "TimesheetReport") {
+                $.ajax({
+                    url: "/api/Reports/GenerateTimesheetReport",
+                    data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
+                    type: 'POST',
+                    traditional: true,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        var downloadButton = document.getElementById("downloadButton");
+                        downloadButton.click();
+                        $("#timesheetReportWindow").data("kendoWindow").close();
+                    }
+                });
+            }
+            else if (reportRun == "CanegrowersTimesheetReport") {
+                $.ajax({
+                    url: "/api/Reports/GenerateCanegrowersTimesheetReport",
+                    data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
+                    type: 'POST',
+                    traditional: true,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        var downloadButton = document.getElementById("downloadButton");
+                        downloadButton.click();
+                        $("#timesheetReportWindow").data("kendoWindow").close();
+                    }
+                });
+            }
         }
 
         function OnCompanyChange() {

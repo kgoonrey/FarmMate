@@ -648,7 +648,7 @@
             var sickEndTime = moment(endDateTime).format('h:mm:ss a');;
             var date = moment(dateTime).format('YYYY/MM/DD');
 
-            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + sickStartTime, "EndDateTime": date + " " + sickEndTime, "Notes": sickNotes, "Type": 1 };
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + sickStartTime, "EndDateTime": date + " " + sickEndTime, "BreakAmount": 0, "Notes": sickNotes, "Type": 1 };
             kendo.ui.progress($("#window"), true);
             $.ajax({
                 url: "api/TimesheetEntry/SubmitTimesheet",
@@ -671,7 +671,7 @@
             var leaveEndTime = moment(endDateTime).format('h:mm:ss a');;
             var date = moment(dateTime).format('YYYY/MM/DD');
 
-            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + leaveStartTime, "EndDateTime": date + " " + leaveEndTime, "Notes": leaveNotes, "Type": 2 };
+            var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany, "StartDateTime": date + " " + leaveStartTime, "EndDateTime": date + " " + leaveEndTime, "BreakAmount": 0, "Notes": leaveNotes, "Type": 2 };
             kendo.ui.progress($("#window"), true);
             $.ajax({
                 url: "api/TimesheetEntry/SubmitTimesheet",

@@ -310,6 +310,8 @@ namespace WebPortal.Controllers
             if (model.Occupation == null)
                 model.Occupation = string.Empty;
 
+            model.Active = true;
+
             if (ModelState.IsValid)
             {
                 using (var context = new DataModel())

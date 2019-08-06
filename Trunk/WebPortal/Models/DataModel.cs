@@ -16,6 +16,7 @@ namespace WebPortal.Models
         public DbSet<AspNetRoles> AspNetRoles { get; set; }
         public DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public DbSet<UserEmployeeAccess> UserEmployeeAccess { get; set; }
+        public DbSet<PublicHolidays> PublicHolidays { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -24,6 +25,12 @@ namespace WebPortal.Models
             .AddJsonFile("appsettings.json")
             .Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PublicHolidays>()
+                .HasKey(c => new { c.Date, c.Region });
         }
     }
 }

@@ -99,7 +99,7 @@ namespace WebPortal.Controllers
                     existingTimesheet.TradingEntity = timesheet.TradingEntity;
                     existingTimesheet.StartDateTime = timesheet.StartDateTime;
                     existingTimesheet.EndDateTime = timesheet.EndDateTime;
-                    existingTimesheet.BreakAmount = 0;
+                    existingTimesheet.BreakAmount = timesheet.BreakAmount;
                     existingTimesheet.Notes = timesheet.Notes;
                     existingTimesheet.AuditDateTime = DateTime.Now;
                     existingTimesheet.AuditUser = user.Id;
