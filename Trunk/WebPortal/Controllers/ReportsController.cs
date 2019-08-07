@@ -115,7 +115,7 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")}");
+                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")}");
                                 w.Flush();
 
                                 w.WriteLine(",,,,,,");
@@ -126,7 +126,7 @@ namespace WebPortal.Controllers
 
                             if (lastTradingEntity != -1)
                             {
-                                w.WriteLine($"{lastTradingEntityDescription} Total,,,,,{tradingEntityWorkedTotal.ToString("N2")},");
+                                w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
                                 w.WriteLine(",,,,,,");
@@ -146,7 +146,7 @@ namespace WebPortal.Controllers
                         {
                             if (lastEmployee != -1)
                             {
-                                w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")},");
+                                w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
                                 w.Flush();
 
                                 w.WriteLine(",,,,,,");
@@ -173,7 +173,7 @@ namespace WebPortal.Controllers
 
                     if (lastEmployee != -1)
                     {
-                        w.WriteLine($",,Total,,,{employeeHoursWorkedTotal.ToString("N2")},");
+                        w.WriteLine($",,Total,,{employeeHoursWorkedTotal.ToString("N2")},");
                         w.Flush();
 
                         w.WriteLine(",,,,,");
@@ -182,7 +182,7 @@ namespace WebPortal.Controllers
 
                     if (lastTradingEntity != -1)
                     {
-                        w.WriteLine($"{lastTradingEntityDescription} Total,,,,,{tradingEntityWorkedTotal.ToString("N2")},");
+                        w.WriteLine($"{lastTradingEntityDescription} Total,,,,{tradingEntityWorkedTotal.ToString("N2")},");
                         w.Flush();
 
                         w.WriteLine(",,,,,,");
@@ -191,7 +191,7 @@ namespace WebPortal.Controllers
 
                     if (reportWorkedTotal != tradingEntityWorkedTotal)
                     {
-                        w.WriteLine($"Report Total,,,,,{reportWorkedTotal.ToString("N2")},");
+                        w.WriteLine($"Report Total,,,,{reportWorkedTotal.ToString("N2")},");
                         w.Flush();
                     }
                 }

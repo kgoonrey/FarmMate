@@ -90,6 +90,16 @@
         color: #41AD49;
     }
 
+    .sickDate {
+        font-weight: bold;
+        color: #e501ff;
+    }
+
+    .leaveDate {
+        font-weight: bold;
+        color: #004bff;
+    }
+
     .k-button.k-danger,
     .k-button.k-danger:active {
         background-color: #D11D1D;
@@ -102,6 +112,9 @@
     <script>
 
         var today = new Date(), events = [];
+        var workDays = [];
+        var sickDays = [];
+        var leaveDays = [];
 
         $(document).ready(function () {
             $("#window").kendoWindow({
@@ -283,6 +296,8 @@
             var timesheet = { "Employee": selectedEmployee, "TradingEntity": selectedCompany };
 
             today = new Date(), events = [];
+            sickDays = [];
+            leaveDays = [];
 
             $.ajax({
                 url: "/api/Data/GetMonthlyTimesheets",
@@ -295,7 +310,17 @@
                     if (result != null) {
                         result.forEach(function (item) {
                             var date = new Date(moment(item.startDateTime).toDate());
-                            events.push(+new Date(date.getFullYear(), date.getMonth(), moment(item.startDateTime).format("DD")));
+                            var dateToAdd = +new Date(date.getFullYear(), date.getMonth(), moment(item.startDateTime).format("DD"));
+                            events.push(dateToAdd);
+
+                            if (item.startDateTime != item.endDateTime) {
+                                if (item.type == 0)
+                                    workDays.push(dateToAdd);
+                                else if (item.type == 1)
+                                    sickDays.push(dateToAdd);
+                                else if (item.type == 2)
+                                    leaveDays.push(dateToAdd);
+                            }                                
                         });
 
                         today = new Date(), events;
@@ -319,7 +344,13 @@
                         // template for dates in month view
                         content: '# if ($.inArray(+data.date, data.dates) != -1) { #' +
                             '<div class="' +
-                            "completedDate" +
+                            '# if ($.inArray(+data.date, sickDays) != -1) { #' +
+                                "sickDate" +
+                            '# } else if ($.inArray(+data.date, leaveDays) != -1) { #' +
+                                "leaveDate" +
+                            '# } else { #' +
+                                "completedDate" +
+                            '# } #' +
                             '">#= data.value #</div>' +
                             '# } else { #' +
                             '#= data.value #' +

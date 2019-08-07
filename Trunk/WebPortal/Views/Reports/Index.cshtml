@@ -8,7 +8,7 @@
 <p><a class="timesheetReportLink">Timesheet Report</a></p>
 <p><a class="canegrowersTimesheetReportLink">Canegrowers Timesheet Report</a></p>
 
-<div id="timesheetReportWindow">
+<div id="timesheetReportWindow" style="display:none;">
     Start Date <input id="startDate" title="startDate" style="width: 100%" />
     End Date <input id="endDate" title="endDate" style="width: 100%" />
     Company
@@ -83,19 +83,21 @@
 
             $("#downloadTimesheetReport").kendoButton({ click: DownloadTimesheetReport });
 
-            $("#startDate").data("kendoDatePicker").value(getStartOfWeek(new Date()));
+             $("#startDate").data("kendoDatePicker").value(getStartOfWeek(new Date()));
             $("#endDate").data("kendoDatePicker").value(new Date());
         });
 
         $('.timesheetReportLink').click(function () {
+            $("#timesheetReportWindow").data("kendoWindow").title("Timesheet Report");
             $("#timesheetReportWindow").data("kendoWindow").open().center();
             reportRun = "TimesheetReport";
-    });
+        });
 
-    $('.canegrowersTimesheetReportLink').click(function () {
-        $("#timesheetReportWindow").data("kendoWindow").open().center();
-        reportRun = "CanegrowersTimesheetReport";
-    });
+        $('.canegrowersTimesheetReportLink').click(function () {
+            $("#timesheetReportWindow").data("kendoWindow").title("Canegrowers Timesheet Report");
+            $("#timesheetReportWindow").data("kendoWindow").open().center();
+            reportRun = "CanegrowersTimesheetReport";
+        });
 
         // Hover shim for Internet Explorer 6 and Internet Explorer 7.
         $(document.body).on('hover', 'a', function () {
@@ -173,7 +175,7 @@
             var day = d.getDay(),
                 diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
             return new Date(d.setDate(diff));
-        }
+    }
 
 </script>
 }
