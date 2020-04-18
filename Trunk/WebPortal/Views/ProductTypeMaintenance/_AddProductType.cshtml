@@ -1,0 +1,23 @@
+﻿@model ProductTypes
+@using WebPortal.Models
+
+<form asp-action="AddProductType" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Product Type" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="Code" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="Code" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="Description" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

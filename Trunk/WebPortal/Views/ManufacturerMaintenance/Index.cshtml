@@ -1,0 +1,52 @@
+﻿@model List<Manufacturers>
+@using WebPortal.Models
+@using WebPortal.Code
+
+@{
+    ViewBag.Title = "Manufacturer Maintenance";
+}
+
+<h1>Manufacturer - Maintenance</h1>
+<br />
+
+<div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <a id="createAddManufacturerModal" data-toggle="modal" asp-action="AddManufacturer" data-target="#modal-action-add-manufacturer" class="btn btn-primary">
+                <i class="glyphicon glyphicon-plus"></i>  Add Manufacturer
+            </a>
+        </div>
+        <p></p>
+        <div class="top-buffer"></div>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Code</td>
+                        <td>@item.Description</td>
+                        <td>
+                            <a id="editManufacturerModal" data-toggle="modal" asp-action="EditManufacturer" asp-route-id="@item.Code" data-target="#modal-action-edit-manufacturer" class="btn btn-info">
+                                <i class="glyphicon glyphicon-pencil"></i>  Edit
+                            </a>
+                            <a id="deleteManufacturerModal" data-toggle="modal" asp-action="DeleteManufacturer" asp-route-id="@item.Code" data-target="#modal-action-delete-manufacturer" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-trash"></i>  Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-manufacturer", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-manufacturer", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-manufacturer", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })

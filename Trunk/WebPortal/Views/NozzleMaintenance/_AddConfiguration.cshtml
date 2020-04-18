@@ -1,0 +1,65 @@
+﻿@model SprayNozzleConfigurationViewModel
+@using WebPortal.Models
+
+<form asp-action="AddConfiguration" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Configuration" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="Config.Name" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="Config.Name" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleAId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleAId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleBId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleBId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleCId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleCId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleDId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleDId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleEId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleEId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.NozzleFId" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Config.NozzleFId" asp-items="@Model.AllSprayNozzles" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

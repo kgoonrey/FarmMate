@@ -17,6 +17,10 @@ namespace WebPortal.Models
         public DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public DbSet<UserEmployeeAccess> UserEmployeeAccess { get; set; }
         public DbSet<PublicHolidays> PublicHolidays { get; set; }
+        public DbSet<SprayNozzles> SprayNozzles { get; set; }
+        public DbSet<Manufacturers> Manufacturers { get; set; }
+        public DbSet<SprayNozzleConfiguration> SprayNozzleConfiguration { get; set; }
+        public DbSet<ProductTypes> ProductTypes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,6 +35,15 @@ namespace WebPortal.Models
         {
             modelBuilder.Entity<PublicHolidays>()
                 .HasKey(c => new { c.Date, c.Region });
+
+            modelBuilder.Entity<SprayNozzles>(entity =>
+            {
+                entity.HasOne(d => d.ManufacturerTarget)
+                    .WithMany(p => p.SprayNozzles)
+                    .HasForeignKey(d => d.Manufacturer)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SprayNozzles_Manufacturers");
+            });
         }
     }
 }

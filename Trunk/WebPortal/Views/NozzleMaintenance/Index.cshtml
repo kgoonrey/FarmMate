@@ -1,0 +1,133 @@
+﻿@model Tuple<List<SprayNozzles>, List<SprayNozzleConfigurationViewModel>, int>
+@using WebPortal.Models
+@using WebPortal.Code
+
+@{
+    ViewBag.Title = "Nozzle Maintenance";
+}
+
+<h1>Nozzle - Maintenance</h1>
+<br />
+
+<div id="tabstrip">
+    <ul>
+        <li class="k-state-active">
+            Nozzles
+        </li>
+        <li>
+            Configurations
+        </li>
+    </ul>
+    <div>
+        <div class="panel-body">
+            <div class="btn-group">
+                <a id="createAddNozzleModal" data-toggle="modal" asp-action="AddNozzle" data-target="#modal-action-add-nozzle" class="btn btn-primary">
+                    <i class="glyphicon glyphicon-plus"></i>  Add Nozzle
+                </a>
+            </div>
+            <p></p>
+            <div class="top-buffer"></div>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Manufacturer</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Item1)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.ManufacturerTarget.Description</td>
+                            <td>
+                                <a id="editNozzleModal" data-toggle="modal" asp-action="EditNozzle" asp-route-id="@item.Id" data-target="#modal-action-edit-nozzle" class="btn btn-info">
+                                    <i class="glyphicon glyphicon-pencil"></i>  Edit
+                                </a>
+                                <a id="deleteNozzleModal" data-toggle="modal" asp-action="DeleteNozzle" asp-route-id="@item.Id" data-target="#modal-action-delete-nozzle" class="btn btn-danger">
+                                    <i class="glyphicon glyphicon-trash"></i>  Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div>
+        <div class="panel-body">
+            <div class="btn-group">
+                <a id="createAddConfigurationModal" data-toggle="modal" asp-action="AddConfiguration" data-target="#modal-action-add-configuration" class="btn btn-primary">
+                    <i class="glyphicon glyphicon-plus"></i>  Add Configuration
+                </a>
+            </div>
+            <p></p>
+            <div class="top-buffer"></div>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Nozzle A</th>
+                        <th>Nozzle B</th>
+                        <th>Nozzle C</th>
+                        <th>Nozzle D</th>
+                        <th>Nozzle E</th>
+                        <th>Nozzle F</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Item2)
+                    {
+                        <tr>
+                            <td>@item.Config.Name</td>
+                            <td>@item.NozzleA</td>
+                            <td>@item.NozzleB</td>
+                            <td>@item.NozzleC</td>
+                            <td>@item.NozzleD</td>
+                            <td>@item.NozzleE</td>
+                            <td>@item.NozzleF</td>
+                            <td>
+                                <a id="editConfigurationModal" data-toggle="modal" asp-action="EditConfiguration" asp-route-id="@item.Config.Id" data-target="#modal-action-edit-configuration" class="btn btn-info">
+                                    <i class="glyphicon glyphicon-pencil"></i>  Edit
+                                </a>
+                                <a id="deleteConfigurationModal" data-toggle="modal" asp-action="DeleteConfiguration" asp-route-id="@item.Config.Id" data-target="#modal-action-delete-configuration" class="btn btn-danger">
+                                    <i class="glyphicon glyphicon-trash"></i>  Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-nozzle", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-nozzle", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-nozzle", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-configuration", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-configuration", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-configuration", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#tabstrip").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+        });
+
+        $(window).load(function () {
+            $("#tabstrip").data("kendoTabStrip").select(@Model.Item3);
+        });
+
+    </script>
+
+}
