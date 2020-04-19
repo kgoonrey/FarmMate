@@ -1,0 +1,57 @@
+﻿@model Tuple<Products, List<ProductMixLines>>
+@using WebPortal.Models
+@using WebPortal.Code
+
+@{
+    ViewBag.Title = "Product Mix";
+}
+
+<h1>Product Mix - @Model.Item1.Name</h1>
+<br />
+
+<div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <a id="createAddProductMixModal" data-toggle="modal" asp-action="Index" class="btn btn-danger" style="margin-right:5px">
+                <i></i>  Back
+            </a>
+            <a id="createAddProductMixModal" data-toggle="modal" asp-action="AddProductMix" asp-route-id="@Model.Item1.Code" data-target="#modal-action-add-product-mix" class="btn btn-primary">
+                <i class="glyphicon glyphicon-plus"></i>  Add Product
+            </a>
+        </div>
+        <p></p>
+        <div class="top-buffer"></div>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Application Rate</th>
+                    <th>Rate UOM</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Item2)
+                {
+                    <tr>
+                        <td>@item.ProductTarget.Name</td>
+                        <td>@item.ApplicationRate</td>
+                        <td>@item.RateUOMString</td>
+                        <td>
+                            <a id="editProductMixModal" data-toggle="modal" asp-action="EditProductMix" asp-route-id="@item.Id" data-target="#modal-action-edit-product-mix" class="btn btn-info">
+                                <i class="glyphicon glyphicon-pencil"></i>  Edit
+                            </a>
+                            <a id="deleteProductMixModal" data-toggle="modal" asp-action="DeleteProductMix" asp-route-id="@item.Id" data-target="#modal-action-delete-product-mix" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-trash"></i>  Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-product-mix", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-product-mix", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-product-mix", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })

@@ -1,0 +1,132 @@
+﻿@model List<Products>
+@using WebPortal.Models
+@using WebPortal.Code
+
+@{
+    ViewBag.Title = "Product Maintenance";
+}
+
+<h1>Product - Maintenance</h1>
+<br />
+
+<div>
+    <div class="panel-body">
+        <div class="btn-group">
+            <a id="createAddProductModal" data-toggle="modal" asp-action="AddProduct" data-target="#modal-action-add-product" class="btn btn-primary">
+                <i class="glyphicon glyphicon-plus"></i>  Add Product
+            </a>
+        </div>
+        <p></p>
+        <div class="col-lg-3">
+            <input id="uiFilter" type="checkbox" class="k-checkbox" onchange = "uiFilterChecked(this)">
+            <label for="uiFilter" class="k-checkbox-label">Filter</label>
+        </div>
+        <br />
+        <br />
+        <div class="top-buffer"></div>
+        <table id="grid" class="table table-bordered table-striped table-condensed">
+            <colgroup>
+                <col class="110px" />
+                <col class="110px" />
+                <col class="110px" />
+                <col class="110px" />
+                <col class="110px" />
+                <col class="110px" />
+                <col class="110px" />
+                <col style="width:90px" />
+                <col style="width:90px" />
+                <col style="width:110px" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Constituents</th>
+                    <th>APVMA No</th>
+                    <th>Type</th>
+                    <th>ERA Product</th>
+                    <th>Tank Size</th>
+                    <th>Edit</th>
+                    <th>Mix</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Code</td>
+                        <td>@item.Name</td>
+                        <td>@item.ActiveConstituents</td>
+                        <td>@item.APVMANumber</td>
+                        <td>@item.TypeTarget.Description</td>
+                        <td>@item.ERAProduct</td>
+                        <td>@item.TankSize</td>
+                        <td>
+                            <a id="editProductModal" data-toggle="modal" asp-action="EditProduct" asp-route-id="@item.Code" data-target="#modal-action-edit-product" class="btn btn-info">
+                                <i class="glyphicon glyphicon-pencil"></i>  Edit
+                            </a>
+                        </td>
+                        <td>
+                            <a id="mixProductModal" data-toggle="modal" asp-action="MixProduct" asp-route-id="@item.Code" class="btn btn-success">
+                                <i class="glyphicon glyphicon-star"></i>  Mix
+                            </a>
+                        </td>
+                        <td>
+                            <a id="deleteProductModal" data-toggle="modal" asp-action="DeleteProduct" asp-route-id="@item.Code" data-target="#modal-action-delete-product" class="btn btn-danger">
+                                <i class="glyphicon glyphicon-trash"></i>  Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-product", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-product", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-product", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+
+@section scripts{
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.default.mobile.min.css" />
+    <script src="~/lib/kendo-ui-core/js/jquery.min.js"></script>
+    <script src="~/lib/kendo-ui-core/js/kendo.all.min.js"></script>
+
+    <style>
+        .k-autocomplete.k-state-default .k-input, .k-combobox .k-state-default .k-input, .k-multiselect-wrap, .k-numeric-wrap.k-state-default .k-input, .k-picker-wrap.k-state-default .k-input, .k-progress-status-wrap, .k-slider-selection, .k-slider-track {
+            width: 100%;
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#grid").kendoGrid({
+                sortable: true,
+                filterable: {
+                    mode: "none"
+                },
+                pageable: true,
+            });
+        });
+
+        function uiFilterChecked(element) {
+            var filter = "none";
+            if (element.checked)
+                filter = "row";
+            
+            $("#grid").data("kendoGrid").setOptions({
+                sortable: true,
+                filterable: {
+                    mode: filter
+                },
+                pageable: true,
+            });
+        }
+
+    </script>
+
+}

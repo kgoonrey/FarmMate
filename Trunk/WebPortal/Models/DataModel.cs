@@ -21,6 +21,8 @@ namespace WebPortal.Models
         public DbSet<Manufacturers> Manufacturers { get; set; }
         public DbSet<SprayNozzleConfiguration> SprayNozzleConfiguration { get; set; }
         public DbSet<ProductTypes> ProductTypes { get; set; }
+        public DbSet<Products> Products { get; set; }
+        public DbSet<ProductMixLines> ProductMixLines { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,6 +45,30 @@ namespace WebPortal.Models
                     .HasForeignKey(d => d.Manufacturer)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SprayNozzles_Manufacturers");
+            });
+
+            modelBuilder.Entity<Products>(entity =>
+            {
+                entity.HasOne(d => d.TypeTarget)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.Type)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Products_ProductTypes");
+            });
+
+            modelBuilder.Entity<ProductMixLines>(entity =>
+            {
+                entity.HasOne(d => d.HeaderProductTarget)
+                    .WithMany(p => p.ProductMixHeaderLines)
+                    .HasForeignKey(d => d.HeaderProduct)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductMixLinesHeader_Products");
+
+                entity.HasOne(d => d.ProductTarget)
+                    .WithMany(p => p.ProductMixLines)
+                    .HasForeignKey(d => d.Product)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ProductMixLines_Products");
             });
         }
     }

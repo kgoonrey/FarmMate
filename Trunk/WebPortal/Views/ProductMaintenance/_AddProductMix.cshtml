@@ -1,0 +1,35 @@
+﻿@model ProductMixLinesViewModel
+@using WebPortal.Models
+
+<form asp-action="AddProductMix" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Product" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <input asp-for="HeaderProduct" style="visibility:hidden" />
+            <div class="form-group">
+                <label asp-for="Product" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Product" asp-items="@Model.AllProducts" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                    <p style="margin-top:5px"><a href="../ProductMaintenance">New Product</a></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApplicationRate" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="ApplicationRate" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="RateUOM" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="RateUOM" asp-items="@Model.RateUOMOption" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

@@ -1,0 +1,50 @@
+﻿@model ProductViewModel
+@using WebPortal.Models
+
+<form asp-action="EditProduct" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Edit Product" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="Name" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="Name" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ActiveConstituents" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="ActiveConstituents" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="APVMANumber" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="APVMANumber" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="TankSize" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <input asp-for="TankSize" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="Type" asp-items="@Model.AllTypes" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                    <p style="margin-top:5px"><a href="../ProductTypeMaintenance">New Type</a></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3 col-lg-offset-3">
+                    <input asp-for="ERAProduct" type="checkbox" class="k-checkbox">
+                    <label asp-for="ERAProduct" class="k-checkbox-label">ERA Product</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>

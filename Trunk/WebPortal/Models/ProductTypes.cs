@@ -8,8 +8,15 @@ namespace WebPortal.Models
 {
     public class ProductTypes
     {
+        public ProductTypes()
+        {
+            Products = new HashSet<Products>();
+        }
+
         [Key]
         public string Code { get; set; }
         public string Description { get; set; }
+
+        public virtual ICollection<Products> Products { get; set; }
     }
 }

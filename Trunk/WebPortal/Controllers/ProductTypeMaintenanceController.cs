@@ -33,7 +33,7 @@ namespace WebPortal.Controllers
         public IActionResult AddProductType(ProductTypes model)
         {
             if (model.Code == null || model.Code == string.Empty)
-                ModelState.AddModelError(string.Empty, "Name missing");
+                ModelState.AddModelError(string.Empty, "Code missing");
 
             if (model.Description == null || model.Description == string.Empty)
                 ModelState.AddModelError(string.Empty, "Description missing");
