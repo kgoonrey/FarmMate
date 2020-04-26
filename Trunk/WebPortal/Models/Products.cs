@@ -12,6 +12,7 @@ namespace WebPortal.Models
         {
             ProductMixHeaderLines = new HashSet<ProductMixLines>();
             ProductMixLines = new HashSet<ProductMixLines>();
+            PesticideApplicationLines = new HashSet<PesticideApplicationLines>();
         }
 
         [Key]
@@ -26,5 +27,6 @@ namespace WebPortal.Models
         public virtual ProductTypes TypeTarget { get; set; }
         public virtual ICollection<ProductMixLines> ProductMixHeaderLines { get; set; }
         public virtual ICollection<ProductMixLines> ProductMixLines { get; set; }
+        public virtual ICollection<PesticideApplicationLines> PesticideApplicationLines { get; set; }
     }
 }

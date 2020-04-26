@@ -186,8 +186,8 @@ namespace WebPortal.Controllers
                 row.RateUOMString = EnumConversion(row.RateUOM);
             }
 
-            var newTurple = Tuple.Create(parentProduct, productMixLines);
-            return View("Mix", newTurple);
+            var newTuple = Tuple.Create(parentProduct, productMixLines);
+            return View("Mix", newTuple);
         }
 
         private string EnumConversion(ProductMixLinesRateUOMEnum value)

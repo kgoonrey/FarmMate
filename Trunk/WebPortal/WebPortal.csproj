@@ -105,4 +105,10 @@
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Views\Spraying\Images\TractorIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

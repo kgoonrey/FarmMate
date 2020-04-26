@@ -23,6 +23,9 @@ namespace WebPortal.Models
         public DbSet<ProductTypes> ProductTypes { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<ProductMixLines> ProductMixLines { get; set; }
+        public DbSet<PesticideApplicationHeader> PesticideApplicationHeader { get; set; }
+        public DbSet<PesticideApplicationLines> PesticideApplicationLines { get; set; }
+        public DbSet<PesticideApplicationSprayTimes> PesticideApplicationSprayTimes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -69,6 +72,30 @@ namespace WebPortal.Models
                     .HasForeignKey(d => d.Product)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ProductMixLines_Products");
+            });
+
+            modelBuilder.Entity<PesticideApplicationLines>(entity =>
+            {
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.Lines)
+                    .HasForeignKey(d => d.HeaderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PesticideApplicationLines_PesticideApplicationHeader");
+
+                entity.HasOne(d => d.ProductTarget)
+                   .WithMany(p => p.PesticideApplicationLines)
+                   .HasForeignKey(d => d.Product)
+                   .OnDelete(DeleteBehavior.ClientSetNull)
+                   .HasConstraintName("FK_PesticideApplicationLines_Products");
+            });
+
+            modelBuilder.Entity<PesticideApplicationSprayTimes>(entity =>
+            {
+                entity.HasOne(d => d.Header)
+                    .WithMany(p => p.Times)
+                    .HasForeignKey(d => d.HeaderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PesticideApplicationSprayTimes_PesticideApplicationHeader");
             });
         }
     }
