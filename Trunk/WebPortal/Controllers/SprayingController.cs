@@ -45,11 +45,11 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PesticideApplication()
+        public async Task<IActionResult> PesticideApplication(PesticideApplicationHeader header)
         {
-            var header = new PesticideApplicationHeader();
             await PopulateViewBag();
-            return View(header);
+            header.DateApplied = DateTime.Today;
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), 0, string.Empty));
         }
 
         private async Task PopulateViewBag()
@@ -77,12 +77,26 @@ namespace WebPortal.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddLine(PesticideApplicationHeader header)
+        public IActionResult Submit([Bind(Prefix = "Item1")] PesticideApplicationHeader header, [Bind(Prefix = "Item2")] string lineJson, [Bind(Prefix = "Item4")] string type)
         {
-            //TODO: Not working for multiple products
-            var model = new PesticideApplicationLines();
-            model.Header = header;
-            model.HeaderJson = JsonConvert.SerializeObject(header);
+            if (type == "Add")
+                return AddLine(header, lineJson);
+            if (type.StartsWith("Edit"))
+                return EditLine(int.Parse(type.Split(":")[1]), header, lineJson);
+            if (type.StartsWith("Delete"))
+                return DeleteLine(int.Parse(type.Split(":")[1]), header, lineJson);
+
+            return PesticideApplication(header).Result;
+        }
+
+        [HttpGet]
+        public IActionResult AddLine(PesticideApplicationHeader header, string lineJson)
+        {
+            header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
+
+            var line = new PesticideApplicationLines();
+            line.Id = header.Lines.Any() ? header.Lines.Max(x => x.Id) + 1 : 0; 
+            line.HeaderJson = JsonConvert.SerializeObject(header);
 
             using (var context = new DataModel())
             {
@@ -94,35 +108,33 @@ namespace WebPortal.Controllers
                 ViewBag.Products = productList;
             }
 
-            return PartialView("_AddLine", model);
+            return PartialView("_AddLine", line);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddLineContinue(PesticideApplicationLines model)
         {
             await PopulateViewBag();
-            model.Header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
+            var header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
 
-            if (model.Header.Lines == null)
-                model.Header.Lines = new List<PesticideApplicationLines>();
-
-            model.Header.Lines.Add(model);
+            model.Header = null;
+            header.Lines.Add(model);
 
             using (var context = new DataModel())
             {
-                foreach(var line in model.Header.Lines)
+                foreach (var line in header.Lines)
                 {
                     line.ProductTarget = context.Products.FirstOrDefault(x => x.Code == line.Product);
                 }
 
                 var user = await _userManager.GetUserAsync(HttpContext.User);
                 var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
-                var employees = context.Employees.Where(x => x.Active && x.TradingEntity == model.Header.TradingEntity && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
+                var employees = context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
                 var roles = context.AspNetRoles.FirstOrDefault(x => x.Name == "Admin");
                 var adminUserList = context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToList();
 
                 if (adminUserList.FirstOrDefault(x => x.UserId == user.Id) != null)
-                    employees = await context.Employees.Where(x => x.Active && x.TradingEntity == model.Header.TradingEntity).ToListAsync();
+                    employees = await context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity).ToListAsync();
 
                 var employeesList = employees.Select(a => new SelectListItem
                 {
@@ -133,71 +145,118 @@ namespace WebPortal.Controllers
                 ViewBag.Employees = employeesList;
             }
 
-            return View("PesticideApplication", model.Header);
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), 2, string.Empty));
         }
 
         [HttpGet]
-        public IActionResult EditLine(string id)
+        public IActionResult EditLine(int id, [Bind(Prefix = "Item1")] PesticideApplicationHeader header, [Bind(Prefix = "Item2")] string lineJson)
         {
-            Manufacturers model = null;
-            using (var context = new DataModel())
-            {
-                model = context.Manufacturers.FirstOrDefault(x => x.Code == id);
-            }
-            return PartialView("_EditManufacturer", model);
-        }
+            header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
 
-        [HttpPost]
-        public IActionResult EditLine(string id, Manufacturers model)
-        {
-            if (model.Description == null || model.Description == string.Empty)
-                return RedirectToAction("Index");
+            var line = header.Lines.FirstOrDefault(x => x.Id == id);
+            line.HeaderJson = JsonConvert.SerializeObject(header);
 
             using (var context = new DataModel())
             {
-                var manufacturer = context.Manufacturers.FirstOrDefault(x => x.Code == id);
-                if (manufacturer == null)
-                    return RedirectToAction("Index");
-
-                manufacturer.Description = model.Description;
-                context.Update(manufacturer);
-                context.SaveChanges();
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public IActionResult DeleteLine(string id)
-        {
-            string description = string.Empty;
-            using (var context = new DataModel())
-            {
-                var manufacturer = context.Manufacturers.FirstOrDefault(x => x.Code == id);
-                if (manufacturer == null)
-                    return RedirectToAction("Index");
-
-                description = manufacturer.Description;
-            }
-            return PartialView("_DeleteManufacturer", description);
-        }
-
-        [HttpPost]
-        public IActionResult DeleteLine(string id, Manufacturers model)
-        {
-            if (ModelState.IsValid)
-            {
-                using (var context = new DataModel())
+                var productList = context.Products.Select(a => new SelectListItem
                 {
-                    var manufacturer = context.Manufacturers.FirstOrDefault(x => x.Code == id);
-                    if (manufacturer == null)
-                        return RedirectToAction("Index");
-
-                    context.Manufacturers.Remove(manufacturer);
-                    context.SaveChanges();
-                }
+                    Value = a.Code,
+                    Text = a.Name
+                }).ToList();
+                ViewBag.Products = productList;
             }
-            return RedirectToAction("Index");
+
+            return PartialView("_EditLine", line);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditLineContinue(PesticideApplicationLines model)
+        {
+            await PopulateViewBag();
+            var header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
+
+            model.Header = null;
+            var line = header.Lines.FirstOrDefault(x => x.Id == model.Id);
+
+            line.Product = model.Product;
+            line.Quantity = model.Quantity;
+
+            using (var context = new DataModel())
+            {
+                foreach (var row in header.Lines)
+                {
+                    row.ProductTarget = context.Products.FirstOrDefault(x => x.Code == row.Product);
+                }
+
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
+                var employees = context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
+                var roles = context.AspNetRoles.FirstOrDefault(x => x.Name == "Admin");
+                var adminUserList = context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToList();
+
+                if (adminUserList.FirstOrDefault(x => x.UserId == user.Id) != null)
+                    employees = await context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity).ToListAsync();
+
+                var employeesList = employees.Select(a => new SelectListItem
+                {
+                    Value = a.Id.ToString(),
+                    Text = $"{a.FirstName} {a.LastName}"
+                }).ToList();
+
+                ViewBag.Employees = employeesList;
+            }
+
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), 2, string.Empty));
+        }
+
+        [HttpGet]
+        public IActionResult DeleteLine(int id, [Bind(Prefix = "Item1")] PesticideApplicationHeader header, [Bind(Prefix = "Item2")] string lineJson)
+        {
+            header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
+
+            var line = header.Lines.FirstOrDefault(x => x.Id == id);
+            line.HeaderJson = JsonConvert.SerializeObject(header);
+
+            return PartialView("_DeleteLine", line);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteLineContinue(PesticideApplicationLines model)
+        {
+            await PopulateViewBag();
+            var header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
+
+            model.Header = null;
+            var line = header.Lines.FirstOrDefault(x => x.Id == model.Id);
+
+            header.Lines.Remove(line);
+
+            using (var context = new DataModel())
+            {
+                foreach (var row in header.Lines)
+                {
+                    row.ProductTarget = context.Products.FirstOrDefault(x => x.Code == row.Product);
+                }
+
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
+                var employees = context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToList();
+                var roles = context.AspNetRoles.FirstOrDefault(x => x.Name == "Admin");
+                var adminUserList = context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToList();
+
+                if (adminUserList.FirstOrDefault(x => x.UserId == user.Id) != null)
+                    employees = await context.Employees.Where(x => x.Active && x.TradingEntity == header.TradingEntity).ToListAsync();
+
+                var employeesList = employees.Select(a => new SelectListItem
+                {
+                    Value = a.Id.ToString(),
+                    Text = $"{a.FirstName} {a.LastName}"
+                }).ToList();
+
+                ViewBag.Employees = employeesList;
+            }
+
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), 2, string.Empty));
         }
     }
 }

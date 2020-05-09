@@ -1,9 +1,9 @@
 ﻿@model PesticideApplicationLines
 @using WebPortal.Models
 
-<form asp-action="AddLineContinue" role="form">
+<form asp-action="EditLineContinue" role="form">
     <div class="modal-content modal-dialog modal-md">
-        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Product" })
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Edit Product" })
         <div class="modal-body form-horizontal">
             <div class="row">
                 @Html.HiddenFor(x => x.HeaderJson)

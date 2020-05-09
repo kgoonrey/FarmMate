@@ -1,0 +1,14 @@
+﻿@model PesticideApplicationLines
+@using WebPortal.Models
+
+<form asp-action="DeleteLineContinue" role="form">
+    <div class="modal-content modal-dialog modal-md">
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Delete Product" })
+        @Html.HiddenFor(x => x.HeaderJson)
+        @Html.HiddenFor(x => x.Id)
+        <div class="modal-body form-horizontal">
+            Are you want to delete @Model.ProductTarget.Name?
+        </div>
+        @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Delete" })
+    </div>
+</form>
