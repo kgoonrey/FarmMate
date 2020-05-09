@@ -1,4 +1,4 @@
-﻿@model Tuple<PesticideApplicationHeader, string, int, string>
+﻿@model Tuple<PesticideApplicationHeader, string, string, int, string>
 @using WebPortal.Models
 @using WebPortal.Code
 
@@ -8,8 +8,9 @@
 
 <form id="uiForm" method="post" name="uiForm">
     @Html.HiddenFor(x => x.Item2)
+    @Html.HiddenFor(x => x.Item3)
 
-    <input id="uiSubmitType" asp-for="Item4" style="visibility:collapse" />
+    <input id="uiSubmitType" asp-for="Item5" style="visibility:collapse" />
 
     <h1>Pesticide Application</h1>
     <br />
@@ -235,7 +236,7 @@
 
             <div class="panel-body">
                 <div class="btn-group">
-                    <a id="createAddLineModal" class="btn btn-primary" onclick="addLine()">
+                    <a id="createAddTimeModal" class="btn btn-primary" onclick="addTime()" data-toggle="modal" data-target="#modal-action-add-time">
                         <i class="glyphicon glyphicon-plus"></i>  Add Time
                     </a>
                 </div>
@@ -246,24 +247,24 @@
                         <tr>
                             <th>Start</th>
                             <th>Stop</th>
-                            <th>Speed</th>
-                            <th>Direction</th>
+                            <th>Wind Speed</th>
+                            <th>Wind Direction</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in @Model.Item1.Lines)
+                        @foreach (var item in @Model.Item1.Times)
                         {
                             <tr>
-                                <td>@item.ProductTarget.Name</td>
-                                <td>@item.ApplicationRate</td>
-                                <td>@item.Quantity</td>
-                                <td>@item.Quantity</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>@item.StartWindSpeed</td>
+                                <td>@item.StartWindDirection</td>
                                 <td>
-                                    <a id="editLineModal" data-toggle="modal" asp-action="EditLine" asp-route-id="@item.Id" data-target="#modal-action-edit-line" class="btn btn-info">
+                                    <a id="editTimeModal" data-toggle="modal" onclick="editTime(@item.Id)" data-target="#modal-action-edit-time" class="btn btn-info">
                                         <i class="glyphicon glyphicon-pencil"></i>  Edit
                                     </a>
-                                    <a id="deleteLineModal" data-toggle="modal" asp-action="DeleteLine" asp-route-id="@item.Id" data-target="#modal-action-delete-line" class="btn btn-danger">
+                                    <a id="deleteTimeModal" data-toggle="modal" onclick="deleteTime(@item.Id)" data-target="#modal-action-delete-time" class="btn btn-danger">
                                         <i class="glyphicon glyphicon-trash"></i>  Delete
                                     </a>
                                 </td>
@@ -295,6 +296,10 @@
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-time", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-time", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-time", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 
 @section scripts{
     <script>
@@ -346,23 +351,53 @@
                 var formData = $(this).serialize();
                 formData += "&Item1.Employee=" + $("#employee").data("kendoDropDownList").value();
 
-                console.log(formData);
                 $.post('/Spraying/Submit', formData, function (response) {
-                    if (document.getElementById("uiSubmitType").value == "Add") {
+                    if (document.getElementById("uiSubmitType").value == "LineAdd") {
                         $("#modal-action-add-line").html(response);
                     }
-                    else if (document.getElementById("uiSubmitType").value.startsWith("Edit")) {
+                    else if (document.getElementById("uiSubmitType").value.startsWith("LineEdit")) {
                         $("#modal-action-edit-line").html(response);
                     }
-                    else {
+                    else if (document.getElementById("uiSubmitType").value.startsWith("LineDelete")) {
                         $("#modal-action-delete-line").html(response);
+                    }
+                    else if (document.getElementById("uiSubmitType").value.startsWith("TimeAdd")) {
+                        $("#modal-action-add-time").html(response);
+
+                        $("#uiStartTime").kendoTimePicker({
+                            interval: 15,
+                            format: "h:mm tt",
+                            parseFormats: ["HH:mm"],
+                            value: "7:00 am"
+                        });
+
+                        $("#uiEndTime").kendoTimePicker({
+                            interval: 15,
+                            format: "h:mm tt",
+                            parseFormats: ["HH:mm"],
+                            value: "5:00 pm"
+                        });
+
+                        $("#uiStartTime").bind("focus", function () {
+                            $(this).data("kendoTimePicker").open();
+                        });
+
+                        $("#uiEndTime").bind("focus", function () {
+                            $(this).data("kendoTimePicker").open();
+                        });
+
+                        $("#uiStartTime").attr("readonly", "readonly");
+                        $("#uiEndTime").attr("readonly", "readonly");
+                    }
+                    else if (document.getElementById("uiSubmitType").value.startsWith("TimeDelete")) {
+                        $("#modal-action-delete-time").html(response);
                     }
                 });
             });
         });
 
         $(window).load(function () {
-            $("#tabstrip").data("kendoTabStrip").select(@Model.Item3);
+            $("#tabstrip").data("kendoTabStrip").select(@Model.Item4);
         });
 
         function ImageClick(checkbox) {
@@ -426,17 +461,33 @@
 
         function addLine() {
 
-            document.getElementById("uiSubmitType").value = "Add";
+            document.getElementById("uiSubmitType").value = "LineAdd";
             $("#uiForm").submit();
         }
 
         function editLine(id) {
-            document.getElementById("uiSubmitType").value = "Edit:" + id;
+            document.getElementById("uiSubmitType").value = "LineEdit:" + id;
             $("#uiForm").submit();
         }
 
         function deleteLine(id) {
-            document.getElementById("uiSubmitType").value = "Delete:" + id;
+            document.getElementById("uiSubmitType").value = "LineDelete:" + id;
+            $("#uiForm").submit();
+        }
+
+        function addTime() {
+
+            document.getElementById("uiSubmitType").value = "TimeAdd";
+            $("#uiForm").submit();
+        }
+
+        function editTime(id) {
+            document.getElementById("uiSubmitType").value = "TimeEdit:" + id;
+            $("#uiForm").submit();
+        }
+
+        function deleteTime(id) {
+            document.getElementById("uiSubmitType").value = "TimeDelete:" + id;
             $("#uiForm").submit();
         }
 

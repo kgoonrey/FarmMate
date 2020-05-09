@@ -35,5 +35,8 @@ namespace WebPortal.Models
         public decimal EndHumidity { get; set; }
 
         public virtual PesticideApplicationHeader Header { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string HeaderJson { get; set; }
     }
 }

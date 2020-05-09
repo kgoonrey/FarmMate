@@ -1,0 +1,27 @@
+﻿@model PesticideApplicationSprayTimes
+@using WebPortal.Models
+
+<form asp-action="AddTimeContinue" role="form">
+    <div class="modal-content modal-dialog modal-md">
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Time" })
+        <div class="modal-body form-horizontal">
+            <div class="row">
+                @Html.HiddenFor(x => x.HeaderJson)
+                @Html.HiddenFor(x => x.Id)
+                <div class="form-group">
+                    <label asp-for="StartTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input id="uiStartTime" asp-for="StartTime" class="form-control" style="width:100%;" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndTime" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input id="uiEndTime" asp-for="EndTime" class="form-control" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+    </div>
+</form>

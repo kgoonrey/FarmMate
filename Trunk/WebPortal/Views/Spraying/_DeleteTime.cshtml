@@ -1,0 +1,14 @@
+﻿@model PesticideApplicationSprayTimes
+@using WebPortal.Models
+
+<form asp-action="DeleteTimeContinue" role="form">
+    <div class="modal-content modal-dialog modal-md">
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Delete Time" })
+        @Html.HiddenFor(x => x.HeaderJson)
+        @Html.HiddenFor(x => x.Id)
+        <div class="modal-body form-horizontal">
+            Are you want to delete?
+        </div>
+        @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Delete" })
+    </div>
+</form>
