@@ -7,6 +7,11 @@ namespace WebPortal.Models
 {
     public class TradingEntity
     {
+        public TradingEntity()
+        {
+            PesticideApplications = new HashSet<PesticideApplicationHeader>();
+        }
+
         public int Id { get; set; }
         public string Description { get; set; }
         public string SMTPHost { get; set; }
@@ -15,5 +20,7 @@ namespace WebPortal.Models
         public string SMTPEmailAddress { get; set; }
         public string SMTPPassword { get; set; }
         public string PayablesEmailAddress { get; set; }
+
+        public virtual ICollection<PesticideApplicationHeader> PesticideApplications { get; set; }
     }
 }

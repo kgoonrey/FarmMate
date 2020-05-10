@@ -7,6 +7,11 @@ namespace WebPortal.Models
 {
     public class Employees
     {
+        public Employees()
+        {
+            PesticideApplications = new HashSet<PesticideApplicationHeader>();
+        }
+
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -22,5 +27,7 @@ namespace WebPortal.Models
         public string Name { get; set; }
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string TradingEntityDescription { get; set; }
+
+        public virtual ICollection<PesticideApplicationHeader> PesticideApplications { get; set; }
     }
 }

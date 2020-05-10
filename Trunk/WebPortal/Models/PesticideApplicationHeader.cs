@@ -70,7 +70,10 @@ namespace WebPortal.Models
         public bool AuthorisationRequired { get; set; }
         public int AuthorisationEmployee { get; set; }
         public byte[] AuthorisationEmployeeSignature { get; set; }
+        public string Notes { get; set; }
 
+        public virtual TradingEntity TradingEntityTarget { get; set; }
+        public virtual Employees EmployeeTarget { get; set; }
         public virtual ICollection<PesticideApplicationLines> Lines { get; set; }
         public virtual ICollection<PesticideApplicationSprayTimes> Times { get; set; }
     }

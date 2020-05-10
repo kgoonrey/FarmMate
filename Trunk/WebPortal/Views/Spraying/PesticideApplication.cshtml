@@ -9,6 +9,7 @@
 <form id="uiForm" method="post" name="uiForm">
     @Html.HiddenFor(x => x.Item2)
     @Html.HiddenFor(x => x.Item3)
+    @Html.HiddenFor(x => x.Item1.Id)
 
     <input id="uiSubmitType" asp-for="Item5" style="visibility:collapse" />
 
@@ -216,7 +217,7 @@
             @using (Html.BeginForm())
             {
                 <div class="form-group">
-                    @Html.DropDownListFor(model => model.Item1.NozzleConfiguration, (IEnumerable<SelectListItem>)ViewBag.TradingEntitys, "Select Config...", new { @class = "form-control", Id = "uiNozzleConfiguration", style = "width: 100%;" })
+                    @Html.DropDownListFor(model => model.Item1.NozzleConfiguration, (IEnumerable<SelectListItem>)ViewBag.NozzleConfigurations, "Select Config...", new { @class = "form-control", Id = "uiNozzleConfiguration", style = "width: 100%;" })
                 </div>
             }
 
@@ -232,7 +233,6 @@
             <div class="form-group">
                 <input id="uiCloudCoverPercentage" asp-for="Item1.CloudCoverPercentage" style="width:100%" />
             </div>
-
 
             <div class="panel-body">
                 <div class="btn-group">
@@ -256,9 +256,9 @@
                         @foreach (var item in @Model.Item1.Times)
                         {
                             <tr>
-                                <td>@item.StartTime</td>
-                                <td>@item.EndTime</td>
-                                <td>@item.StartWindSpeed</td>
+                                <td>@item.StartTime.ToShortTimeString()</td>
+                                <td>@item.EndTime.ToShortTimeString()</td>
+                                <td>@item.StartWindSpeed km/h</td>
                                 <td>@item.StartWindDirection</td>
                                 <td>
                                     <a id="editTimeModal" data-toggle="modal" onclick="editTime(@item.Id)" data-target="#modal-action-edit-time" class="btn btn-info">
@@ -276,10 +276,61 @@
 
         </div>
         <div>
-            <label>Four</label>
+            <label for="uiNotes">Notes</label>
+            <div class="form-group">
+                <textarea id="uiNotes" asp-for="Item1.Notes" class="k-textbox" style="width: 100%; min-width: 100%; max-width: 100%; height: 60px; min-height: 60px"></textarea>
+            </div>
+
+            <label for="uiNotes">Spray Type</label>
+            @using (Html.BeginForm())
+            {
+                <div class="form-group">
+                    @Html.DropDownListFor(model => model.Item1.SprayType, (IEnumerable<SelectListItem>)ViewBag.SprayTypes, null, new { @class = "form-control", Id = "uiSprayType", style = "width: 100%;" })
+                </div>
+            }
+
+            <label for="uiFarmId">Other Spray Type</label>
+            <div class="form-group">
+                <input id="uiOtherSprayType" asp-for="Item1.OtherType" class="k-textbox" style="width:100%" />
+            </div>
+
+            <label for="uiSystemOperatingPressure">System Operating Pressure</label>
+            <div class="form-group">
+                <input id="uiSystemOperatingPressure" asp-for="Item1.SystemOperatingPressure" style="width:100%" />
+            </div>
+
+            <label for="uiVehicleGroundSpeed">Vehicle Ground Speed</label>
+            <div class="form-group">
+                <input id="uiVehicleGroundSpeed" asp-for="Item1.VehicleGroundSpeed" style="width:100%" />
+            </div>
+
+            <label for="uiSprayTankVolume">Spray Tank Volume</label>
+            <div class="form-group">
+                <input id="uiSprayTankVolume" asp-for="Item1.SprayTankVolume" style="width:100%" />
+            </div>
+
+            <label for="uiSprayerReleaseHeight">Spray Release Height</label>
+            <div class="form-group">
+                <input id="uiSprayerReleaseHeight" asp-for="Item1.SprayerReleaseHeight" style="width:100%" />
+            </div>
+
+            <label for="uiSprayerApplicationRate">Sprayer Application Rate</label>
+            <div class="form-group">
+                <input id="uiSprayerApplicationRate" asp-for="Item1.SprayerApplicationRate" style="width:100%" />
+            </div>
+
         </div>
         <div>
-            <label>Five</label>
+            <h3>Please sign below to confirm all information is true and correct to the best of your knowledge.</h3>
+            <div>
+                <div id="surface-container" style="width:50%; margin: 0 auto;">
+                    <div id="surface" style="width: 90%; height: 300px;border: 1px solid black;"></div>
+
+                    <a id="createAddProductMixModal" class="btn btn-danger" style="margin-right:10%; margin-top: 4px; float:right" onclick="ClearSignatureClicked()">
+                        <i class="glyphicon glyphicon-trash"></i>  Clear
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -293,6 +344,12 @@
     </div>
 </form>
 
+<style>
+    .k-loading-image {
+        background-image: url('/images/Loading.gif');
+    }
+</style>
+
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
@@ -301,9 +358,75 @@
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-edit-time", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-time", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
 
+
+
+
 @section scripts{
+
+    <script src="~/lib/kendo-ui-core/js/jquery.min.js"></script>
+    <script src="~/lib/kendo-ui-core/js/kendo.all.min.js"></script>
+
     <script>
+
+        var surface;
+
+        $(window).load(function () {
+            var companyCount = $("#company").data("kendoDropDownList").dataSource.data().length;
+            var employeeCount = $("#employee").data("kendoDropDownList").dataSource.data().length;
+
+            if (companyCount == 2)
+                $("#company").data("kendoDropDownList").select(1);
+
+            if (employeeCount == 2)
+                $("#employee").data("kendoDropDownList").select(1);
+
+            $('.k-input').on('focus', function () {
+                var input = $(this);
+                setTimeout(function () { input.select(); });
+            });
+
+            var geom = kendo.geometry;
+            var Point = geom.Point;
+            var draw = kendo.drawing;
+            var Path = draw.Path;
+            var path;
+
+            surface = draw.Surface.create($("#surface"));
+            $("#surface-container").on("mousemove", function (e) {
+                if (!path) {
+                    return;
+                }
+
+                var offset = $(this).offset();
+                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+                path.lineTo(newPoint);
+            }).on("mousedown", function (e) {
+                path = new Path({
+                    stroke: {
+                        color: '#E4141B',
+                        width: 2,
+                        lineCap: "round",
+                        lineJoin: "round"
+                    }
+                });
+
+                var offset = $(this).offset();
+                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+                for (var i = 0; i < 1; i++) {
+                    path.lineTo(newPoint.clone().translate(i * 1, 0));
+                }
+
+                surface.draw(path);
+            }).on("mouseup", function (e) {
+                path = undefined;
+            });
+
+        });
+
         $(document).ready(function () {
+
             $("#tabstrip").kendoTabStrip({
                 animation: {
                     open: {
@@ -329,9 +452,31 @@
                 suggest: false
             });
 
+            $("#uiSprayType").kendoDropDownList({
+                dataValueField: "value",
+                dataTextField: "text",
+                suggest: false
+            });
+
             $("#uiAreaTreated").kendoNumericTextBox();
 
+            $("#uiSystemOperatingPressure").kendoNumericTextBox();
+            $("#uiSprayerReleaseHeight").kendoNumericTextBox();
+            $("#uiSprayerApplicationRate").kendoNumericTextBox();
+
             $("#uiCloudCoverPercentage").kendoNumericTextBox({
+                format: "0",
+                decimals: 0,
+                min: 0
+            });
+
+            $("#uiVehicleGroundSpeed").kendoNumericTextBox({
+                format: "0",
+                decimals: 0,
+                min: 0
+            });
+
+            $("#uiSprayTankVolume").kendoNumericTextBox({
                 format: "0",
                 decimals: 0,
                 min: 0
@@ -350,6 +495,8 @@
 
                 var formData = $(this).serialize();
                 formData += "&Item1.Employee=" + $("#employee").data("kendoDropDownList").value();
+                formData += "&Item1.NozzleConfiguration=" + $("#uiNozzleConfiguration").data("kendoDropDownList").value();
+                formData += "&Item1.SprayType=" + $("#uiSprayType").data("kendoDropDownList").value();
 
                 $.post('/Spraying/Submit', formData, function (response) {
                     if (document.getElementById("uiSubmitType").value == "LineAdd") {
@@ -361,21 +508,23 @@
                     else if (document.getElementById("uiSubmitType").value.startsWith("LineDelete")) {
                         $("#modal-action-delete-line").html(response);
                     }
-                    else if (document.getElementById("uiSubmitType").value.startsWith("TimeAdd")) {
-                        $("#modal-action-add-time").html(response);
+                    else if (document.getElementById("uiSubmitType").value.startsWith("TimeAdd") || document.getElementById("uiSubmitType").value.startsWith("TimeEdit")) {
+
+                        if (document.getElementById("uiSubmitType").value.startsWith("TimeAdd"))
+                            $("#modal-action-add-time").html(response);
+                        else
+                            $("#modal-action-edit-time").html(response);
 
                         $("#uiStartTime").kendoTimePicker({
                             interval: 15,
                             format: "h:mm tt",
-                            parseFormats: ["HH:mm"],
-                            value: "7:00 am"
+                            parseFormats: ["yyyy-MM-ddTHH:mm"]
                         });
 
                         $("#uiEndTime").kendoTimePicker({
                             interval: 15,
                             format: "h:mm tt",
-                            parseFormats: ["HH:mm"],
-                            value: "5:00 pm"
+                            parseFormats: ["yyyy-MM-ddTHH:mm"]
                         });
 
                         $("#uiStartTime").bind("focus", function () {
@@ -388,10 +537,51 @@
 
                         $("#uiStartTime").attr("readonly", "readonly");
                         $("#uiEndTime").attr("readonly", "readonly");
+
+                        $("#uiStartWindSpeed").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
+
+                        $("#uiEndWindSpeed").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
+
+                        $("#uiStartTemp").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
+
+                        $("#uiEndTemp").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
+
+                        $("#uiStartHumidity").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
+
+                        $("#uiEndHumidity").kendoNumericTextBox({
+                            format: "0",
+                            decimals: 0,
+                            min: 0
+                        });
                     }
                     else if (document.getElementById("uiSubmitType").value.startsWith("TimeDelete")) {
                         $("#modal-action-delete-time").html(response);
                     }
+
+                    $('.k-input').on('focus', function () {
+                        var input = $(this);
+                        setTimeout(function () { input.select(); });
+                    });
                 });
             });
         });
@@ -432,7 +622,7 @@
 
             if (index === 0) {
                 myconfirm("Quit Pesticide Application?", "Quit?").then(function () {
-                    window.location.href = "../Spraying";
+                    window.location.href = "/Spraying";
                 });
 
                 return;
@@ -445,7 +635,16 @@
             var index = $("#tabstrip").data("kendoTabStrip").select().index();
 
             if (index === 5) {
-                //last page check if want to submit
+                myconfirm("Save Changes?", "Save").then(function () {
+                    document.getElementById("uiSubmitType").value = "Saving";
+                    kendo.ui.progress($("#uiForm"), true);
+                    $("#uiForm").submit();
+
+                    setTimeout(function () {
+                        window.location.href = "/Spraying";
+                    }, 2000);
+
+                });
                 return;
             }
 
@@ -460,7 +659,6 @@
         }
 
         function addLine() {
-
             document.getElementById("uiSubmitType").value = "LineAdd";
             $("#uiForm").submit();
         }
@@ -476,7 +674,6 @@
         }
 
         function addTime() {
-
             document.getElementById("uiSubmitType").value = "TimeAdd";
             $("#uiForm").submit();
         }
@@ -489,6 +686,10 @@
         function deleteTime(id) {
             document.getElementById("uiSubmitType").value = "TimeDelete:" + id;
             $("#uiForm").submit();
+        }
+
+        function ClearSignatureClicked() {
+            surface.clear();
         }
 
     </script>

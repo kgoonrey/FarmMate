@@ -97,6 +97,21 @@ namespace WebPortal.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PesticideApplicationSprayTimes_PesticideApplicationHeader");
             });
+
+            modelBuilder.Entity<PesticideApplicationHeader>(entity =>
+            {
+                entity.HasOne(d => d.TradingEntityTarget)
+                    .WithMany(p => p.PesticideApplications)
+                    .HasForeignKey(d => d.TradingEntity)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PesticideApplicationHeader_TradingEntity");
+
+                entity.HasOne(d => d.EmployeeTarget)
+                    .WithMany(p => p.PesticideApplications)
+                    .HasForeignKey(d => d.Employee)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PesticideApplicationHeader_Employees");
+            });
         }
     }
 }

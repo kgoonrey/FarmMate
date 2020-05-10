@@ -1,4 +1,7 @@
-﻿@model TradingEntity
+﻿@model List<PesticideApplicationHeader>
+@using WebPortal.Models
+@using WebPortal.Code
+
 @{
     ViewBag.Title = "Spraying";
 }
@@ -16,10 +19,36 @@
 <table class="table table-bordered table-striped table-condensed">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Email</th>
+            <th>Date Applied</th>
+            <th>Company</th>
+            <th>Farm Id</th>
+            <th>Block No/s</th>
+            <th>Employee</th>
+            <th>Authorisation Required</th>
             <th>Action</th>
         </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+        @foreach (var item in @Model)
+        {
+            <tr>
+                <td>@item.DateApplied.ToShortDateString()</td>
+                <td>@item.TradingEntityTarget.Description</td>
+                <td>@item.FarmId</td>
+                <td>@item.BlockNumbers</td>
+                <td>@item.EmployeeTarget.FirstName @item.EmployeeTarget.LastName</td>
+                <td>@item.AuthorisationRequired</td>
+                <td>
+                    <a id="editApplicationModal" asp-action="EditApplication" asp-route-id="@item.Id" class="btn btn-info">
+                        <i class="glyphicon glyphicon-pencil"></i>  Edit
+                    </a>
+                    <a id="deleteApplicationModal" data-toggle="modal" asp-action="DeleteApplication" asp-route-id="@item.Id" data-target="#modal-action-delete-application" class="btn btn-danger">
+                        <i class="glyphicon glyphicon-trash"></i>  Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-application", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
