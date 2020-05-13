@@ -79,7 +79,7 @@ namespace WebPortal.Models
                 entity.HasOne(d => d.Header)
                     .WithMany(p => p.Lines)
                     .HasForeignKey(d => d.HeaderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PesticideApplicationLines_PesticideApplicationHeader");
 
                 entity.HasOne(d => d.ProductTarget)
@@ -94,7 +94,7 @@ namespace WebPortal.Models
                 entity.HasOne(d => d.Header)
                     .WithMany(p => p.Times)
                     .HasForeignKey(d => d.HeaderId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_PesticideApplicationSprayTimes_PesticideApplicationHeader");
             });
 

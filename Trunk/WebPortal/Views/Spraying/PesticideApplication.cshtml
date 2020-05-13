@@ -12,6 +12,7 @@
     @Html.HiddenFor(x => x.Item1.Id)
 
     <input id="uiSubmitType" asp-for="Item5" style="visibility:collapse" />
+    <input id="uiEmployeeSignature" asp-for="Item1.EmployeeSignature" style="visibility:collapse" />
 
     <h1>Pesticide Application</h1>
     <br />
@@ -324,9 +325,13 @@
             <h3>Please sign below to confirm all information is true and correct to the best of your knowledge.</h3>
             <div>
                 <div id="surface-container" style="width:50%; margin: 0 auto;">
-                    <div id="surface" style="width: 90%; height: 300px;border: 1px solid black;"></div>
+                    <div id="surface" style="width: 90%; height: 150px; max-width: 300px; border: 1px solid black;"></div>
+                    
+                    <div id="surface2" style="width: 90%; height: 150px; max-width: 300px; border: 1px solid black; display:none">
+                        <img id="uiPreviousSignature" src="" />
+                    </div>
 
-                    <a id="createAddProductMixModal" class="btn btn-danger" style="margin-right:10%; margin-top: 4px; float:right" onclick="ClearSignatureClicked()">
+                    <a id="createAddProductMixModal" class="btn btn-danger" style="margin-top: 4px; margin-left: 40%" onclick="ClearSignatureClicked()">
                         <i class="glyphicon glyphicon-trash"></i>  Clear
                     </a>
                 </div>
@@ -348,6 +353,11 @@
     .k-loading-image {
         background-image: url('/images/Loading.gif');
     }
+
+    button.k-button {
+        width: 50%;
+    }
+    
 </style>
 
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-add-line", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
@@ -423,6 +433,13 @@
                 path = undefined;
             });
 
+            var image = document.getElementById("uiEmployeeSignature").value;
+
+            if (image !== "") {
+                $("#uiPreviousSignature").attr("src", image);
+                $("#surface2").css({ "display": "" });
+                $("#surface").css({ "display": "none" });
+            }
         });
 
         $(document).ready(function () {
@@ -636,9 +653,25 @@
 
             if (index === 5) {
                 myconfirm("Save Changes?", "Save").then(function () {
+
+                    var company = $("#company").data("kendoDropDownList").value();
+                    var employee = $("#employee").data("kendoDropDownList").value();
+                    var config = $("#uiNozzleConfiguration").data("kendoDropDownList").value();
+
+                    if (company === null || company === "" || company === "-1" || employee === null || employee === "" || employee === "-1") {
+                        myalert("Please select a valid company and employee", "Error");
+                        return;
+                    }
+
+                    if (config === null || config === "" || config === "-1") {
+                        myalert("Please select a valid nozzle configuration", "Error");
+                        return;
+                    }
+
                     document.getElementById("uiSubmitType").value = "Saving";
                     kendo.ui.progress($("#uiForm"), true);
-                    $("#uiForm").submit();
+
+                    saveSignature();
 
                     setTimeout(function () {
                         window.location.href = "/Spraying";
@@ -658,38 +691,72 @@
             }).data("kendoConfirm").open().result;
         }
 
+        function myalert(content, title) {
+            var t = $("<div></div>").kendoAlert({
+                title: title,
+                content: content
+            }).data("kendoAlert");
+
+            t._defaultFocus.style.width = "100%";
+            t.open();
+        }
+
         function addLine() {
             document.getElementById("uiSubmitType").value = "LineAdd";
-            $("#uiForm").submit();
+            saveSignature();
         }
 
         function editLine(id) {
             document.getElementById("uiSubmitType").value = "LineEdit:" + id;
-            $("#uiForm").submit();
+            saveSignature();
         }
 
         function deleteLine(id) {
             document.getElementById("uiSubmitType").value = "LineDelete:" + id;
-            $("#uiForm").submit();
+            saveSignature();
         }
 
         function addTime() {
             document.getElementById("uiSubmitType").value = "TimeAdd";
-            $("#uiForm").submit();
+            saveSignature();
         }
 
         function editTime(id) {
             document.getElementById("uiSubmitType").value = "TimeEdit:" + id;
-            $("#uiForm").submit();
+            saveSignature();
         }
 
         function deleteTime(id) {
             document.getElementById("uiSubmitType").value = "TimeDelete:" + id;
-            $("#uiForm").submit();
+            saveSignature();
+        }
+
+        function saveSignature() {
+            if (document.getElementById("uiEmployeeSignature").value === "" && $("#surface")[0].children[0].childElementCount > 1) {
+
+                $("#surface").css({ "border": "" });
+
+                kendo.drawing.drawDOM($("#surface"))
+                    .then(function (group) {
+                        return kendo.drawing.exportSVG(group);
+                    })
+                    .done(function (data) {
+                        $("#surface").css({ "border": "1px solid black;" });
+                        document.getElementById("uiEmployeeSignature").value = data;
+                        $("#uiForm").submit();
+                    });
+            }
+            else {
+                $("#uiForm").submit();
+            }
         }
 
         function ClearSignatureClicked() {
             surface.clear();
+
+            $("#surface2").css({ "display": "none" });
+            $("#surface").css({ "display": "" });
+            document.getElementById("uiEmployeeSignature").value = "";
         }
 
     </script>

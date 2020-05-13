@@ -66,10 +66,10 @@ namespace WebPortal.Models
         public bool Gloves { get; set; }
         public int Employee { get; set; }
         public DateTime AuditDateTime { get; set; }
-        public byte[] EmployeeSignature { get; set; }
+        public string EmployeeSignature { get; set; }
         public bool AuthorisationRequired { get; set; }
         public int AuthorisationEmployee { get; set; }
-        public byte[] AuthorisationEmployeeSignature { get; set; }
+        public string AuthorisationEmployeeSignature { get; set; }
         public string Notes { get; set; }
 
         public virtual TradingEntity TradingEntityTarget { get; set; }

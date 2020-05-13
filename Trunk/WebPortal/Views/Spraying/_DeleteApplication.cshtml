@@ -1,0 +1,10 @@
+﻿
+<form asp-action="DeleteApplication" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Delete Application" })
+
+    <div class="modal-body form-horizontal">
+        Are you want to delete?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Delete" })
+</form>
+

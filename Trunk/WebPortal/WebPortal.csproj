@@ -99,6 +99,9 @@
     <Content Update="Views\ProductTypeMaintenance\_EditProductType.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Spraying\_DeleteApplication.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Spraying\_EditTime.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

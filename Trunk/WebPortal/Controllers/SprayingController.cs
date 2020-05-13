@@ -405,10 +405,10 @@ namespace WebPortal.Controllers
                 header.FarmId = string.Empty;
 
             if (header.AuthorisationEmployeeSignature == null)
-                header.AuthorisationEmployeeSignature = new byte[0];
+                header.AuthorisationEmployeeSignature = string.Empty;
 
             if (header.EmployeeSignature == null)
-                header.EmployeeSignature = new byte[0];
+                header.EmployeeSignature = string.Empty;
 
             foreach (var line in header.Lines)
                 line.ProductTarget = null;
@@ -416,8 +416,11 @@ namespace WebPortal.Controllers
             using (var context = new DataModel())
             {
                 var currentLines = header.Lines.ToList();
+                var currentTimes = header.Times.ToList();
+
                 var existingHeader = context.PesticideApplicationHeader.FirstOrDefault(x => x.Id == header.Id);
                 var existingLines = context.PesticideApplicationLines.Where(x => x.HeaderId == header.Id);
+                var existingTimes = context.PesticideApplicationSprayTimes.Where(x => x.HeaderId == header.Id);
 
                 if (existingHeader != null)
                 {
@@ -444,6 +447,25 @@ namespace WebPortal.Controllers
                     foreach(var line in existingLines)
                     {
                         if (!currentLines.Any(x => x.Id == line.Id))
+                            context.Remove(line);
+                    }
+
+                    foreach (var line in header.Times)
+                    {
+                        if (existingTimes.Any(x => x.Id == line.Id))
+                        {
+                            context.Update(line);
+                        }
+                        else
+                        {
+                            line.Id = 0;
+                            context.Add(line);
+                        }
+                    }
+
+                    foreach (var line in existingTimes)
+                    {
+                        if (!currentTimes.Any(x => x.Id == line.Id))
                             context.Remove(line);
                     }
                 }
@@ -478,6 +500,33 @@ namespace WebPortal.Controllers
             await PopulateOldData(header);
 
             return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 0, string.Empty));
+        }
+
+        [HttpGet]
+        public IActionResult DeleteApplication(int id)
+        {
+            using (var context = new DataModel())
+            {
+                var header = context.PesticideApplicationHeader.FirstOrDefault(x => x.Id == id);
+                if (header == null)
+                    return RedirectToAction("Index");
+            }
+            return PartialView("_DeleteApplication");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteApplication(int id, PesticideApplicationHeader model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    var header = context.PesticideApplicationHeader.Include(x=> x.Lines).Include(x=> x.Times).Where(x => x.Id == id).FirstOrDefault();
+                    context.PesticideApplicationHeader.Remove(header);
+                    context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
         }
     }
 
