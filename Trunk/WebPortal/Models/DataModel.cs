@@ -20,6 +20,7 @@ namespace WebPortal.Models
         public DbSet<SprayNozzles> SprayNozzles { get; set; }
         public DbSet<Manufacturers> Manufacturers { get; set; }
         public DbSet<SprayNozzleConfiguration> SprayNozzleConfiguration { get; set; }
+        public DbSet<SprayConfigurationCompetencies> SprayConfigurationCompetencies { get; set; }
         public DbSet<ProductTypes> ProductTypes { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<ProductMixLines> ProductMixLines { get; set; }
@@ -40,6 +41,9 @@ namespace WebPortal.Models
         {
             modelBuilder.Entity<PublicHolidays>()
                 .HasKey(c => new { c.Date, c.Region });
+
+            modelBuilder.Entity<SprayConfigurationCompetencies>()
+                .HasKey(c => new { c.ConfigurationId, c.EmployeeId });
 
             modelBuilder.Entity<SprayNozzles>(entity =>
             {
@@ -111,6 +115,21 @@ namespace WebPortal.Models
                     .HasForeignKey(d => d.Employee)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PesticideApplicationHeader_Employees");
+            });
+
+            modelBuilder.Entity<SprayConfigurationCompetencies>(entity =>
+            {
+                entity.HasOne(d => d.ConfigurationTarget)
+                    .WithMany(p => p.Competencies)
+                    .HasForeignKey(d => d.ConfigurationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SprayConfigurationCompetencies_SprayNozzleConfiguration");
+
+                entity.HasOne(d => d.EmployeeTarget)
+                    .WithMany(p => p.Competencies)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_SprayConfigurationCompetencies_Employees");
             });
         }
     }

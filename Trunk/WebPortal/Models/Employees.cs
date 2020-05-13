@@ -10,6 +10,7 @@ namespace WebPortal.Models
         public Employees()
         {
             PesticideApplications = new HashSet<PesticideApplicationHeader>();
+            Competencies = new HashSet<SprayConfigurationCompetencies>();
         }
 
         public int Id { get; set; }
@@ -29,5 +30,6 @@ namespace WebPortal.Models
         public string TradingEntityDescription { get; set; }
 
         public virtual ICollection<PesticideApplicationHeader> PesticideApplications { get; set; }
+        public virtual ICollection<SprayConfigurationCompetencies> Competencies { get; set; }
     }
 }

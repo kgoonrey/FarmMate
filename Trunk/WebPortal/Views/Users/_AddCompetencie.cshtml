@@ -1,0 +1,74 @@
+﻿@model SprayConfigurationCompetencies
+@using WebPortal.Models
+
+<form asp-action="AddCompetencie" role="form">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Competencie" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="form-group">
+                @Html.HiddenFor(x => x.EmployeeId)
+                <label class="col-lg-3 col-sm-3 control-label" style="margin-right:8px">Configuration</label>
+                @using (Html.BeginForm())
+                {
+                    <div class="form-group">
+                        @Html.DropDownListFor(model => model.ConfigurationId, (IEnumerable<SelectListItem>)ViewBag.NozzleConfigurations, "Select Config...", new { @class = "form-control", Id = "uiNozzleConfiguration", style = "width: 45%;" })
+                    </div>
+                }
+                <div class="form-group">
+                    <label asp-for="Provider" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="Provider" class="k-textbox" style="width:50%" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Year" class="col-lg-3 col-sm-3 control-label"></label>
+                    <div class="col-lg-6">
+                        <input asp-for="Year" class="k-textbox" style="width:50%" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CommercialLicenceNumber" class="col-lg-3 col-sm-3 control-label">Commercial Licence Number</label>
+                    <div class="col-lg-6">
+                        <input asp-for="CommercialLicenceNumber" class="k-textbox" style="width:50%" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrepareAndApplyChemicals" class="col-lg-5 col-sm-5 control-label">Prepare And Apply Chemicals</label>
+                    <div class="col-lg-6">
+                        <input asp-for="PrepareAndApplyChemicals" style="margin-top: 10px" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ControlWeeds" class="col-lg-5 col-sm-5 control-label">Control Weeds</label>
+                    <div class="col-lg-6">
+                        <input asp-for="ControlWeeds" style="margin-top: 10px" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TransportHandleAndStoreChemicals" class="col-lg-5 col-sm-5 control-label">Transport Handle And Store Chemicals</label>
+                    <div class="col-lg-6">
+                        <input asp-for="TransportHandleAndStoreChemicals" style="margin-top: 10px" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+
+@section scripts{
+
+    <script>
+
+        $(document).ready(function () {
+
+            $("#uiNozzleConfiguration").kendoDropDownList({
+                dataValueField: "value",
+                dataTextField: "text",
+                suggest: false
+            });
+        });
+
+    </script>
+    
+    }

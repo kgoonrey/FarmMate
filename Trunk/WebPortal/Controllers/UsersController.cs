@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -482,6 +483,56 @@ namespace WebPortal.Controllers
                     context.SaveChanges();
                 }
             }
+        }
+
+        [HttpGet]
+        public IActionResult EmployeeCompetencies(int id)
+        {
+            var model = new List<SprayConfigurationCompetencies>();
+            var employeeName = string.Empty;
+            using (var context = new DataModel())
+            {
+                var employee = context.Employees.FirstOrDefault(x => x.Id == id);
+                model = context.SprayConfigurationCompetencies.Include(x=> x.ConfigurationTarget).Where(x => x.EmployeeId == id).ToList();
+                employeeName = employee.FirstName + " " + employee.LastName;
+            }
+
+            return View("EmployeeCompetencies", Tuple.Create(model, employeeName, id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddCompetencie(int id)
+        {
+            var model = new SprayConfigurationCompetencies();
+            model.EmployeeId = id;
+
+            using (var context = new DataModel())
+            {
+                var nozzleConfis = await context.SprayNozzleConfiguration.Select(a => new SelectListItem
+                {
+                    Value = a.Id.ToString(),
+                    Text = a.Name
+                }).ToListAsync();
+
+                ViewBag.NozzleConfigurations = nozzleConfis;
+            }
+
+            return PartialView("_AddCompetencie", model);
+        }
+
+        [HttpPost]
+        public IActionResult AddCompetencie(SprayConfigurationCompetencies model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    context.Add(model);
+                    context.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("EmployeeCompetencies", new { id = model.EmployeeId });
         }
     }
 }

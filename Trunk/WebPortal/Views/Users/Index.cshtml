@@ -87,6 +87,9 @@
                         <a id="deleteEmployeeModal" data-toggle="modal" asp-action="DeleteEmployee" asp-route-id="@item.Id" data-target="#modal-action-user" class="btn btn-danger">
                             <i class="glyphicon glyphicon-trash"></i>  Delete
                         </a>
+                        <a id="competenciesModal" asp-action="EmployeeCompetencies" asp-route-id="@item.Id" class="btn btn-success">
+                            <i class="glyphicon glyphicon-book"></i>  Competencies
+                        </a>
                     </td>
                 </tr>
                 }
