@@ -7,29 +7,30 @@
         <div class="row">
             <div class="form-group">
                 @Html.HiddenFor(x => x.EmployeeId)
-                <label class="col-lg-3 col-sm-3 control-label" style="margin-right:8px">Configuration</label>
-                @using (Html.BeginForm())
-                {
-                    <div class="form-group">
-                        @Html.DropDownListFor(model => model.ConfigurationId, (IEnumerable<SelectListItem>)ViewBag.NozzleConfigurations, "Select Config...", new { @class = "form-control", Id = "uiNozzleConfiguration", style = "width: 45%;" })
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-3 control-label">Configuration</label>
+                    <div class="col-lg-6">
+                        <select asp-for="ConfigurationId" asp-items="(IEnumerable<SelectListItem>)ViewBag.NozzleConfigurations" class="form-control">
+                            <option>Please select</option>
+                        </select>
                     </div>
-                }
+                </div>
                 <div class="form-group">
                     <label asp-for="Provider" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="Provider" class="k-textbox" style="width:50%" />
+                        <input asp-for="Provider" class="k-textbox" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="Year" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="Year" class="k-textbox" style="width:50%" />
+                        <input asp-for="Year" class="k-textbox" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label asp-for="CommercialLicenceNumber" class="col-lg-3 col-sm-3 control-label">Commercial Licence Number</label>
                     <div class="col-lg-6">
-                        <input asp-for="CommercialLicenceNumber" class="k-textbox" style="width:50%" />
+                        <input asp-for="CommercialLicenceNumber" class="k-textbox" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -55,20 +56,3 @@
     </div>
     @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
 </form>
-
-@section scripts{
-
-    <script>
-
-        $(document).ready(function () {
-
-            $("#uiNozzleConfiguration").kendoDropDownList({
-                dataValueField: "value",
-                dataTextField: "text",
-                suggest: false
-            });
-        });
-
-    </script>
-    
-    }

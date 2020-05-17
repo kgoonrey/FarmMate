@@ -1,0 +1,13 @@
+﻿@model SprayConfigurationCompetencies
+
+<form asp-action="DeleteManufacturer" role="form">
+    @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Delete Competencie" })
+    @Html.HiddenFor(x => x.EmployeeId)
+    @Html.HiddenFor(x => x.ConfigurationId)
+
+    <div class="modal-body form-horizontal">
+        Are you want to delete?
+    </div>
+    @Html.Partial("_ModalFooter", new ModalFooter { SubmitButtonText = "Delete" })
+</form>
+

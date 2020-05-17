@@ -42,6 +42,12 @@
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="Views\EmployeeCompetencies\_DeleteCompetencie.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\EmployeeCompetencies\_EditCompetencie.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\ManufacturerMaintenance\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -117,10 +123,10 @@
     <Content Update="Views\Spraying\_EditLine.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Users\EmployeeCompetencies.cshtml">
+    <Content Update="Views\EmployeeCompetencies\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Users\_AddCompetencie.cshtml">
+    <Content Update="Views\EmployeeCompetencies\_AddCompetencie.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
