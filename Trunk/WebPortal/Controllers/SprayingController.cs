@@ -471,6 +471,12 @@ namespace WebPortal.Controllers
                 }
                 else
                 {
+                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.ConfigurationId == header.NozzleConfiguration && x.EmployeeId == header.Employee);
+                    if (competency == null)
+                        header.AuthorisationRequired = true;
+                    else
+                        header.AuthorisationRequired = false;
+
                     header.AuditDateTime = DateTime.Now;
                     context.Add(header);
                 }
@@ -528,6 +534,71 @@ namespace WebPortal.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        [Route("Spraying/CanAuthoriseApplication")]
+        public async Task<IActionResult> CanAuthoriseApplication([FromBody]PesticideApplicationHeader applicationHeader)
+        {
+            using (var context = new DataModel())
+            {
+                var application = context.PesticideApplicationHeader.FirstOrDefault(x => x.Id == applicationHeader.Id && x.AuthorisationRequired);
+                if (application == null)
+                {
+                    return Ok("Application already authorised");
+                }
+
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var userEmployeeAccess = await context.UserEmployeeAccess.Where(x => x.UserId == user.Id).ToListAsync();
+                var employees = await context.Employees.Where(x => x.Active && userEmployeeAccess.FirstOrDefault(y => y.EmployeeId == x.Id) != null).ToListAsync();
+
+                var roles = await context.AspNetRoles.FirstOrDefaultAsync(x => x.Name == "Admin");
+                var adminUserList = await context.AspNetUserRoles.Where(x => x.RoleId == roles.Id).ToListAsync();
+
+                if (adminUserList.FirstOrDefault(x => x.UserId == user.Id) != null)
+                    employees = await context.Employees.Where(x => x.Active).ToListAsync();
+
+                
+                var employeeList = new List<SelectListItem>();
+                foreach (var employee in employees)
+                {
+                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.ConfigurationId == application.NozzleConfiguration && x.EmployeeId == employee.Id);
+                    if (competency != null)
+                        employeeList.Add(new SelectListItem() { Text = employee.FirstName + " " + employee.LastName, Value = employee.Id.ToString() });
+                }
+
+                if (employeeList.Any())
+                {
+                    ViewBag.Employees = employeeList;
+
+                    if (employeeList.Count == 1)
+                        application.AuthorisationEmployee = int.Parse(employeeList[0].Value);
+
+                    return PartialView("_AuthoriseApplication", application);
+                }
+
+                return Ok("You don't have the competency qualification to authorise this application.");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AuthoriseApplication(PesticideApplicationHeader model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new DataModel())
+                {
+                    var header = context.PesticideApplicationHeader.FirstOrDefault(x => x.Id == model.Id);
+                    header.AuthorisationRequired = false;
+                    header.AuthorisationEmployee = model.AuthorisationEmployee;
+                    header.AuthorisationEmployeeSignature = model.AuthorisationEmployeeSignature;
+
+                    context.Update(header);
+                    context.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index");
+        }
+        
     }
 
     public static class ext

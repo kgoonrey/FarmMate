@@ -1,0 +1,39 @@
+﻿@model PesticideApplicationHeader
+@using WebPortal.Models
+
+<form id="uiForm" asp-action="AuthoriseApplication" role="form">
+    <div class="modal-content modal-dialog modal-md">
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Authorise Application" })
+        <h3>Please sign below to confirm all information is true and correct to the best of your knowledge.</h3>
+        <input id="uiAuthorisationEmployeeSignature" asp-for="AuthorisationEmployeeSignature" style="visibility:collapse" />
+        <div class="modal-body form-horizontal">
+            <div class="row">
+                @Html.HiddenFor(x => x.Id)
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-3 control-label">Authorisation Employee</label>
+                    <div class="col-lg-6">
+                        <select asp-for="AuthorisationEmployee" asp-items="(IEnumerable<SelectListItem>)ViewBag.Employees" class="form-control">
+                            <option>Please select</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <div id="surface-container" style="width:50%; margin: 0 auto;">
+                            <div id="surface" style="width: 90%; height: 150px; max-width: 300px; border: 1px solid black;"></div>
+                            <a id="createAddProductMixModal" class="btn btn-danger" style="margin-top: 4px; margin-left: 40%" onclick="ClearSignatureClicked()">
+                                <i class="glyphicon glyphicon-trash"></i>  Clear
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button data-dismiss="modal" id="cancel" class="btn btn-default" type="button">Cancel</button>
+            <button class="btn btn-success" id="uiSubmit" onclick="saveSignature()">Submit</button>
+        </div>
+    </div>
+</form>

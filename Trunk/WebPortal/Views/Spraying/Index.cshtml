@@ -14,9 +14,13 @@
     <a id="createPesticideApplicationModal" data-toggle="modal" asp-action="PesticideApplication" class="btn btn-primary">
         <i class="glyphicon glyphicon-plus"></i>  Pesticide Application
     </a>
+
+    <input style="margin-left:30px" id="uiFilter" type="checkbox" class="k-checkbox" onchange="uiFilterChecked(this)">
+    <label style="margin-top:5px" for="uiFilter" class="k-checkbox-label">Filter</label>
+
 </div>
 <p></p>
-<table class="table table-bordered table-striped table-condensed">
+<table id="grid" class="table table-bordered table-striped table-condensed">
     <thead>
         <tr>
             <th>Date Applied</th>
@@ -24,31 +28,190 @@
             <th>Farm Id</th>
             <th>Block No/s</th>
             <th>Employee</th>
-            <th>Authorisation Required</th>
-            <th>Action</th>
+            <th>Auth Required</th>
+            <th>Edit</th>
+            <th>Delete</th>
+            <th>Authorise</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in @Model)
         {
-            <tr>
-                <td>@item.DateApplied.ToShortDateString()</td>
-                <td>@item.TradingEntityTarget.Description</td>
-                <td>@item.FarmId</td>
-                <td>@item.BlockNumbers</td>
-                <td>@item.EmployeeTarget.FirstName @item.EmployeeTarget.LastName</td>
-                <td>@item.AuthorisationRequired</td>
-                <td>
-                    <a id="editApplicationModal" asp-action="EditApplication" asp-route-id="@item.Id" class="btn btn-info">
-                        <i class="glyphicon glyphicon-pencil"></i>  Edit
-                    </a>
-                    <a id="deleteApplicationModal" data-toggle="modal" asp-action="DeleteApplication" asp-route-id="@item.Id" data-target="#modal-action-delete-application" class="btn btn-danger">
-                        <i class="glyphicon glyphicon-trash"></i>  Delete
-                    </a>
-                </td>
-            </tr>
+        <tr>
+            <td>@item.DateApplied.ToShortDateString()</td>
+            <td>@item.TradingEntityTarget.Description</td>
+            <td>@item.FarmId</td>
+            <td>@item.BlockNumbers</td>
+            <td>@item.EmployeeTarget.FirstName @item.EmployeeTarget.LastName</td>
+            <td>@item.AuthorisationRequired</td>
+            <td>
+                <a id="editApplicationModal" asp-action="EditApplication" asp-route-id="@item.Id" class="btn btn-info">
+                    <i class="glyphicon glyphicon-pencil"></i>  Edit
+                </a>
+            </td>
+            <td>
+                <a id="deleteApplicationModal" data-toggle="modal" asp-action="DeleteApplication" asp-route-id="@item.Id" data-target="#modal-action-delete-application" class="btn btn-danger">
+                    <i class="glyphicon glyphicon-trash"></i>  Delete
+                </a>
+            </td>
+            <td>
+                <a id="authoriseApplicationModal" data-toggle="modal" onclick="authoriseApplication(@item.Id)" class="btn btn-success">
+                    <i class="glyphicon glyphicon-check"></i>  Authorise
+                </a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
 
 @Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-delete-application", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+@Html.Partial("_Modal", new BootstrapModel { ID = "modal-action-authorise-application", AreaLabeledId = "modal-action-user-label", Size = ModalSize.Medium })
+
+@section scripts{
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="~/lib/kendo-ui-core/styles/kendo.default.mobile.min.css" />
+    <script src="~/lib/kendo-ui-core/js/kendo.all.min.js"></script>
+
+    <style>
+        .k-autocomplete.k-state-default .k-input, .k-combobox .k-state-default .k-input, .k-multiselect-wrap, .k-numeric-wrap.k-state-default .k-input, .k-picker-wrap.k-state-default .k-input, .k-progress-status-wrap, .k-slider-selection, .k-slider-track {
+            width: 100%;
+        }
+    </style>
+
+    <script>
+
+        $(document).ready(function () {
+            $("#grid").kendoGrid({
+                sortable: true,
+                filterable: {
+                    mode: "none"
+                },
+                pageable: {
+                    pageSize: 10,
+                    buttonCount: 10,
+                    pageSizes: [5, 10, 20, 50, 100, 500]
+                },
+                width: 1100
+            });
+        });
+
+        function uiFilterChecked(element) {
+            var filter = "none";
+            if (element.checked)
+                filter = "row";
+
+            $("#grid").data("kendoGrid").setOptions({
+                sortable: true,
+                filterable: {
+                    mode: filter
+                },
+                pageable: {
+                    pageSize: 10,
+                    buttonCount: 10,
+                    pageSizes: [5, 10, 20, 50, 100, 500]
+                },
+                width: 1100
+            });
+        }
+
+        var surface;
+        var authOnly = false;
+
+        function authoriseApplication(id) {
+            $.ajax({
+                url: "/Spraying/CanAuthoriseApplication",
+                data: JSON.stringify({ "Id": id }),
+                type: 'POST',
+                traditional: true,
+                contentType: 'application/json',
+                success: function (result) {
+                    if (result != null) {
+
+                        if (result.length < 100) {
+                            myalert(result, "Error");
+                        }
+                        else {
+                            $("#modal-action-authorise-application").html(result);
+                            $("#modal-action-authorise-application").modal('show');
+
+                            var geom = kendo.geometry;
+                            var Point = geom.Point;
+                            var draw = kendo.drawing;
+                            var Path = draw.Path;
+                            var path;
+
+                            surface = draw.Surface.create($("#surface"));
+                            $("#surface-container").on("mousemove", function (e) {
+                                if (!path) {
+                                    return;
+                                }
+
+                                var offset = $(this).offset();
+                                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+                                path.lineTo(newPoint);
+                            }).on("mousedown", function (e) {
+                                path = new Path({
+                                    stroke: {
+                                        color: '#E4141B',
+                                        width: 2,
+                                        lineCap: "round",
+                                        lineJoin: "round"
+                                    }
+                                });
+
+                                var offset = $(this).offset();
+                                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+                                for (var i = 0; i < 1; i++) {
+                                    path.lineTo(newPoint.clone().translate(i * 1, 0));
+                                }
+
+                                surface.draw(path);
+                            }).on("mouseup", function (e) {
+                                path = undefined;
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        function ClearSignatureClicked() {
+            surface.clear();
+        }
+
+        function saveSignature() {
+            if (document.getElementById("uiAuthorisationEmployeeSignature").value === "" && $("#surface")[0].children[0].childElementCount > 1) {
+
+                $("#surface").css({ "border": "" });
+
+                kendo.drawing.drawDOM($("#surface"))
+                    .then(function (group) {
+                        return kendo.drawing.exportSVG(group);
+                    })
+                    .done(function (data) {
+                        $("#surface").css({ "border": "1px solid black;" });
+                        document.getElementById("uiAuthorisationEmployeeSignature").value = data;
+                        $("#uiForm").submit();
+                    });
+            }
+            else {
+                $("#uiForm").submit();
+            }
+        }
+
+        function myalert(content, title) {
+            var t = $("<div></div>").kendoAlert({
+                title: title,
+                content: content
+            }).data("kendoAlert");
+
+            t._defaultFocus.style.width = "100%";
+            t.open();
+        }
+
+    </script>
+
+}
