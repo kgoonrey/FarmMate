@@ -193,6 +193,14 @@ namespace WebPortal.Controllers
                 ViewBag.Products = productList;
             }
 
+            var rateUOM = new List<SelectListItem>();
+            rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)RateUOMEnum.KilogramPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "L/ha", Value = ((int)RateUOMEnum.LitrePerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+            line.RateUOMOption = rateUOM;
+
             return PartialView("_EditLine", line);
         }
 
