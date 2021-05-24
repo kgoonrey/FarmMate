@@ -9,8 +9,7 @@ namespace WebPortal.Models
     public class SprayConfigurationCompetencies
     {
         [Key]
-        public int ConfigurationId { get; set; }
-        [Key]
+        public int? Id { get; set; }
         public int EmployeeId { get; set; }
         public bool PrepareAndApplyChemicals { get; set; }
         public bool ControlWeeds { get; set; }
@@ -18,8 +17,9 @@ namespace WebPortal.Models
         public string Provider { get; set; }
         public string Year { get; set; }
         public string CommercialLicenceNumber { get; set; }
+        public string AccreditationNumber { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
-        public virtual SprayNozzleConfiguration ConfigurationTarget { get; set; }
         public virtual Employees EmployeeTarget { get; set; }
     }
 }

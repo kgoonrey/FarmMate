@@ -18,7 +18,7 @@ namespace WebPortal.Controllers
             using (var context = new DataModel())
             {
                 var employee = context.Employees.FirstOrDefault(x => x.Id == id);
-                model = context.SprayConfigurationCompetencies.Include(x => x.ConfigurationTarget).Where(x => x.EmployeeId == id).ToList();
+                model = context.SprayConfigurationCompetencies.Where(x => x.EmployeeId == id).ToList();
                 employeeName = employee.FirstName + " " + employee.LastName;
             }
 
@@ -59,17 +59,6 @@ namespace WebPortal.Controllers
             var model = new SprayConfigurationCompetencies();
             model.EmployeeId = id;
 
-            using (var context = new DataModel())
-            {
-                var nozzleConfis = context.SprayNozzleConfiguration.Select(a => new SelectListItem
-                {
-                    Value = a.Id.ToString(),
-                    Text = a.Name
-                }).ToList();
-
-                ViewBag.NozzleConfigurations = nozzleConfis;
-            }
-
             return PartialView("_AddCompetencie", model);
         }
 
@@ -85,6 +74,8 @@ namespace WebPortal.Controllers
             if (model.CommercialLicenceNumber == null)
                 model.CommercialLicenceNumber = string.Empty;
 
+            model.Id = null;
+
             if (ModelState.IsValid)
             {
                 using (var context = new DataModel())
@@ -98,22 +89,12 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditCompetencie(string id)
+        public IActionResult EditCompetencie(int id)
         {
-            var key = id.Split(":");
-
             SprayConfigurationCompetencies model = null;
             using (var context = new DataModel())
             {
-                model = context.SprayConfigurationCompetencies.FirstOrDefault(x=> x.ConfigurationId == int.Parse(key[0]) && x.EmployeeId == int.Parse(key[1]));
-
-                var nozzleConfis = context.SprayNozzleConfiguration.Select(a => new SelectListItem
-                {
-                    Value = a.Id.ToString(),
-                    Text = a.Name
-                }).ToList();
-
-                ViewBag.NozzleConfigurations = nozzleConfis;
+                model = context.SprayConfigurationCompetencies.FirstOrDefault(x=> x.Id == id);
             }
             return PartialView("_EditCompetencie", model);
         }
@@ -121,8 +102,17 @@ namespace WebPortal.Controllers
         [HttpPost]
         public IActionResult EditCompetencie(SprayConfigurationCompetencies model)
         {
-            if (model.ConfigurationId == 0 || model.EmployeeId == 0)
+            if (model.EmployeeId == 0)
                 return RedirectToAction("Index");
+
+            if (model.Provider == null)
+                model.Provider = string.Empty;
+
+            if (model.Year == null)
+                model.Year = string.Empty;
+
+            if (model.CommercialLicenceNumber == null)
+                model.CommercialLicenceNumber = string.Empty;
 
             using (var context = new DataModel())
             {
@@ -134,14 +124,12 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteCompetencie(string id)
+        public IActionResult DeleteCompetencie(int id)
         {
-            var key = id.Split(":");
-
             SprayConfigurationCompetencies model = null;
             using (var context = new DataModel())
             {
-                model = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.ConfigurationId == int.Parse(key[0]) && x.EmployeeId == int.Parse(key[1]));
+                model = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.Id == id);
             }
             return PartialView("_DeleteCompetencie", model);
         }

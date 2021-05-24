@@ -43,7 +43,7 @@ namespace WebPortal.Models
                 .HasKey(c => new { c.Date, c.Region });
 
             modelBuilder.Entity<SprayConfigurationCompetencies>()
-                .HasKey(c => new { c.ConfigurationId, c.EmployeeId });
+                .HasKey(c => new { c.Id });
 
             modelBuilder.Entity<SprayNozzles>(entity =>
             {
@@ -119,12 +119,6 @@ namespace WebPortal.Models
 
             modelBuilder.Entity<SprayConfigurationCompetencies>(entity =>
             {
-                entity.HasOne(d => d.ConfigurationTarget)
-                    .WithMany(p => p.Competencies)
-                    .HasForeignKey(d => d.ConfigurationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SprayConfigurationCompetencies_SprayNozzleConfiguration");
-
                 entity.HasOne(d => d.EmployeeTarget)
                     .WithMany(p => p.Competencies)
                     .HasForeignKey(d => d.EmployeeId)

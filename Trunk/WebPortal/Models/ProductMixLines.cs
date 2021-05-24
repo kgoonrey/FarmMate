@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace WebPortal.Models
 {
-    public enum ProductMixLinesRateUOMEnum
+    public enum RateUOMEnum
     {
         KilogramPerHa,
-        LitrePerHa
+        LitrePerHa,
+        GramPerHa,
+        MilliliterPerHa,
+        MilliliterPer100L
     }
 
     public class ProductMixLines
@@ -20,7 +23,7 @@ namespace WebPortal.Models
         public string HeaderProduct { get; set; }
         public string Product { get; set; }
         public decimal ApplicationRate { get; set; }
-        public ProductMixLinesRateUOMEnum RateUOM { get; set; }
+        public RateUOMEnum RateUOM { get; set; }
 
         [NotMapped]
         public string RateUOMString { get; set; }

@@ -150,6 +150,14 @@ namespace WebPortal.Controllers
                 ViewBag.Products = productList;
             }
 
+            var rateUOM = new List<SelectListItem>();
+            rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)RateUOMEnum.KilogramPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "L/ha", Value = ((int)RateUOMEnum.LitrePerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+            line.RateUOMOption = rateUOM;
+
             return PartialView("_AddLine", line);
         }
 
@@ -471,7 +479,7 @@ namespace WebPortal.Controllers
                 }
                 else
                 {
-                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.ConfigurationId == header.NozzleConfiguration && x.EmployeeId == header.Employee);
+                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.EmployeeId == header.Employee && (x.ExpiryDate == null || x.ExpiryDate > header.DateApplied));
                     if (competency == null)
                         header.AuthorisationRequired = true;
                     else
@@ -484,6 +492,7 @@ namespace WebPortal.Controllers
                 context.SaveChanges();
             }
 
+            System.Threading.Thread.Sleep(2000);
             return null;
         }
 
@@ -561,7 +570,7 @@ namespace WebPortal.Controllers
                 var employeeList = new List<SelectListItem>();
                 foreach (var employee in employees)
                 {
-                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.ConfigurationId == application.NozzleConfiguration && x.EmployeeId == employee.Id);
+                    var competency = context.SprayConfigurationCompetencies.FirstOrDefault(x => x.EmployeeId == employee.Id && (x.ExpiryDate == null || x.ExpiryDate > application.DateApplied));
                     if (competency != null)
                         employeeList.Add(new SelectListItem() { Text = employee.FirstName + " " + employee.LastName, Value = employee.Id.ToString() });
                 }

@@ -295,27 +295,27 @@
                 <input id="uiOtherSprayType" asp-for="Item1.OtherType" class="k-textbox" style="width:100%" />
             </div>
 
-            <label for="uiSystemOperatingPressure">System Operating Pressure</label>
+            <label for="uiSystemOperatingPressure">System Operating Pressure (bar)</label>
             <div class="form-group">
                 <input id="uiSystemOperatingPressure" asp-for="Item1.SystemOperatingPressure" style="width:100%" />
             </div>
 
-            <label for="uiVehicleGroundSpeed">Vehicle Ground Speed</label>
+            <label for="uiVehicleGroundSpeed">Vehicle Ground Speed (km/h)</label>
             <div class="form-group">
                 <input id="uiVehicleGroundSpeed" asp-for="Item1.VehicleGroundSpeed" style="width:100%" />
             </div>
 
-            <label for="uiSprayTankVolume">Spray Tank Volume</label>
+            <label for="uiSprayTankVolume">Spray Tank Volume (L)</label>
             <div class="form-group">
                 <input id="uiSprayTankVolume" asp-for="Item1.SprayTankVolume" style="width:100%" />
             </div>
 
-            <label for="uiSprayerReleaseHeight">Spray Release Height</label>
+            <label for="uiSprayerReleaseHeight">Spray Release Height (m)</label>
             <div class="form-group">
                 <input id="uiSprayerReleaseHeight" asp-for="Item1.SprayerReleaseHeight" style="width:100%" />
             </div>
 
-            <label for="uiSprayerApplicationRate">Sprayer Application Rate</label>
+            <label for="uiSprayerApplicationRate">Sprayer Application Rate (L/ha)</label>
             <div class="form-group">
                 <input id="uiSprayerApplicationRate" asp-for="Item1.SprayerApplicationRate" style="width:100%" />
             </div>
@@ -430,6 +430,45 @@
 
                 surface.draw(path);
             }).on("mouseup", function (e) {
+                path = undefined;
+            });
+
+            $("#surface-container").on("touchmove", function (e) {
+                if (!path) {
+                    return;
+                }
+
+                var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+                x = touch.pageX;
+                y = touch.pageY;
+
+                var offset = $(this).offset();
+                var newPoint = new Point(x - offset.left, y - offset.top);
+
+                path.lineTo(newPoint);
+            }).on("touchstart", function (e) {
+                path = new Path({
+                    stroke: {
+                        color: '#E4141B',
+                        width: 2,
+                        lineCap: "round",
+                        lineJoin: "round"
+                    }
+                });
+
+                var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+                x = touch.pageX;
+                y = touch.pageY;
+
+                var offset = $(this).offset();
+                var newPoint = new Point(x - offset.left, y - offset.top);
+
+                for (var i = 0; i < 1; i++) {
+                    path.lineTo(newPoint.clone().translate(i * 1, 0));
+                }
+
+                surface.draw(path);
+            }).on("touchEnd", function (e) {
                 path = undefined;
             });
 

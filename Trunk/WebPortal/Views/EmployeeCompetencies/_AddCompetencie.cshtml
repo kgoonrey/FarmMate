@@ -8,11 +8,9 @@
             <div class="form-group">
                 @Html.HiddenFor(x => x.EmployeeId)
                 <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Configuration</label>
+                    <label asp-for="AccreditationNumber" class="col-lg-3 col-sm-3 control-label">Accreditation Number</label>
                     <div class="col-lg-6">
-                        <select asp-for="ConfigurationId" asp-items="(IEnumerable<SelectListItem>)ViewBag.NozzleConfigurations" class="form-control">
-                            <option>Please select</option>
-                        </select>
+                        <input asp-for="AccreditationNumber" class="k-textbox" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -31,6 +29,12 @@
                     <label asp-for="CommercialLicenceNumber" class="col-lg-3 col-sm-3 control-label">Commercial Licence Number</label>
                     <div class="col-lg-6">
                         <input asp-for="CommercialLicenceNumber" class="k-textbox" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ExpiryDate" class="col-lg-3 col-sm-3 control-label">Expiry Date</label>
+                    <div class="col-lg-6">
+                        <input asp-for="ExpiryDate" class="k-datepicker-calendar" />
                     </div>
                 </div>
                 <div class="form-group">

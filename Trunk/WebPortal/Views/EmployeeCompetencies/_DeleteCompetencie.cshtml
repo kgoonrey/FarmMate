@@ -2,8 +2,8 @@
 
 <form asp-action="DeleteManufacturer" role="form">
     @Html.Partial("_ModalHeader", new ModalHeader { Heading = "Delete Competencie" })
+    @Html.HiddenFor(x => x.Id)
     @Html.HiddenFor(x => x.EmployeeId)
-    @Html.HiddenFor(x => x.ConfigurationId)
 
     <div class="modal-body form-horizontal">
         Are you want to delete?

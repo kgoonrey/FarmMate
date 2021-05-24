@@ -190,12 +190,20 @@ namespace WebPortal.Controllers
             return View("Mix", newTuple);
         }
 
-        private string EnumConversion(ProductMixLinesRateUOMEnum value)
+        private string EnumConversion(RateUOMEnum value)
         {
-            if (value == ProductMixLinesRateUOMEnum.KilogramPerHa)
+            if (value == RateUOMEnum.KilogramPerHa)
                 return "kg/ha";
+            if (value == RateUOMEnum.LitrePerHa)
+                return "L/ha";
+            if (value == RateUOMEnum.GramPerHa)
+                return "g/ha";
+            if (value == RateUOMEnum.MilliliterPerHa)
+                return "mL/ha";
+            if (value == RateUOMEnum.MilliliterPer100L)
+                return "mL/100L";
 
-            return "l/ha";
+            return string.Empty;
         }
 
         [HttpGet]
@@ -213,8 +221,11 @@ namespace WebPortal.Controllers
                 }).ToList();
 
                 var rateUOM = new List<SelectListItem>();
-                rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)ProductMixLinesRateUOMEnum.KilogramPerHa).ToString() });
-                rateUOM.Add(new SelectListItem() { Text = "l/ha", Value = ((int)ProductMixLinesRateUOMEnum.LitrePerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)RateUOMEnum.KilogramPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "L/ha", Value = ((int)RateUOMEnum.LitrePerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
                 viewModel.RateUOMOption = rateUOM;
             }
             return PartialView("_AddProductMix", viewModel);
@@ -235,7 +246,7 @@ namespace WebPortal.Controllers
                 model.HeaderProduct = viewModel.HeaderProduct;
                 model.Product = viewModel.Product;
                 model.ApplicationRate = viewModel.ApplicationRate;
-                model.RateUOM =  (ProductMixLinesRateUOMEnum) int.Parse(viewModel.RateUOM);
+                model.RateUOM =  (RateUOMEnum) int.Parse(viewModel.RateUOM);
 
                 context.Add(model);
                 context.SaveChanges();
@@ -265,8 +276,11 @@ namespace WebPortal.Controllers
                 }).ToList();
 
                 var rateUOM = new List<SelectListItem>();
-                rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)ProductMixLinesRateUOMEnum.KilogramPerHa).ToString() });
-                rateUOM.Add(new SelectListItem() { Text = "l/ha", Value = ((int)ProductMixLinesRateUOMEnum.LitrePerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "kg/ha", Value = ((int)RateUOMEnum.KilogramPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "L/ha", Value = ((int)RateUOMEnum.LitrePerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
                 viewModel.RateUOMOption = rateUOM;
             }
             return PartialView("_EditProductMix", viewModel);
@@ -291,7 +305,7 @@ namespace WebPortal.Controllers
                     header = model.HeaderProduct;
                     model.Product = viewModel.Product;
                     model.ApplicationRate = viewModel.ApplicationRate;
-                    model.RateUOM = (ProductMixLinesRateUOMEnum)int.Parse(viewModel.RateUOM);
+                    model.RateUOM = (RateUOMEnum)int.Parse(viewModel.RateUOM);
 
                     context.Update(model);
                     context.SaveChanges();
