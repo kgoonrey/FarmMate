@@ -31,7 +31,7 @@ namespace WebPortal.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public IActionResult Index()
         {
             using (var context = new DataModel())
