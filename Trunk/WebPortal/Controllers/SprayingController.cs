@@ -36,7 +36,7 @@ namespace WebPortal.Controllers
         {
             using (var context = new DataModel())
             {
-                return View(context.PesticideApplicationHeader.Include(x=> x.TradingEntityTarget).Include(x=> x.EmployeeTarget).ToList());
+                return View(context.PesticideApplicationHeader.Include(x=> x.TradingEntityTarget).Include(x=> x.EmployeeTarget).OrderByDescending(x=> x.DateApplied).ToList());
             }
         }
 
@@ -113,16 +113,16 @@ namespace WebPortal.Controllers
             if (type == "LineAdd")
                 return AddLine(header, lineJson, timeJson);
             if (type.StartsWith("LineEdit"))
-                return EditLine(int.Parse(type.Split(":")[1]), header, lineJson, timeJson);
+                return EditLine(Guid.Parse(type.Split(":")[1]), header, lineJson, timeJson);
             if (type.StartsWith("LineDelete"))
-                return DeleteLine(int.Parse(type.Split(":")[1]), header, lineJson, timeJson);
+                return DeleteLine(Guid.Parse(type.Split(":")[1]), header, lineJson, timeJson);
 
             if (type == "TimeAdd")
                 return AddTime(header, lineJson, timeJson);
             if (type.StartsWith("TimeEdit"))
-                return EditTime(int.Parse(type.Split(":")[1]), header, lineJson, timeJson);
+                return EditTime(Guid.Parse(type.Split(":")[1]), header, lineJson, timeJson);
             if (type.StartsWith("TimeDelete"))
-                return DeleteTime(int.Parse(type.Split(":")[1]), header, lineJson, timeJson);
+                return DeleteTime(Guid.Parse(type.Split(":")[1]), header, lineJson, timeJson);
 
             if (type == "Saving")
                 return Saving(header, lineJson, timeJson);
@@ -137,7 +137,7 @@ namespace WebPortal.Controllers
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
 
             var line = new PesticideApplicationLines();
-            line.Id = header.Lines.Any() ? header.Lines.Max(x => x.Id) + 1 : 0; 
+            line.Id = Guid.NewGuid();
             line.HeaderJson = JsonConvert.SerializeObject(header);
 
             using (var context = new DataModel())
@@ -175,7 +175,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditLine(int id, PesticideApplicationHeader header, string lineJson, string timeJson)
+        public IActionResult EditLine(Guid id, PesticideApplicationHeader header, string lineJson, string timeJson)
         {
             header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
@@ -221,7 +221,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteLine(int id, PesticideApplicationHeader header, string lineJson, string timeJson)
+        public IActionResult DeleteLine(Guid id, PesticideApplicationHeader header, string lineJson, string timeJson)
         {
             header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
@@ -254,7 +254,7 @@ namespace WebPortal.Controllers
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
 
             var time = new PesticideApplicationSprayTimes();
-            time.Id = header.Times.Any() ? header.Times.Max(x => x.Id) + 1 : 0;
+            time.Id = Guid.NewGuid();
             time.HeaderJson = JsonConvert.SerializeObject(header);
 
             var current = DateTime.Now;
@@ -301,7 +301,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditTime(int id, PesticideApplicationHeader header, string lineJson, string timeJson)
+        public IActionResult EditTime(Guid id, PesticideApplicationHeader header, string lineJson, string timeJson)
         {
             header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
@@ -345,7 +345,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult DeleteTime(int id, PesticideApplicationHeader header, string lineJson, string timeJson)
+        public IActionResult DeleteTime(Guid id, PesticideApplicationHeader header, string lineJson, string timeJson)
         {
             header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
@@ -455,7 +455,7 @@ namespace WebPortal.Controllers
                         }
                         else
                         {
-                            line.Id = 0;
+                            line.Id = Guid.NewGuid();
                             context.Add(line);
                         }
                     }
@@ -474,7 +474,7 @@ namespace WebPortal.Controllers
                         }
                         else
                         {
-                            line.Id = 0;
+                            line.Id = Guid.NewGuid();
                             context.Add(line);
                         }
                     }

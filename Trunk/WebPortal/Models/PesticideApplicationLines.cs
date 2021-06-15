@@ -10,7 +10,7 @@ namespace WebPortal.Models
     public class PesticideApplicationLines
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int HeaderId { get; set; }
         public string Product { get; set; }
         public RateUOMEnum ApplicationRate { get; set; }

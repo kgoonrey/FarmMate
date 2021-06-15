@@ -21,7 +21,7 @@ namespace WebPortal.Models
         }
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int HeaderId { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
