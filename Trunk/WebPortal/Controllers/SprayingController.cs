@@ -81,8 +81,14 @@ namespace WebPortal.Controllers
                     Text = a.Name
                 }).ToListAsync();
 
+                var employeesList = employees.Select(a => new SelectListItem
+                {
+                    Value = a.Id.ToString(),
+                    Text = $"{a.FirstName} {a.LastName}"
+                }).ToList();
+
                 ViewBag.TradingEntitys = tradingEntity;
-                ViewBag.Employees = new List<SelectListItem>();
+                ViewBag.Employees = employeesList;
                 ViewBag.NozzleConfigurations = nozzleConfis;
             }
 
@@ -107,6 +113,7 @@ namespace WebPortal.Controllers
 
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public IActionResult Submit([Bind(Prefix = "Item1")] PesticideApplicationHeader header, [Bind(Prefix = "Item2")] string lineJson, [Bind(Prefix = "Item3")] string timeJson, [Bind(Prefix = "Item5")] string type)
         {
@@ -125,7 +132,10 @@ namespace WebPortal.Controllers
                 return DeleteTime(Guid.Parse(type.Split(":")[1]), header, lineJson, timeJson);
 
             if (type == "Saving")
-                return Saving(header, lineJson, timeJson);
+            {
+                header.Completed = true;
+                return Saving(header);
+            }
 
             return PesticideApplication(header).Result;
         }
@@ -161,6 +171,7 @@ namespace WebPortal.Controllers
             return PartialView("_AddLine", line);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public async Task<IActionResult> AddLineContinue(PesticideApplicationLines model)
         {
@@ -168,10 +179,12 @@ namespace WebPortal.Controllers
             var header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
 
             model.Header = null;
-            header.Lines.Add(model);
+            if (model.Product != "Please select")
+                header.Lines.Add(model);
+
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 2, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 2, string.Empty));
         }
 
         [HttpGet]
@@ -204,6 +217,7 @@ namespace WebPortal.Controllers
             return PartialView("_EditLine", line);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public async Task<IActionResult> EditLineContinue(PesticideApplicationLines model)
         {
@@ -217,7 +231,7 @@ namespace WebPortal.Controllers
             line.Quantity = model.Quantity;
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 2, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 2, string.Empty));
         }
 
         [HttpGet]
@@ -232,6 +246,7 @@ namespace WebPortal.Controllers
             return PartialView("_DeleteLine", line);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public async Task<IActionResult> DeleteLineContinue(PesticideApplicationLines model)
         {
@@ -244,7 +259,7 @@ namespace WebPortal.Controllers
             header.Lines.Remove(line);
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 2, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 2, string.Empty));
         }
 
         [HttpGet]
@@ -287,6 +302,7 @@ namespace WebPortal.Controllers
             return PartialView("_AddTime", time);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public async Task<IActionResult> AddTimeContinue(PesticideApplicationSprayTimes model)
         {
@@ -297,7 +313,7 @@ namespace WebPortal.Controllers
             header.Times.Add(model);
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 3, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 3, string.Empty));
         }
 
         [HttpGet]
@@ -320,6 +336,7 @@ namespace WebPortal.Controllers
             return PartialView("_EditTime", time);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public async Task<IActionResult> EditTimeContinue(PesticideApplicationSprayTimes model)
         {
@@ -341,7 +358,7 @@ namespace WebPortal.Controllers
             time.EndHumidity = model.EndHumidity;
 
             await PopulateOldData(header);
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 3, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 3, string.Empty));
         }
 
         [HttpGet]
@@ -350,14 +367,15 @@ namespace WebPortal.Controllers
             header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
             header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
 
-            var line = header.Times.FirstOrDefault(x => x.Id == id);
-            line.HeaderJson = JsonConvert.SerializeObject(header);
+            var time = header.Times.FirstOrDefault(x => x.Id == id);
+            time.HeaderJson = JsonConvert.SerializeObject(header);
 
-            return PartialView("_DeleteTime", line);
+            return PartialView("_DeleteTime", time);
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
-        public async Task<IActionResult> DeleteTimeContinue(PesticideApplicationLines model)
+        public async Task<IActionResult> DeleteTimeContinue(PesticideApplicationSprayTimes model)
         {
             await PopulateViewBag();
             var header = JsonConvert.DeserializeObject<PesticideApplicationHeader>(model.HeaderJson);
@@ -368,11 +386,13 @@ namespace WebPortal.Controllers
             header.Times.Remove(line);
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 3, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 3, string.Empty));
         }
 
         private async Task PopulateOldData(PesticideApplicationHeader header)
         {
+            Saving(header);
+
             using (var context = new DataModel())
             {
                 foreach (var line in header.Lines)
@@ -400,11 +420,8 @@ namespace WebPortal.Controllers
         }
 
         [HttpGet]
-        public IActionResult Saving(PesticideApplicationHeader header, string lineJson, string timeJson)
+        public IActionResult Saving(PesticideApplicationHeader header)
         {
-            header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
-            header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
-
             if (header.Notes == null)
                 header.Notes = string.Empty;
 
@@ -522,7 +539,7 @@ namespace WebPortal.Controllers
             await PopulateViewBag();
             await PopulateOldData(header);
 
-            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 0, string.Empty));
+            return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 0, string.Empty));
         }
 
         [HttpGet]
@@ -537,6 +554,7 @@ namespace WebPortal.Controllers
             return PartialView("_DeleteApplication");
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public IActionResult DeleteApplication(int id, PesticideApplicationHeader model)
         {
@@ -552,6 +570,7 @@ namespace WebPortal.Controllers
             return RedirectToAction("Index");
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         [Route("Spraying/CanAuthoriseApplication")]
         public async Task<IActionResult> CanAuthoriseApplication([FromBody]PesticideApplicationHeader applicationHeader)
@@ -597,6 +616,7 @@ namespace WebPortal.Controllers
             }
         }
 
+        [DisableRequestSizeLimit]
         [HttpPost]
         public IActionResult AuthoriseApplication(PesticideApplicationHeader model)
         {

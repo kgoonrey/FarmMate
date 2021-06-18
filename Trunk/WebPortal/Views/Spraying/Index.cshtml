@@ -23,6 +23,7 @@
 <table id="grid" class="table table-bordered table-striped table-condensed">
     <thead>
         <tr>
+            <th>Status</th>
             <th>Date Applied</th>
             <th>Company</th>
             <th>Farm Id</th>
@@ -37,7 +38,21 @@
     <tbody>
         @foreach (var item in @Model)
         {
+
         <tr>
+            @if (!item.Completed)
+            {
+                <td> <label class="text-danger">Incomplete</label></td>
+            }
+            else if (item.AuthorisationRequired)
+            {
+                <td><label class="text-primary">Unauthorised</label></td>
+            }
+            else
+            {
+                <td><label class="text-success">Complete</label></td>
+            }
+
             <td>@item.DateApplied.ToShortDateString()</td>
             <td>@item.TradingEntityTarget.Description</td>
             <td>@item.FarmId</td>
@@ -60,7 +75,7 @@
                 </a>
             </td>
         </tr>
-        }
+            }
     </tbody>
 </table>
 

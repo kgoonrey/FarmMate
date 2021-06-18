@@ -71,6 +71,7 @@ namespace WebPortal.Models
         public int AuthorisationEmployee { get; set; }
         public string AuthorisationEmployeeSignature { get; set; }
         public string Notes { get; set; }
+        public bool Completed { get; set; }
 
         public virtual TradingEntity TradingEntityTarget { get; set; }
         public virtual Employees EmployeeTarget { get; set; }
