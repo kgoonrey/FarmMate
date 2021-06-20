@@ -167,6 +167,7 @@ namespace WebPortal.Controllers
             rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
             rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
             line.RateUOMOption = rateUOM;
+            line.ApplicationRate = RateUOMEnum.LitrePerHa;
 
             return PartialView("_AddLine", line);
         }

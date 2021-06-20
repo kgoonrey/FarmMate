@@ -3,82 +3,112 @@
 
 <form asp-action="EditTimeContinue" role="form">
     <div class="modal-content modal-dialog modal-md">
-        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Add Time" })
+        @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "Edit Time" })
         <div class="modal-body form-horizontal">
             <div class="row">
                 @Html.HiddenFor(x => x.HeaderJson)
                 @Html.HiddenFor(x => x.Id)
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Start Time</label>
-                    <div class="col-lg-6">
-                        <input id="uiStartTime" asp-for="StartTime" class="form-control" style="width:100%;" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">End Time</label>
-                    <div class="col-lg-6">
-                        <input id="uiEndTime" asp-for="EndTime" class="form-control" style="width:100%;" />
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Start Wind Speed km/h</label>
-                    <div class="col-lg-6">
-                        <input id="uiStartWindSpeed" asp-for="StartWindSpeed" style="width:100%;" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">End Wind Speed km/h</label>
-                    <div class="col-lg-6">
-                        <input id="uiEndWindSpeed" asp-for="EndWindSpeed" style="width:100%;" />
-                    </div>
-                </div>
+                <div id="tabstrip_addTime">
+                    <ul>
+                        <li class="k-state-active">
+                            Start
+                        </li>
+                        <li>
+                            End
+                        </li>
+                    </ul>
+                    <div style='overflow-x: hidden;'>
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">Start Time</label>
+                            <div class="col-lg-6">
+                                <input id="uiStartTime" asp-for="StartTime" class="form-control" style="width:100%;" />
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Start Wind Direction</label>
-                    <div class="col-lg-6">
-                        <select asp-for="StartWindDirection" asp-items="(IEnumerable<SelectListItem>)ViewBag.WindDirection" class="form-control">
-                            <option>Please select</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">End Wind Direction</label>
-                    <div class="col-lg-6">
-                        <select asp-for="EndWindDirection" asp-items="(IEnumerable<SelectListItem>)ViewBag.WindDirection" class="form-control">
-                            <option>Please select</option>
-                        </select>
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">Start Wind Speed km/h</label>
+                            <div class="col-lg-6">
+                                <input id="uiStartWindSpeed" asp-for="StartWindSpeed" style="width:100%;" />
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Start Temp °C</label>
-                    <div class="col-lg-6">
-                        <input id="uiStartTemp" asp-for="StartTemp" style="width:100%;" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">End Temp °C</label>
-                    <div class="col-lg-6">
-                        <input id="uiEndTemp" asp-for="EndTemp" style="width:100%;" />
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">Start Wind Direction</label>
+                            <div class="col-lg-6">
+                                <select asp-for="StartWindDirection" asp-items="(IEnumerable<SelectListItem>)ViewBag.WindDirection" class="form-control" style="padding: 0px">
+                                    <option>Please select</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Start Humidity %</label>
-                    <div class="col-lg-6">
-                        <input id="uiStartHumidity" asp-for="StartHumidity" style="width:100%;" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">End Humidity %</label>
-                    <div class="col-lg-6">
-                        <input id="uiEndHumidity" asp-for="EndHumidity" style="width:100%;" />
-                    </div>
-                </div>
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">Start Temp °C</label>
+                            <div class="col-lg-6">
+                                <input id="uiStartTemp" asp-for="StartTemp" style="width:100%;" />
+                            </div>
+                        </div>
 
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">Start Humidity %</label>
+                            <div class="col-lg-6">
+                                <input id="uiStartHumidity" asp-for="StartHumidity" style="width:100%;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div style='overflow-x: hidden;'>
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">End Time</label>
+                            <div class="col-lg-6">
+                                <input id="uiEndTime" asp-for="EndTime" class="form-control" style="width:100%;" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">End Wind Speed km/h</label>
+                            <div class="col-lg-6">
+                                <input id="uiEndWindSpeed" asp-for="EndWindSpeed" style="width:100%;" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">End Wind Direction</label>
+                            <div class="col-lg-6">
+                                <select asp-for="EndWindDirection" asp-items="(IEnumerable<SelectListItem>)ViewBag.WindDirection" class="form-control" style="padding: 0px">
+                                    <option>Please select</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">End Temp °C</label>
+                            <div class="col-lg-6">
+                                <input id="uiEndTemp" asp-for="EndTemp" style="width:100%;" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-3 col-sm-3 control-label">End Humidity %</label>
+                            <div class="col-lg-6">
+                                <input id="uiEndHumidity" asp-for="EndHumidity" style="width:100%;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
         </div>
-        @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#tabstrip_addTime").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+        });
+    </script>
 </form>

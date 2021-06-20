@@ -7,6 +7,7 @@
 <br />
 <p><a class="timesheetReportLink">Timesheet Report</a></p>
 <p><a class="canegrowersTimesheetReportLink">Canegrowers Timesheet Report</a></p>
+<p><a class="pesticideApplicationReportLink">Pesticide Application Report</a></p>
 
 <div id="timesheetReportWindow" style="display:none;">
     Start Date <input id="startDate" title="startDate" style="width: 100%" />
@@ -99,6 +100,12 @@
             reportRun = "CanegrowersTimesheetReport";
         });
 
+        $('.pesticideApplicationReportLink').click(function () {
+            $("#timesheetReportWindow").data("kendoWindow").title("Pesticide Application Report");
+            $("#timesheetReportWindow").data("kendoWindow").open().center();
+            reportRun = "PesticideApplicationReport";
+        });    
+
         // Hover shim for Internet Explorer 6 and Internet Explorer 7.
         $(document.body).on('hover', 'a', function () {
             $(this).toggleClass('hover');
@@ -133,6 +140,20 @@
             else if (reportRun == "CanegrowersTimesheetReport") {
                 $.ajax({
                     url: "/api/Reports/GenerateCanegrowersTimesheetReport",
+                    data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
+                    type: 'POST',
+                    traditional: true,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        var downloadButton = document.getElementById("downloadButton");
+                        downloadButton.click();
+                        $("#timesheetReportWindow").data("kendoWindow").close();
+                    }
+                });
+            }
+            else if (reportRun == "PesticideApplicationReport") {
+                $.ajax({
+                    url: "/api/Reports/GeneratePesticideApplicationReport",
                     data: JSON.stringify({ "StartDate": moment(startDate).format('YYYY/MM/DD'), "EndDate": moment(endDate).format('YYYY/MM/DD'), "Employee": employee, "TradingEntity": tradingEntity }),
                     type: 'POST',
                     traditional: true,

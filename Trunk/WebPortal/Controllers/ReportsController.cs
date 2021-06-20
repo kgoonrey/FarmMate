@@ -400,6 +400,94 @@ namespace WebPortal.Controllers
             return timesheet;
         }
 
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/Reports/GeneratePesticideApplicationReport")]
+        public JsonResult GeneratePesticideApplicationReport([FromBody] ReportParameters reportParameters)
+        {
+            _reportId = Guid.NewGuid();
+            var filePath = _hostingEnvironment.WebRootPath + "\\Reports\\" + _reportId;
+            _reportName = $"Pesticide_Application_{reportParameters.StartDate.ToString("yyyyMMdd")}-{reportParameters.EndDate.ToString("yyyyMMdd")}.csv";
+            using (var context = new DataModel())
+            {
+                var tradingEntityRow = context.TradingEntity.FirstOrDefault(x => x.Id == reportParameters.TradingEntity);
+                var employeeRow = context.Employees.FirstOrDefault(x => x.Id == reportParameters.Employee);
+
+                if (tradingEntityRow != null)
+                    _reportName = tradingEntityRow.Description + "_" + _reportName;
+
+                if (employeeRow != null)
+                    _reportName = $"{employeeRow.FirstName}_{employeeRow.LastName}_{_reportName}";
+
+                var data = context.PesticideApplicationHeader.Include(x=> x.TradingEntityTarget).Include(x=> x.EmployeeTarget).Include(x => x.Lines).ThenInclude(x => x.ProductTarget).Include(x => x.Times).Where(x => x.DateApplied <= reportParameters.EndDate.Date.AddDays(1).AddSeconds(-1) && x.DateApplied >= reportParameters.StartDate.Date);
+
+                var employeeList = new List<int>();
+                var employeeNameLookup = new Dictionary<int, string>();
+
+                var employeeTimesheets = new List<CanegrowersTimesheetPerDay>();
+
+                using (var w = new StreamWriter(filePath))
+                {
+                    foreach (var header in data)
+                    {
+                        if (tradingEntityRow != null && header.TradingEntity != tradingEntityRow.Id)
+                            continue;
+
+                        if (employeeRow != null && header.Employee != employeeRow.Id && header.AuthorisationEmployee != employeeRow.Id)
+                            continue;
+
+                        w.WriteLine("TradingEntity,FarmId,BlockNumbers,AreaTreated,DateApplied,AuditDateTime,Employee,AuthorisationEmployee,Aerial,Band,OverCanopy,UnderCanopy,DirectSpray,Shielded,Hooded,Boom,Spot,Handgun,OtherMethod,NozzleConfiguration,BOMForecastChecked,RainForecastIn48Hours,CloudCoverPercentage,SprayType,OtherType,SystemOperatingPressure,VehicleGroundSpeed,SprayTankVolume,SprayerReleaseHeight,SprayerApplicationRate,ProductLabelReadAndUnderstood,MSDSReadAndUnderstood,RiskAssessmentUndertaken,NeighboursNotifiedVerbal,NeighboursNotifiedWritten,ACCab,Overalls,Goggles,Respirator,Hat,Apron,Boots,Gloves,Notes");
+                        w.Flush();
+
+                        var authorisedEmployee = context.Employees.FirstOrDefault(x => x.Id == header.AuthorisationEmployee);
+                        if (authorisedEmployee == null)
+                            authorisedEmployee = context.Employees.FirstOrDefault(x => x.Id == header.Employee);
+
+                        var nozzleConfig = context.SprayNozzleConfiguration.FirstOrDefault(x => x.Id == header.NozzleConfiguration);
+
+                        w.WriteLine($"{header.TradingEntityTarget.Description},{header.FarmId},{header.BlockNumbers},{header.AreaTreated},{header.DateApplied.ToShortDateString()},{header.AuditDateTime.ToString("dd/MM/yyyy HH:mm")},{header.EmployeeTarget.FirstName + " " + header.EmployeeTarget.LastName},{authorisedEmployee.Name},{header.Aerial},{header.Band},{header.OverCanopy},{header.UnderCanopy},{header.DirectSpray},{header.Shielded},{header.Hooded},{header.Boom},{header.Spot},{header.Handgun},{header.OtherMethod},{nozzleConfig?.Name ?? header.NozzleConfiguration.ToString()},{header.BOMForecastChecked},{header.RainForecastIn48Hours},{header.CloudCoverPercentage},{header.SprayType},{header.OtherType},{header.SystemOperatingPressure},{header.VehicleGroundSpeed},{header.SprayTankVolume},{header.SprayerReleaseHeight},{header.SprayerApplicationRate},{header.ProductLabelReadAndUnderstood},{header.MSDSReadAndUnderstood},{header.RiskAssessmentUndertaken},{header.NeighboursNotifiedVerbal},{header.NeighboursNotifiedWritten},{header.ACCab},{header.Overalls},{header.Goggles},{header.Respirator},{header.Hat},{header.Apron},{header.Boots},{header.Gloves},{header.Notes}");
+                        w.Flush();
+
+                        w.WriteLine(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        w.WriteLine("Products,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        w.WriteLine(",Product,Description,ApplicationRate,Quantity,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        foreach (var line in header.Lines)
+                        {
+                            w.WriteLine($",{line.Product},{line.ProductTarget.Name},{line.ApplicationRate},{line.Quantity},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                            w.Flush();
+                        }
+
+                        w.WriteLine(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        w.WriteLine("Spray Times,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        w.WriteLine(",StartTime,EndTime,StartWindSpeed,EndWindSpeed,StartWindDirection,EndWindDirection,StartTemp,EndTemp,StartHumidity,EndHumidity,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+
+                        foreach (var time in header.Times)
+                        {
+                            w.WriteLine($",{time.StartTime.ToShortTimeString()},{time.EndTime.ToShortTimeString()},{time.StartWindSpeed},{time.EndWindSpeed},{time.StartWindDirection},{time.EndWindDirection},{time.StartTemp},{time.EndTemp},{time.StartHumidity},{time.EndHumidity},,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                            w.Flush();
+                        }
+
+                        w.WriteLine(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,");
+                        w.Flush();
+                    }
+                }
+            }
+
+            return Json("Success");
+        }
+
         private string GetBlankLine(int headerLength)
         {
             var newLine = "";

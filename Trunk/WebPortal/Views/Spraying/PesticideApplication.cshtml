@@ -73,7 +73,7 @@
 
             <label for="uiDateApplied">Date Applied</label>
             <div class="form-group">
-                <input id="uiDateApplied" asp-for="Item1.DateApplied" style="width:100%" />
+                <input id="uiDateApplied" inputmode="none" asp-for="Item1.DateApplied" style="width:100%" />
             </div>
 
         </div>
@@ -491,6 +491,14 @@
                 }
             });
 
+            $("#tabstrip_addTime").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });            
+
             $("#company").kendoDropDownList({
                 suggest: false,
                 change: OnCompanyChange
@@ -545,6 +553,8 @@
             $("#uiDateApplied").bind("focus", function () {
                 $(this).data("kendoDatePicker").open();
             });
+
+            $("#uiDateApplied").attr("readonly", "readonly");
 
             $('#uiForm').on('submit', function (e) {
                 e.preventDefault();
