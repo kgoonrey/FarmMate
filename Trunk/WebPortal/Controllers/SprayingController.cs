@@ -134,6 +134,8 @@ namespace WebPortal.Controllers
             if (type == "Saving")
             {
                 header.Completed = true;
+                header.Lines = JsonConvert.DeserializeObject<List<PesticideApplicationLines>>(lineJson);
+                header.Times = JsonConvert.DeserializeObject<List<PesticideApplicationSprayTimes>>(timeJson);
                 return Saving(header);
             }
 
@@ -166,6 +168,7 @@ namespace WebPortal.Controllers
             rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
             rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
             rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "Each", Value = ((int)RateUOMEnum.Each).ToString() });
             line.RateUOMOption = rateUOM;
             line.ApplicationRate = RateUOMEnum.LitrePerHa;
 
@@ -213,6 +216,7 @@ namespace WebPortal.Controllers
             rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
             rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
             rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+            rateUOM.Add(new SelectListItem() { Text = "Each", Value = ((int)RateUOMEnum.Each).ToString() });
             line.RateUOMOption = rateUOM;
 
             return PartialView("_EditLine", line);
@@ -230,6 +234,7 @@ namespace WebPortal.Controllers
 
             line.Product = model.Product;
             line.Quantity = model.Quantity;
+            line.ApplicationRate = model.ApplicationRate;
             await PopulateOldData(header);
 
             return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), JsonConvert.SerializeObject(header.Times, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), 2, string.Empty));
@@ -473,8 +478,7 @@ namespace WebPortal.Controllers
                         }
                         else
                         {
-                            line.Id = Guid.NewGuid();
-                            context.Add(line);
+                            context.PesticideApplicationLines.Add(line);
                         }
                     }
 
@@ -492,8 +496,7 @@ namespace WebPortal.Controllers
                         }
                         else
                         {
-                            line.Id = Guid.NewGuid();
-                            context.Add(line);
+                            context.PesticideApplicationSprayTimes.Add(line);
                         }
                     }
 

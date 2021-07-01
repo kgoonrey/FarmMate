@@ -152,7 +152,7 @@ namespace WebPortal.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteProductType(string id, Products model)
+        public IActionResult DeleteProduct(string id, Products model)
         {
             if (ModelState.IsValid)
             {
@@ -202,6 +202,8 @@ namespace WebPortal.Controllers
                 return "mL/ha";
             if (value == RateUOMEnum.MilliliterPer100L)
                 return "mL/100L";
+            if (value == RateUOMEnum.Each)
+                return "Each";
 
             return string.Empty;
         }
@@ -226,6 +228,7 @@ namespace WebPortal.Controllers
                 rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
                 rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
                 rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "Each", Value = ((int)RateUOMEnum.Each).ToString() });
                 viewModel.RateUOMOption = rateUOM;
             }
             return PartialView("_AddProductMix", viewModel);
@@ -281,6 +284,7 @@ namespace WebPortal.Controllers
                 rateUOM.Add(new SelectListItem() { Text = "g/ha", Value = ((int)RateUOMEnum.GramPerHa).ToString() });
                 rateUOM.Add(new SelectListItem() { Text = "mL/ha", Value = ((int)RateUOMEnum.MilliliterPerHa).ToString() });
                 rateUOM.Add(new SelectListItem() { Text = "mL/100L", Value = ((int)RateUOMEnum.MilliliterPer100L).ToString() });
+                rateUOM.Add(new SelectListItem() { Text = "Each", Value = ((int)RateUOMEnum.Each).ToString() });
                 viewModel.RateUOMOption = rateUOM;
             }
             return PartialView("_EditProductMix", viewModel);

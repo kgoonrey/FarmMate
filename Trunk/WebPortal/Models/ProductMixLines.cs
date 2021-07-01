@@ -13,7 +13,8 @@ namespace WebPortal.Models
         LitrePerHa,
         GramPerHa,
         MilliliterPerHa,
-        MilliliterPer100L
+        MilliliterPer100L,
+        Each
     }
 
     public class ProductMixLines
