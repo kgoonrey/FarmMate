@@ -19,6 +19,27 @@
 
     <div></div>
 
+    <style>
+        .wrapper {
+            position: relative;
+            width: 400px;
+            height: 200px;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 400px;
+            height: 200px;
+            background-color: white;
+        }
+    </style>
+
     <div id="tabstrip">
         <ul>
             <li class="k-state-active">
@@ -324,18 +345,18 @@
         <div>
             <h3>Please sign below to confirm all information is true and correct to the best of your knowledge.</h3>
             <div>
-                <div id="surface-container" style="width:50%; margin: 0 auto;">
-                    <div id="surface" style="width: 90%; height: 150px; max-width: 300px; border: 1px solid black;"></div>
-
-                    <div id="surface2" style="width: 90%; height: 150px; max-width: 300px; border: 1px solid black; display:none">
-                        <img id="uiPreviousSignature" src="" />
-                    </div>
-
-                    <a id="createAddProductMixModal" class="btn btn-danger" style="margin-top: 4px; margin-left: 40%" onclick="ClearSignatureClicked()">
-                        <i class="glyphicon glyphicon-trash"></i>  Clear
-                    </a>
+                <div id="surface" class="wrapper" style="border: 1px solid black;">
+                    <canvas id="signature-pad" class="signature-pad" width=400 height=200></canvas>
                 </div>
-            </div>
+
+                <div id="surface2" class="wrapper" style="display:none; border: 1px solid black;">
+                    <img id="uiPreviousSignature" src="" width=400 height=200/>
+                </div>
+
+                <a id="createAddProductMixModal" class="btn btn-danger" style="margin-top: 4px; margin-left: 40%" onclick="ClearSignatureClicked()">
+                    <i class="glyphicon glyphicon-trash"></i>  Clear
+                </a>
+                </div>
         </div>
     </div>
 
@@ -375,10 +396,33 @@
 
     <script src="~/lib/kendo-ui-core/js/jquery.min.js"></script>
     <script src="~/lib/kendo-ui-core/js/kendo.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 
     <script>
 
         var surface;
+
+        var canvas = document.getElementById('signature-pad');
+
+        // Adjust canvas coordinate space taking into account pixel ratio,
+        // to make it look crisp on mobile devices.
+        // This also causes canvas to be cleared.
+        function resizeCanvas() {
+            // When zoomed out to less than 100%, for some very strange reason,
+            // some browsers report devicePixelRatio as less than 1
+            // and only part of the canvas is cleared then.
+            var ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+        }
+
+        window.onresize = resizeCanvas;
+        resizeCanvas();
+
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)' // necessary for saving image as JPEG; can be removed is only saving as PNG or SVG
+        });
 
         $(window).load(function () {
             var companyCount = $("#company").data("kendoDropDownList").dataSource.data().length;
@@ -393,83 +437,6 @@
             $('.k-input').on('focus', function () {
                 var input = $(this);
                 setTimeout(function () { input.select(); });
-            });
-
-            var geom = kendo.geometry;
-            var Point = geom.Point;
-            var draw = kendo.drawing;
-            var Path = draw.Path;
-            var path;
-
-            surface = draw.Surface.create($("#surface"));
-            $("#surface-container").on("mousemove", function (e) {
-                if (!path) {
-                    return;
-                }
-
-                var offset = $(this).offset();
-                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
-
-                path.lineTo(newPoint);
-            }).on("mousedown", function (e) {
-                path = new Path({
-                    stroke: {
-                        color: '#E4141B',
-                        width: 2,
-                        lineCap: "round",
-                        lineJoin: "round"
-                    }
-                });
-
-                var offset = $(this).offset();
-                var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
-
-                for (var i = 0; i < 1; i++) {
-                    path.lineTo(newPoint.clone().translate(i * 1, 0));
-                }
-
-                surface.draw(path);
-            }).on("mouseup", function (e) {
-                path = undefined;
-            });
-
-            $("#surface-container").on("touchmove", function (e) {
-                if (!path) {
-                    return;
-                }
-
-                var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-                x = touch.pageX;
-                y = touch.pageY;
-
-                var offset = $(this).offset();
-                var newPoint = new Point(x - offset.left, y - offset.top);
-
-                path.lineTo(newPoint);
-            }).on("touchstart", function (e) {
-                path = new Path({
-                    stroke: {
-                        color: '#E4141B',
-                        width: 2,
-                        lineCap: "round",
-                        lineJoin: "round"
-                    }
-                });
-
-                var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-                x = touch.pageX;
-                y = touch.pageY;
-
-                var offset = $(this).offset();
-                var newPoint = new Point(x - offset.left, y - offset.top);
-
-                for (var i = 0; i < 1; i++) {
-                    path.lineTo(newPoint.clone().translate(i * 1, 0));
-                }
-
-                surface.draw(path);
-            }).on("touchEnd", function (e) {
-                path = undefined;
             });
 
             var image = document.getElementById("uiEmployeeSignature").value;
@@ -781,19 +748,10 @@
         }
 
         function saveSignature() {
-            if (document.getElementById("uiEmployeeSignature").value === "" && $("#surface")[0].children[0].childElementCount > 1) {
-
-                $("#surface").css({ "border": "" });
-
-                kendo.drawing.drawDOM($("#surface"))
-                    .then(function (group) {
-                        return kendo.drawing.exportSVG(group);
-                    })
-                    .done(function (data) {
-                        $("#surface").css({ "border": "1px solid black;" });
-                        document.getElementById("uiEmployeeSignature").value = data;
-                        $("#uiForm").submit();
-                    });
+            if (document.getElementById("uiEmployeeSignature").value === "" && !signaturePad.isEmpty()) {
+                var data = signaturePad.toDataURL('image/png');
+                document.getElementById("uiEmployeeSignature").value = data;
+                $("#uiForm").submit();
             }
             else {
                 $("#uiForm").submit();
@@ -801,9 +759,9 @@
         }
 
         function ClearSignatureClicked() {
-            surface.clear();
-
             $("#surface2").css({ "display": "none" });
+            signaturePad.clear();
+
             $("#surface").css({ "display": "" });
             document.getElementById("uiEmployeeSignature").value = "";
         }
