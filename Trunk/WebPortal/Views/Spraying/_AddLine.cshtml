@@ -88,9 +88,11 @@
         }
 
         function EnableEverything() {
-            for (var i = 0; i < controlNames.length; i++) {
-                document.getElementById(controlNames[i]).disabled = "";
-            }
+            setTimeout(function () {
+                for (var i = 0; i < controlNames.length; i++) {
+                    document.getElementById(controlNames[i]).disabled = "";
+                }
+            }, 300);
         }
 
         function OnProductGroupChange() {
