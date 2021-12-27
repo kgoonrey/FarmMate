@@ -52,6 +52,7 @@ namespace WebPortal.Controllers
         {
             await PopulateViewBag();
             header.DateApplied = DateTime.Today;
+            header.TradingEntity = 1; //TODO Setting
             return View("PesticideApplication", Tuple.Create(header, JsonConvert.SerializeObject(header.Lines), JsonConvert.SerializeObject(header.Times), 0, string.Empty));
         }
 
@@ -160,6 +161,13 @@ namespace WebPortal.Controllers
                     Text = a.Name
                 }).ToList();
                 ViewBag.Products = productList;
+
+                var productTypeList = context.ProductTypes.Select(a => new SelectListItem
+                {
+                    Value = a.Code,
+                    Text = a.Description
+                }).ToList();
+                ViewBag.ProductTypeList = productTypeList;
             }
 
             var rateUOM = new List<SelectListItem>();
@@ -208,6 +216,13 @@ namespace WebPortal.Controllers
                     Text = a.Name
                 }).ToList();
                 ViewBag.Products = productList;
+
+                var productTypeList = context.ProductTypes.Select(a => new SelectListItem
+                {
+                    Value = a.Code,
+                    Text = a.Description
+                }).ToList();
+                ViewBag.ProductTypeList = productTypeList;
             }
 
             var rateUOM = new List<SelectListItem>();
@@ -305,6 +320,8 @@ namespace WebPortal.Controllers
             }
 
             ViewBag.WindDirection = windDirection;
+            time.StartWindDirection = PesticideApplicationSprayTimes.WindDirectionEnum.SouthEast;
+            time.EndWindDirection = PesticideApplicationSprayTimes.WindDirectionEnum.SouthEast;
             return PartialView("_AddTime", time);
         }
 

@@ -19,7 +19,6 @@ namespace WebPortal.Models
         public virtual PesticideApplicationHeader Header { get; set; }
         public virtual Products ProductTarget { get; set; }
 
-
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string HeaderJson { get; set; }
 

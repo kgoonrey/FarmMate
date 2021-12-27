@@ -129,5 +129,26 @@ namespace WebPortal.Controllers
                 return Json(timesheet);
             }
         }
+
+        [HttpGet]
+        [Route("api/Data/GetNozzleConfigTankVolume/{id}")]
+        public int GetNozzleConfigTankVolume(int id)
+        {
+            using (var context = new DataModel())
+            {
+                var config = context.SprayNozzleConfiguration.FirstOrDefault(x => x.Id == id);
+                return config?.TankVolume ?? 0;
+            }
+        }
+
+        [HttpGet]
+        [Route("api/Data/GetProductsByType/{productType}")]
+        public List<Products> GetProductsByType(string productType)
+        {
+            using (var context = new DataModel())
+            {
+                return context.Products.Where(x => productType == "All" || x.Type == productType).ToList();
+            }
+        }
     }
 }

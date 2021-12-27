@@ -17,5 +17,6 @@ namespace WebPortal.Models
         public int NozzleDId { get; set; }
         public int NozzleEId { get; set; }
         public int NozzleFId { get; set; }
+        public int TankVolume { get; set; }
     }
 }

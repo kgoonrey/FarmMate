@@ -166,6 +166,7 @@
             if (employeeCount == 2)
                 $("#employee").data("kendoDropDownList").select(1);
 
+            PopulateCompletedDays();
         });
 
         function LoadWorkControls() {
@@ -282,7 +283,6 @@
         }
 
         function PopulateCompletedDays() {
-
             if ($("#company").data("kendoDropDownList") == null || $("#employee").data("kendoDropDownList") == null)
                 return;
 

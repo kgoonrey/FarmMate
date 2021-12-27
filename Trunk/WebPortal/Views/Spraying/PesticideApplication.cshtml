@@ -441,7 +441,7 @@
 
             var image = document.getElementById("uiEmployeeSignature").value;
 
-            if (image !== "") {
+            if (image !== "" && image !== "data:,") {
                 $("#uiPreviousSignature").attr("src", image);
                 $("#surface2").css({ "display": "" });
                 $("#surface").css({ "display": "none" });
@@ -458,13 +458,28 @@
                 }
             });
 
+            //wire focus of all numerictextbox widgets on the page
+            $("input[type=text]").on("focus", function () {
+                var input = $(this);
+                clearTimeout(input.data("selectTimeId")); //stop started time out if any
+
+                var selectTimeId = setTimeout(function () {
+                    input[0].setSelectionRange(0, 9999);
+                });
+
+                input.data("selectTimeId", selectTimeId);
+            }).blur(function (e) {
+                clearTimeout($(this).data("selectTimeId")); //stop started timeout
+            });
+
+
             $("#tabstrip_addTime").kendoTabStrip({
                 animation: {
                     open: {
                         effects: "fadeIn"
                     }
                 }
-            });            
+            });
 
             $("#company").kendoDropDownList({
                 suggest: false,
@@ -480,7 +495,8 @@
             $("#uiNozzleConfiguration").kendoDropDownList({
                 dataValueField: "value",
                 dataTextField: "text",
-                suggest: false
+                suggest: false,
+                change: OnNozzleConfigChange
             });
 
             $("#uiSprayType").kendoDropDownList({
@@ -646,6 +662,19 @@
                     for (i = 0; i < result.length; i++) {
                         combo.dataSource.add({ value: result[i].id, text: result[i].firstName + " " + result[i].lastName });
                     }
+                }
+            });
+        }
+
+        function OnNozzleConfigChange() {
+            var value = $("#uiNozzleConfiguration").data("kendoDropDownList").value();
+
+            $.ajax({
+                url: "/api/Data/GetNozzleConfigTankVolume/" + value,
+                type: 'GET',
+                traditional: true,
+                success: function (result) {
+                    $("#uiSprayTankVolume").data("kendoNumericTextBox").value(result);
                 }
             });
         }

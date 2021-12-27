@@ -9,9 +9,17 @@
                 @Html.HiddenFor(x => x.HeaderJson)
                 @Html.HiddenFor(x => x.Id)
                 <div class="form-group">
+                    <label class="col-lg-3 col-sm-3 control-label">Product Type</label>
+                    <div class="col-lg-6">
+                        <select id="uiProductTypes" asp-items="ViewBag.ProductTypeList" class="form-control" onchange="OnProductTypeChange()" style="width:100%">
+                            <option>All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label asp-for="Product" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <select asp-for="Product" asp-items="ViewBag.Products" class="form-control">
+                        <select id="uiProducts" asp-for="Product" asp-items="ViewBag.Products" class="form-control" style="width:100%">
                             <option>Please select</option>
                         </select>
                     </div>
@@ -35,3 +43,53 @@
         @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
     </div>
 </form>
+
+<script>
+    $(document).ready(function () {
+
+        //wire focus of all numerictextbox widgets on the page
+        $("input[type=text]").on("focus", function () {
+            var input = $(this);
+            clearTimeout(input.data("selectTimeId")); //stop started time out if any
+
+            var selectTimeId = setTimeout(function () {
+                input[0].setSelectionRange(0, 9999);
+            });
+
+            input.data("selectTimeId", selectTimeId);
+        }).blur(function (e) {
+            clearTimeout($(this).data("selectTimeId")); //stop started timeout
+        });
+
+        $("#uiProductTypes").kendoDropDownList({
+            suggest: false,
+        });
+
+        $("#uiProducts").kendoDropDownList({
+            dataValueField: "value",
+            dataTextField: "text",
+            suggest: false
+        });
+    });
+
+    function OnProductTypeChange() {
+        var productType = $("#uiProductTypes").data("kendoDropDownList").value();
+        var products = $("#uiProducts").data("kendoDropDownList");
+        var dataSource = new kendo.data.DataSource({
+            data: [{ value: "", text: "Please select" }]
+        });
+        products.setDataSource(dataSource);
+        products.select(0);
+
+        $.ajax({
+            url: "/api/Data/GetProductsByType/" + productType,
+            type: 'GET',
+            traditional: true,
+            success: function (result) {
+                for (i = 0; i < result.length; i++) {
+                    products.dataSource.add({ value: result[i].code, text: result[i].name });
+                }
+            }
+        });
+    }
+</script>
