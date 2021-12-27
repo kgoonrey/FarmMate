@@ -16,7 +16,9 @@ namespace WebPortal.Models
         public bool ERAProduct { get; set; }
         public int TankSize { get; set; }
         public string RateUOM { get; set; }
+        public string ProductGroup { get; set; }
         public List<SelectListItem> RateUOMOption { get; set; }
         public List<SelectListItem> AllTypes { get; set; }
+        public List<SelectListItem> ProductGroups { get; set; }
     }
 }

@@ -302,9 +302,9 @@
             <label for="uiNotes">Spray Type</label>
             @using (Html.BeginForm())
             {
-                <div class="form-group">
-                    @Html.DropDownListFor(model => model.Item1.SprayType, (IEnumerable<SelectListItem>)ViewBag.SprayTypes, null, new { @class = "form-control", Id = "uiSprayType", style = "width: 100%;" })
-                </div>
+            <div class="form-group">
+                @Html.DropDownListFor(model => model.Item1.SprayType, (IEnumerable<SelectListItem>)ViewBag.SprayTypes, null, new { @class = "form-control", Id = "uiSprayType", style = "width: 100%;" })
+            </div>
             }
 
             <label for="uiFarmId">Other Spray Type</label>
@@ -319,7 +319,9 @@
             <input asp-for="Item1.VehicleGroundSpeed" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <label for="uiSprayTankVolume">Spray Tank Volume (L)</label>
-            <input asp-for="Item1.SprayTankVolume" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
+            <div class="form-group">
+                <input id="uiSprayTankVolume" asp-for="Item1.SprayTankVolume" style="width:100%" />
+            </div>
 
             <label for="uiSprayerReleaseHeight">Spray Release Height (m)</label>
             <input asp-for="Item1.SprayerReleaseHeight" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
@@ -495,6 +497,12 @@
                 dataValueField: "value",
                 dataTextField: "text",
                 suggest: false
+            });
+
+            $("#uiSprayTankVolume").kendoNumericTextBox({
+                format: "0",
+                decimals: 0,
+                min: 0
             });
 
             $("#uiDateApplied").kendoDatePicker({

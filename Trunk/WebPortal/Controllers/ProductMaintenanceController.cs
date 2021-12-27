@@ -34,6 +34,12 @@ namespace WebPortal.Controllers
                     Text = r.Description,
                     Value = r.Code
                 }).ToList();
+
+                viewModel.ProductGroups = context.ProductGroups.Select(r => new SelectListItem
+                {
+                    Text = r.Name,
+                    Value = r.Id.ToString()
+                }).ToList();
             }
             return PartialView("_AddProduct", viewModel);
         }
@@ -49,6 +55,9 @@ namespace WebPortal.Controllers
 
             if (viewModel.Type == null || viewModel.Type == "Please select")
                 ModelState.AddModelError(string.Empty, "Type missing");
+
+            if (!int.TryParse(viewModel?.ProductGroup ?? "", out var productGroup) || viewModel.ProductGroup == null || viewModel.ProductGroup == "Please select")
+                ModelState.AddModelError(string.Empty, "Product group missing");
 
             if (viewModel.ActiveConstituents == null)
                 viewModel.ActiveConstituents = string.Empty;
@@ -68,6 +77,7 @@ namespace WebPortal.Controllers
                     model.Type = viewModel.Type;
                     model.ERAProduct = viewModel.ERAProduct;
                     model.TankSize = viewModel.TankSize;
+                    model.ProductGroup = productGroup;
 
                     context.Add(model);
                     context.SaveChanges();
@@ -91,11 +101,18 @@ namespace WebPortal.Controllers
                 viewModel.Type = model.Type;
                 viewModel.ERAProduct = model.ERAProduct;
                 viewModel.TankSize = model.TankSize;
+                viewModel.ProductGroup = model.ProductGroup.ToString();
 
                 viewModel.AllTypes = context.ProductTypes.Select(r => new SelectListItem
                 {
                     Text = r.Description,
                     Value = r.Code
+                }).ToList();
+
+                viewModel.ProductGroups = context.ProductGroups.Select(r => new SelectListItem
+                {
+                    Text = r.Name,
+                    Value = r.Id.ToString()
                 }).ToList();
             }
             return PartialView("_EditProduct", viewModel);
@@ -108,6 +125,9 @@ namespace WebPortal.Controllers
                 return RedirectToAction("Index");
 
             if (viewModel.Type == null || viewModel.Type == "Please select")
+                return RedirectToAction("Index");
+
+            if (!int.TryParse(viewModel?.ProductGroup ?? "", out var productGroup) || viewModel.ProductGroup == null || viewModel.ProductGroup == "Please select")
                 return RedirectToAction("Index");
 
             if (viewModel.ActiveConstituents == null)
@@ -128,6 +148,7 @@ namespace WebPortal.Controllers
                 product.Type = viewModel.Type;
                 product.ERAProduct = viewModel.ERAProduct;
                 product.TankSize = viewModel.TankSize;
+                product.ProductGroup = productGroup;
 
                 context.Update(product);
                 context.SaveChanges();

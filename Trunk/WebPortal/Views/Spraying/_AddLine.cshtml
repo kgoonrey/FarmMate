@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label asp-for="ApplicationRate" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <select asp-for="ApplicationRate" asp-items="@Model.RateUOMOption" class="form-control">
+                        <select id="uiApplicationRate" asp-for="ApplicationRate" asp-items="@Model.RateUOMOption" class="form-control">
                             <option>Please select</option>
                         </select>
                     </div>
@@ -35,7 +35,7 @@
                 <div class="form-group">
                     <label asp-for="Quantity" class="col-lg-3 col-sm-3 control-label"></label>
                     <div class="col-lg-6">
-                        <input asp-for="Quantity" class="form-control" />
+                        <input id="uiQuantity" asp-for="Quantity" class="form-control" />
                     </div>
                 </div>
             </div>
@@ -45,6 +45,8 @@
 </form>
 
 <script>
+
+    var controlNames = ["uiProductGroups", "uiProducts", "uiApplicationRate", "uiQuantity"];
         $(document).ready(function () {
 
             //wire focus of all numerictextbox widgets on the page
@@ -65,14 +67,31 @@
 
             $("#uiProductGroups").kendoDropDownList({
                 suggest: false,
+                open: ()=> DisableEverythingExceptMe("uiProductGroups"),
+                close: EnableEverything
             });
 
             $("#uiProducts").kendoDropDownList({
-                dataValueField: "value",
-                dataTextField: "text",
-                suggest: false
+                suggest: false,
+                open: () => DisableEverythingExceptMe("uiProductGroups"),
+                close: EnableEverything
             });
         });
+
+        function DisableEverythingExceptMe(me) {
+
+            for (var i = 0; i < controlNames.length; i++) {
+                if (controlNames[i] !== me) {
+                    document.getElementById(controlNames[i]).disabled = "disabled";
+                }
+            }
+        }
+
+        function EnableEverything() {
+            for (var i = 0; i < controlNames.length; i++) {
+                document.getElementById(controlNames[i]).disabled = "";
+            }
+        }
 
         function OnProductGroupChange() {
             var productGroup = $("#uiProductGroups").data("kendoDropDownList").value();
@@ -89,7 +108,7 @@
                 traditional: true,
                 success: function (result) {
                     for (i = 0; i < result.length; i++) {
-                        products.dataSource.add({ value: result[i].id, text: result[i].name });
+                        products.dataSource.add({ value: result[i].code, text: result[i].name });
                     }
                 }
             });

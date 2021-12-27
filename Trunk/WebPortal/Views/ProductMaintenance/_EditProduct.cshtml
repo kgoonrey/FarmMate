@@ -30,6 +30,14 @@
                 </div>
             </div>
             <div class="form-group">
+                <label asp-for="ProductGroup" class="col-lg-3 col-sm-3 control-label"></label>
+                <div class="col-lg-6">
+                    <select asp-for="ProductGroup" asp-items="@Model.ProductGroups" class="form-control">
+                        <option>Please select</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
                 <label asp-for="Type" class="col-lg-3 col-sm-3 control-label"></label>
                 <div class="col-lg-6">
                     <select asp-for="Type" asp-items="@Model.AllTypes" class="form-control">
