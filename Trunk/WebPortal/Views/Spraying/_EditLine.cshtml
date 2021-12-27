@@ -9,9 +9,9 @@
                 @Html.HiddenFor(x => x.HeaderJson)
                 @Html.HiddenFor(x => x.Id)
                 <div class="form-group">
-                    <label class="col-lg-3 col-sm-3 control-label">Product Type</label>
+                    <label class="col-lg-3 col-sm-3 control-label">Product Groups</label>
                     <div class="col-lg-6">
-                        <select id="uiProductTypes" asp-items="ViewBag.ProductTypeList" class="form-control" onchange="OnProductTypeChange()" style="width:100%">
+                        <select id="uiProductGroups" asp-items="ViewBag.ProductGroupList" class="form-control" onchange="OnProductGroupChangeEdit()" style="width:100%">
                             <option>All</option>
                         </select>
                     </div>
@@ -53,7 +53,9 @@
             clearTimeout(input.data("selectTimeId")); //stop started time out if any
 
             var selectTimeId = setTimeout(function () {
-                input[0].setSelectionRange(0, 9999);
+                input.select();
+                // To make this work on iOS, too, replace the above line with the following one. Discussed in https://stackoverflow.com/q/3272089
+                // input[0].setSelectionRange(0, 9999);
             });
 
             input.data("selectTimeId", selectTimeId);
@@ -61,7 +63,7 @@
             clearTimeout($(this).data("selectTimeId")); //stop started timeout
         });
 
-        $("#uiProductTypes").kendoDropDownList({
+        $("#uiProductGroups").kendoDropDownList({
             suggest: false,
         });
 
@@ -72,8 +74,8 @@
         });
     });
 
-    function OnProductTypeChange() {
-        var productType = $("#uiProductTypes").data("kendoDropDownList").value();
+    function OnProductGroupChangeEdit() {
+        var productGroup = $("#uiProductGroups").data("kendoDropDownList").value();
         var products = $("#uiProducts").data("kendoDropDownList");
         var dataSource = new kendo.data.DataSource({
             data: [{ value: "", text: "Please select" }]
@@ -82,12 +84,12 @@
         products.select(0);
 
         $.ajax({
-            url: "/api/Data/GetProductsByType/" + productType,
+            url: "/api/Data/GetProductsByGroup/" + productGroup,
             type: 'GET',
             traditional: true,
             success: function (result) {
                 for (i = 0; i < result.length; i++) {
-                    products.dataSource.add({ value: result[i].code, text: result[i].name });
+                    products.dataSource.add({ value: result[i].id, text: result[i].name });
                 }
             }
         });

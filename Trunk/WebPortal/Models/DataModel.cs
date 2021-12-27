@@ -27,6 +27,7 @@ namespace WebPortal.Models
         public DbSet<PesticideApplicationHeader> PesticideApplicationHeader { get; set; }
         public DbSet<PesticideApplicationLines> PesticideApplicationLines { get; set; }
         public DbSet<PesticideApplicationSprayTimes> PesticideApplicationSprayTimes { get; set; }
+        public DbSet<ProductGroups> ProductGroups { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -61,6 +62,12 @@ namespace WebPortal.Models
                     .HasForeignKey(d => d.Type)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Products_ProductTypes");
+
+                entity.HasOne(d => d.ProductGroupTarget)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.ProductGroup)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Products_ProductGroups");
             });
 
             modelBuilder.Entity<ProductMixLines>(entity =>

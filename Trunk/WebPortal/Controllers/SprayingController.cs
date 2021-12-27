@@ -76,7 +76,7 @@ namespace WebPortal.Controllers
                     Text = a.Description
                 }).ToListAsync();
 
-                var nozzleConfis = await context.SprayNozzleConfiguration.Select(a => new SelectListItem
+                var nozzleConfis = await context.SprayNozzleConfiguration.OrderByDescending(x=> x.Id).Select(a => new SelectListItem
                 {
                     Value = a.Id.ToString(),
                     Text = a.Name
@@ -162,12 +162,12 @@ namespace WebPortal.Controllers
                 }).ToList();
                 ViewBag.Products = productList;
 
-                var productTypeList = context.ProductTypes.Select(a => new SelectListItem
+                var productGroupList = context.ProductGroups.Select(a => new SelectListItem
                 {
-                    Value = a.Code,
-                    Text = a.Description
+                    Value = a.Id.ToString(),
+                    Text = a.Name
                 }).ToList();
-                ViewBag.ProductTypeList = productTypeList;
+                ViewBag.ProductGroupList = productGroupList;
             }
 
             var rateUOM = new List<SelectListItem>();
@@ -217,12 +217,12 @@ namespace WebPortal.Controllers
                 }).ToList();
                 ViewBag.Products = productList;
 
-                var productTypeList = context.ProductTypes.Select(a => new SelectListItem
+                var productGroupList = context.ProductGroups.Select(a => new SelectListItem
                 {
-                    Value = a.Code,
-                    Text = a.Description
+                    Value = a.Id.ToString(),
+                    Text = a.Name
                 }).ToList();
-                ViewBag.ProductTypeList = productTypeList;
+                ViewBag.ProductGroupList = productGroupList;
             }
 
             var rateUOM = new List<SelectListItem>();

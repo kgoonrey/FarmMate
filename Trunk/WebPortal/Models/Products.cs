@@ -23,8 +23,10 @@ namespace WebPortal.Models
         public string Type { get; set; }
         public bool ERAProduct { get; set; }
         public int TankSize { get; set; }
+        public int ProductGroup { get; set; }
 
         public virtual ProductTypes TypeTarget { get; set; }
+        public virtual ProductGroups ProductGroupTarget { get; set; }
         public virtual ICollection<ProductMixLines> ProductMixHeaderLines { get; set; }
         public virtual ICollection<ProductMixLines> ProductMixLines { get; set; }
         public virtual ICollection<PesticideApplicationLines> PesticideApplicationLines { get; set; }

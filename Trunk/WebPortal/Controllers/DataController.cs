@@ -150,5 +150,16 @@ namespace WebPortal.Controllers
                 return context.Products.Where(x => productType == "All" || x.Type == productType).ToList();
             }
         }
+
+        [HttpGet]
+        [Route("api/Data/GetProductsByGroup/{productGroup}")]
+        public List<Products> GetProductsByGroup(string productGroup)
+        {
+            using (var context = new DataModel())
+            {
+                int.TryParse(productGroup, out var id);
+                return context.Products.Where(x => productGroup == "All" || x.ProductGroup == id).ToList();
+            }
+        }
     }
 }

@@ -87,10 +87,8 @@
                 <input id="uiBlockNumbers" asp-for="Item1.BlockNumbers" class="k-textbox" style="width:100%" />
             </div>
 
-            <label for="uiAreaTreated">Area Treated (ha)</label>
-            <div class="form-group">
-                <input id="uiAreaTreated" asp-for="Item1.AreaTreated" style="width:100%" />
-            </div>
+            <label for="uiAreaTreated">Area Treated (ha)</label>            
+            <input asp-for="Item1.AreaTreated" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />            
 
             <label for="uiDateApplied">Date Applied</label>
             <div class="form-group">
@@ -252,9 +250,7 @@
             <br />
             <br />
             <label for="uiCloudCoverPercentage">Cloud Cover Percentage</label>
-            <div class="form-group">
-                <input id="uiCloudCoverPercentage" asp-for="Item1.CloudCoverPercentage" style="width:100%" />
-            </div>
+            <input asp-for="Item1.CloudCoverPercentage" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <div class="panel-body">
                 <div class="btn-group">
@@ -317,33 +313,23 @@
             </div>
 
             <label for="uiSystemOperatingPressure">System Operating Pressure (bar)</label>
-            <div class="form-group">
-                <input id="uiSystemOperatingPressure" asp-for="Item1.SystemOperatingPressure" style="width:100%" />
-            </div>
+            <input asp-for="Item1.SystemOperatingPressure" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <label for="uiVehicleGroundSpeed">Vehicle Ground Speed (km/h)</label>
-            <div class="form-group">
-                <input id="uiVehicleGroundSpeed" asp-for="Item1.VehicleGroundSpeed" style="width:100%" />
-            </div>
+            <input asp-for="Item1.VehicleGroundSpeed" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <label for="uiSprayTankVolume">Spray Tank Volume (L)</label>
-            <div class="form-group">
-                <input id="uiSprayTankVolume" asp-for="Item1.SprayTankVolume" style="width:100%" />
-            </div>
+            <input asp-for="Item1.SprayTankVolume" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <label for="uiSprayerReleaseHeight">Spray Release Height (m)</label>
-            <div class="form-group">
-                <input id="uiSprayerReleaseHeight" asp-for="Item1.SprayerReleaseHeight" style="width:100%" />
-            </div>
+            <input asp-for="Item1.SprayerReleaseHeight" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
             <label for="uiSprayerApplicationRate">Sprayer Application Rate (L/ha)</label>
-            <div class="form-group">
-                <input id="uiSprayerApplicationRate" asp-for="Item1.SprayerApplicationRate" style="width:100%" />
-            </div>
+            <input asp-for="Item1.SprayerApplicationRate" class="form-control" style="width: 100%; max-width: -webkit-fill-available" />
 
         </div>
         <div>
-            <h3>Please sign below to confirm all information is true and correct to the best of your knowledge.</h3>
+            <h4>Please sign below to confirm all information is true and correct to the best of your knowledge.</h4>
             <div>
                 <div id="surface" class="wrapper" style="border: 1px solid black;">
                     <canvas id="signature-pad" class="signature-pad" width=400 height=200></canvas>
@@ -446,6 +432,10 @@
                 $("#surface2").css({ "display": "" });
                 $("#surface").css({ "display": "none" });
             }
+            else {
+                $("#surface2").css({ "display": "none" });
+                $("#surface").css({ "display": "" });
+            }
         });
 
         $(document).ready(function () {
@@ -464,7 +454,9 @@
                 clearTimeout(input.data("selectTimeId")); //stop started time out if any
 
                 var selectTimeId = setTimeout(function () {
-                    input[0].setSelectionRange(0, 9999);
+                    input.select();
+                    // To make this work on iOS, too, replace the above line with the following one. Discussed in https://stackoverflow.com/q/3272089
+                    // input[0].setSelectionRange(0, 9999);
                 });
 
                 input.data("selectTimeId", selectTimeId);
@@ -503,30 +495,6 @@
                 dataValueField: "value",
                 dataTextField: "text",
                 suggest: false
-            });
-
-            $("#uiAreaTreated").kendoNumericTextBox();
-
-            $("#uiSystemOperatingPressure").kendoNumericTextBox();
-            $("#uiSprayerReleaseHeight").kendoNumericTextBox();
-            $("#uiSprayerApplicationRate").kendoNumericTextBox();
-
-            $("#uiCloudCoverPercentage").kendoNumericTextBox({
-                format: "0",
-                decimals: 0,
-                min: 0
-            });
-
-            $("#uiVehicleGroundSpeed").kendoNumericTextBox({
-                format: "0",
-                decimals: 0,
-                min: 0
-            });
-
-            $("#uiSprayTankVolume").kendoNumericTextBox({
-                format: "0",
-                decimals: 0,
-                min: 0
             });
 
             $("#uiDateApplied").kendoDatePicker({
@@ -586,42 +554,6 @@
 
                         $("#uiStartTime").attr("readonly", "readonly");
                         $("#uiEndTime").attr("readonly", "readonly");
-
-                        $("#uiStartWindSpeed").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
-
-                        $("#uiEndWindSpeed").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
-
-                        $("#uiStartTemp").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
-
-                        $("#uiEndTemp").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
-
-                        $("#uiStartHumidity").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
-
-                        $("#uiEndHumidity").kendoNumericTextBox({
-                            format: "0",
-                            decimals: 0,
-                            min: 0
-                        });
                     }
                     else if (document.getElementById("uiSubmitType").value.startsWith("TimeDelete")) {
                         $("#modal-action-delete-time").html(response);
@@ -681,6 +613,7 @@
 
         function BackClicked() {
             var index = $("#tabstrip").data("kendoTabStrip").select().index();
+            window.scrollTo(0, 0);
 
             if (index === 0) {
                 myconfirm("Quit Pesticide Application?", "Quit?").then(function () {
@@ -695,6 +628,7 @@
 
         function NextClicked() {
             var index = $("#tabstrip").data("kendoTabStrip").select().index();
+            window.scrollTo(0, 0);
 
             if (index === 5) {
                 myconfirm("Save Changes?", "Save").then(function () {
@@ -725,8 +659,18 @@
                 });
                 return;
             }
+            else if (index === 4 && window.innerWidth < 1000) {
+                showURLBar();
+            }
 
             $("#tabstrip").data("kendoTabStrip").select(++index);
+        }
+
+        function showURLBar() {
+            document.documentElement.webkitRequestFullscreen();
+            setTimeout(function () {
+                document.webkitExitFullscreen();
+            }, 100);
         }
 
         function myconfirm(content, title) {
