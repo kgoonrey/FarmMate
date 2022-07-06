@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" />
-    <PackageReference Include="Moment.js" Version="2.20.1" />
+    <PackageReference Include="Moment.js" Version="2.29.4" />
   </ItemGroup>
 
   <ItemGroup>
